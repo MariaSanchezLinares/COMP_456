@@ -1,0 +1,529 @@
+---
+title: "Text retrieval from PDFs 101"
+author: "Emanuel, Maria, Nibia"
+format: 
+  html:
+    embed-resources: true
+    toc: true
+---
+
+## What We Will Learn
+
+Text mining, also known as text data mining, is the process of transforming unstructured text into a structured format to identify meaningful patterns and new insights. We can use text mining to analyze vast collections of textual materials to capture key concepts, trends and hidden relationships. [More information](https://www.ibm.com/topics/text-mining)
+
+We will work on an intro section on information retrieval from PDFs. We will apply *tokenization* (This is the process of breaking out long-form text into sentences and words called "tokens") and preprocess text to make analysis easier.
+
+Also, we will apply TF-IDF (term frequency-inverse document frequency) as a statistical measure that will help us quantify how important a word is to a document in a collection of documents.
+
+## Real-Life Applications of TF-IDF Analysis
+
+Why would we want to do text mining and what can we learn from the TF-IDF analysis?
+
+Some practical applications include:
+
+1.  **Sentiment Analysis**: Identifies key terms expressing positive or negative sentiments in customer reviews and social media.
+
+2.  **Text Classification**: Used in natural language processing for categorizing text, such as spam detection in emails.
+
+3.  **Document Clustering**: Groups similar documents together, aiding in organizing large document sets like news articles.
+
+4.  **Content Recommendation**: Powers recommendation systems by analyzing user preferences to suggest similar content.
+
+### Packages
+
+```{r, message=FALSE}
+# install.packages("pdftools")
+# install.packages("stringr")
+# install.packages("purrr")
+# install.packages("stopwords")
+# install.packages("dplyr")
+# install.packages("tidytext")
+# install.packages("ggplot2")
+# install.packages("fs")
+
+library(pdftools)
+library(stringr)
+library(purrr)
+library(stopwords)
+library(dplyr)
+library(tidytext)
+library(fs) 
+library(ggplot2)
+```
+
+### Where did we get this data from?
+
+Files were retrieved from Nexus Uni, a paid database that allows you to access newspapers that are behind a paywall. *Make sure you download all the files alongside this learning guide to continue with the next steps.*
+
+We'll be working with articles on Taylor Swift's influence on the 2024 US elections.
+
+Here you can see how one single article looks like after extracting raw text from a pdf file:
+
+```{r}
+pdf_text_data <- pdf_text("~/Desktop/STATS 456/Learning Guide/Text_Retrieval_from_PDFs/TayTay/Can Taylor Swift Swing An Election_ How Celebrity Endorsements Work.pdf")
+
+# pdf_text_data <- pdf_text("~/Desktop/___/Text_Retrieval_from_PDFs/TayTay/Can Taylor Swift Swing An Election_ How Celebrity Endorsements Work.pdf")
+
+print(pdf_text_data[1]) #For page 1
+```
+
+Now try this:
+
+```{r}
+cat(pdf_text_data[1]) #For page 1
+```
+
+Using 'print()' instead of 'cat()' will show the special characters like \n in the output. This is useful for identifying specific patterns in the text structure that might not be as obvious when the text is printed without these markers.
+
+## Tool: Retrieve data from PDFs
+
+In the following chuck of code, you can find the regular format that we followed to define functions that look for specific text patterns, which allow us to extract parts of the text that interest us and stores them into a separate data frame for each file.
+
+Now we will retrieve:
+
+-   Date
+
+-   Title
+
+-   Content
+
+Visually, it is really easy to identify patters that correspond to the those categories, however in our code we need to describe that pattern using 'stringr language'. You might recall using this [stringr cheat sheet](https://evoldyn.gitlab.io/evomics-2018/ref-sheets/R_strings.pdf).
+
+```{r message=FALSE}
+# Define PDF directory
+pdf_directory <- "~/Desktop/STATS 456/Learning Guide/Text_Retrieval_from_PDFs/TayTay/"
+
+# Function to extract date, title, and main text from a single PDF
+extract_pdf_info <- function(pdf_file) {
+  # Extract text from all pages of the PDF
+  pdf_text_data <- pdf_text(pdf_file)
+  full_text <- paste(pdf_text_data, collapse = "\n")  # Combine all pages
+
+  # Define extraction functions
+  extract_date <- function(text) {
+    date_pattern <- "\\b\\w+ \\d{1,2}, \\d{4}\\b"  # Pattern for 'Month Day, Year'
+    date <- str_extract(text, date_pattern)
+    return(date)
+  }
+  
+  extract_title <- function(text) {
+    lines <- str_split(text, "\n")[[1]]
+    title <- lines[2]  # Assuming the title is on the second line
+    return(str_trim(title))
+  }
+  
+  extract_main_text <- function(text) {
+    # Locate the start of the main text after "Body"
+    body_start <- str_locate(text, "Body")[, 1]
+    
+    # Locate the end of the main text before "Classification" or "End of Document"
+    classification_start <- str_locate(text, "Classification")[, 1]
+    end_document_start <- str_locate(text, "End of Document")[, 1]
+  
+    # Determine the ending point of the main text
+    main_text_end <- min(c(na.omit(c(classification_start, end_document_start))), na.rm = TRUE)
+  
+    # Extract main text if "Body" and end marker are found
+    if (!is.na(body_start) && !is.na(main_text_end)) {
+      main_text <- str_sub(text, body_start + 5, main_text_end - 1)  # +5 to skip "Body"
+      } else {
+        main_text <- text  # Fallback to the entire text if markers are missing
+        }
+    return(str_trim(main_text))
+  }
+  
+  # Apply extraction functions
+  date <- extract_date(full_text)
+  title <- extract_title(full_text)
+  main_text <- extract_main_text(full_text)
+  
+  # Create a data frame for this PDF
+  pdf_df <- data.frame(
+    date = date,
+    title = title,
+    content = main_text,
+    stringsAsFactors = FALSE
+  )
+  
+  return(pdf_df)
+}
+
+# Get a list of all PDF files in the directory
+pdf_files <- dir_ls(pdf_directory, glob = "*.pdf")
+
+# Use purrr to apply the extraction function across all PDF files and combine results
+taytay_pdf_df <- map_df(pdf_files, extract_pdf_info)
+
+# Display the combined data frame
+print(taytay_pdf_df)
+
+```
+
+## TF-IDF
+
+TF-IDF is a widely used concept in Natural Language Processing (NLP), which stands for Term Frequency-Inverse Document Frequency
+
+### Key Definitions
+
+Before diving into TF-IDF, it's important to understand two key concepts: **Document** and **Corpus**.
+
+-   **Document**: A piece of writing which is a collection of sentences and facts. (denoted by ( d ))
+
+-   **Corpus**: A collection of documents is called a corpus. (denoted by ( D ))
+
+**Example**:
+
+-   A website is a document, while a collection of websites is a corpus.
+
+-   A chapter of a book is a document, while the book (a collection of chapters) is a corpus.
+
+## Term Frequency (TF)
+
+Term Frequency is a numerical statistic that measures the value of the occurrence of a particular term (( t )) in a document (( d )). It is calculated by the number of times that term ( t ) occurs in document ( d ).
+
+The formula used to measure TF is as follows:
+
+$$
+\text{tf}(t, d) = \frac{f(t, d)}{N_d}
+$$
+
+where:
+
+-   ( f(t, d) ) = Number of occurrences of the term ( t ) in document ( d )
+
+-   ( N_d ) = Total number of terms in document ( d )
+
+## Inverse Document Frequency (IDF)
+
+IDF is another numerical statistic that measures the amount of information a word provides. It is calculated based on the number of documents in the corpus ( D ) in which the term ( t ) occurs.
+
+The formula is as follows:
+
+$$
+\text{idf}(t) = \log\left(\frac{N}{n_t}\right)
+$$
+
+where:
+
+-   ( n_t ) = Number of documents in which the term ( t ) occurs in the corpus ( D )
+
+-   ( N ) = Total number of documents in corpus ( D )
+
+## Origin of the Concept
+
+Let ( X ) be a random variable representing the collection of all words in a corpus. According to the language model derived by Shannon, we can say the probability model of the random variable ( X ) is:
+
+$$
+P(X = \text{word}_i) = p_i
+$$
+
+This means that ( p_i ) is the probability of the occurrence of the ( i )-th word in the corpus.
+
+The information value (entropy) of a word ( x ) in a corpus can be represented as:
+
+$$
+H(X) = E_X[I(x)]
+$$
+
+This entropy of a word can be measured by the statistic TF-IDF, defined as:
+
+$$
+\text{TF-IDF} = \text{TF} \times \text{IDF}
+$$
+
+## Applying TF-IDF in R
+
+Before applying TF-IDF in R, we need to preprocess the given data to convert it into tidy text format. Tidy data has a specific structure:
+
+-   Each variable is a column.
+-   Each observation is a row.
+-   Each type of observational unit is a table.
+
+The tidy text format can be defined as a table with one token per row. A **token** is a meaningful unit of text, such as a word, that we are interested in using for analysis. **Tokenization** is the process of splitting text into tokens.
+
+### Text pre-processing
+
+```{r}
+# Define a text pre-processing function
+stop_words <- stopwords("en")  # Define stop words once
+
+preprocess_text <- function(text) {
+  text <- tolower(text)  # Convert to lowercase
+  text <- str_replace_all(text, "[^[:alpha:][:space:]]", " ")  # Remove punctuation/special characters
+  text <- str_replace_all(text, "\\s+", " ")  # Replace multiple spaces with a single space
+  text <- str_trim(text)  # Trim leading and trailing spaces
+  tokens <- unlist(strsplit(text, "\\s+"))  # Split text into words
+  tokens <- tokens[!tokens %in% stop_words]  # Remove English stop words
+  # tokens <- lemmatize_words(tokens)  # Lemmatize the words
+  paste(tokens, collapse = " ")  # Combine tokens back into a single string
+}
+
+# Apply preprocessing to each article’s content
+taytay_pdf_df <- taytay_pdf_df %>%
+  mutate(processed_content = map_chr(content, preprocess_text))
+
+# View the processed data
+head(taytay_pdf_df)
+```
+
+#### Tokenization
+
+![Tokenization process](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*ECAVNGlzLHZ31SEFq8qHqw.png)
+
+
+```{r}
+#Tokenize and Preprocess Text for TF-IDF
+tidy_text <- taytay_pdf_df %>%
+  unnest_tokens(word, processed_content)  # Tokenize the `processed_content` column
+```
+
+### Calculating TF-IDF
+
+```{r}
+#Calculate TF-IDF
+tf_idf <- tidy_text %>%
+  count(title, word, sort = TRUE) %>%  # You can count occurrences of each word per document
+  bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
+
+#Display Top Terms by TF-IDF
+top_tf_idf <- tf_idf %>%
+  group_by(title) %>%
+  slice_max(tf_idf, n = 10) %>%  # 'n=_''Select top n terms per document
+  ungroup()
+
+print(top_tf_idf)
+```
+
+## Understanding TF, IDF, and TF-IDF Values
+
+### Term Frequency (TF)
+
+TF values range from **0 to 1**, indicating the relative frequency of a term within a document. A TF of **0** means the term does not appear in the document. A TF of **1** means the term comprises all the words in the document (which is unlikely).
+
+### Inverse Document Frequency (IDF)
+
+IDF values can be **0 or positive**, reflecting how common or rare a term is across the corpus. If a term appears in all documents, its IDF will approach **0**, indicating that it does not provide much information (e.g., common stop words). Conversely, if a term appears in only a few documents, its IDF will be higher, reflecting its uniqueness.
+
+### TF-IDF Scores
+
+TF-IDF scores can vary widely, with higher values indicating more significant terms in the context of the document relative to the entire corpus. A TF-IDF score of **0** indicates that the term does not appear in the document. Higher scores indicate terms that are both frequent in the specific document and rare in the corpus.
+
+Because TF can be up to **1** and IDF can be greater than **1**, TF-IDF scores can vary widely, typically ranging from **0 to several** (depending on the distribution of terms).
+
+### Viz
+
+```{r}
+#Visualize Top TF-IDF Terms
+ggplot(top_tf_idf, aes(x = reorder_within(word, tf_idf, title), y = tf_idf, fill = title)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ title, scales = "free_y") +
+  scale_x_reordered() +
+  labs(x = "Words", y = "TF-IDF") +
+  coord_flip()
+```
+
+## Apply the tools we just learned
+
+Now, we will apply what we just learned to a different set of articles from a Forbes now related to the Barbie movie (2023).
+
+Let's start by looking at an individual file to identify the format and potential information of interest
+
+```{r eval = FALSE}
+# insert a file path to the barbie movie folder
+pdf_text <- pdf_text("")
+
+cat(___[1]) # fill in the name of your pdf
+```
+
+Let's start by collecting the data:
+
+```{r eval = FALSE}
+# Define PDF directory to the barbie movie folder
+barbie_pdf_directory <- ""
+
+# Define a function that extract  date, title, main body of text, source (newspaper name), language, highlights, publication type, author and section from a single PDf 
+
+extract_pdf_info_2 <- function(pdf_file) {
+  
+  # Extract text from all pages of the PDF and concatenate
+  pdf_text_data <- pdf_text(pdf_file)
+  full_text <- paste(pdf_text_data, collapse = "\n")  # Combine all pages
+  
+  # Define extraction functions
+  extract_date <- function(text) {
+    date_pattern <- "___"  # Pattern for 'Month Day, Year'
+    date <- str_extract(text, date_pattern)
+    return(date)
+  }
+  
+  extract_title <- function(text) {
+    lines <- str_split(text, "\n")[[1]]
+    title <- lines[___]  # What line is the title in?
+    return(str_trim(title))
+  }
+  
+  extract_main_text <- function(text) {
+    # Locate the start of the main text after "Body"
+    body_start <- str_locate(text, "Body")[, 1]
+    
+    # Locate the end of the main text before "Classification" or "End of Document"
+    classification_start <- str_locate(text, "____")[, 1]
+    end_document_start <- str_locate(text, "____")[, 1]
+  
+    # Determine the ending point of the main text
+    main_text_end <- min(c(na.omit(c(classification_start, end_document_start))), na.rm = TRUE)
+  
+    # Extract main text if "Body" and end marker are found
+    if (!is.na(body_start) && !is.na(main_text_end)) {
+      main_text <- str_sub(text, body_start + 5, main_text_end - 1)  # +5 to skip "Body"
+      } else {
+        main_text <- text  # Fallback to the entire text if markers are missing
+        }
+    return(str_trim(main_text))
+  }
+  
+  # Function to extract the newspaper name
+  extract_newspaper <- function(text) {
+    newspaper_pattern <- "___" # Fill in with a pattern that would identify the name of the source
+    newspaper <- str_extract(text, newspaper_pattern)
+    return(newspaper)
+  }
+  
+  # Function to extract the highlight
+  extract_highlight <- function(text) {
+    highlight_pattern <- "(?<=Highlight:)\\s*(.*?)\\s*(?=Body)" # we will use this as an example later
+    highlight <- str_extract(text, highlight_pattern)
+    return(str_trim(highlight))
+  }
+  
+  # Function to extract the language
+  extract_language <- function(text) {
+    language_pattern <- "___" # hint: start by identifying the label `Language` similar to what we did above 
+    language <- str_extract(text, language_pattern)
+    return(language)
+  }
+  
+  # Function to extract the publication type
+  extract_publication_type <- function(text) {
+    publication_type_pattern <- "___" # similar as above
+    publication_type <- str_extract(text, publication_type_pattern)
+    return(publication_type)
+  }
+  
+  # Function to extract the author
+  extract_author <- function(text) {
+    author_pattern <- "(?<=Byline:)\\s*(.*?)\\s*(?=Highlight)" #We give you this one
+    author <- str_extract(text, author_pattern)
+    return(str_trim(author))
+  }
+  
+  # Function to extract the section
+  extract_section <- function(text) {
+    section_pattern <- "___"
+    section <- str_extract(text, section_pattern)
+    return(str_trim(section))
+  }
+
+  # Apply extraction functions on the combined text from all pages
+  date <- extract_date(full_text)
+  title <- extract_title(full_text)
+  main_text <- extract_main_text(full_text)
+  newspaper <- extract_newspaper(full_text)
+  highlight <- extract_highlight(full_text)
+  language <- extract_language(full_text)
+  publication_type <- extract_publication_type(full_text)
+  author <- extract_author(full_text)
+  section <- extract_section(full_text)
+  
+  # Create a data frame for this PDF
+  pdf_df <- data.frame(
+    date = date,
+    title = title,
+    content = main_text,
+    source_name = newspaper,
+    laguage = language,
+    highlight = highlight,
+    publication_type = publication_type,
+    author = author,
+    section = section,
+    stringsAsFactors = FALSE
+  )
+  
+  return(pdf_df)
+}
+
+```
+
+### Applying text extracting function
+
+```{r eval = FALSE}
+# Get a list of all PDF files in the directory
+barbie_pdf_files <- dir_ls(___, glob = "*.pdf")
+
+# Use purrr to apply the extraction function across all PDF files and combine results into one data frame
+barbie_pdf_df <- map_df(barbie_pdf_files, )
+
+# Display the combined data frame
+print(barbie_pdf_df)
+```
+
+### Text pre-processing
+
+```{r eval = FALSE}
+# Define a text pre-processing function
+stop_words <- stopwords("en")  # Define stop words once
+
+preprocess_text <- function(text) {
+  text <- _______(text)  # Convert to lowercase
+  text <- _______________(text, "[^[:alpha:][:space:]]", " ")  # Remove punctuation/special characters
+  text <- _______________(text, "\\s+", " ")  # Replace multiple spaces with a single space
+  text <- _____(text)  # Trim leading and trailing spaces
+  tokens <- unlist(______(text, "\\s+"))  # Split text into words
+  tokens <- tokens[!tokens %in% ________]  # Remove English stop words
+  # tokens <- lemmatize_words(tokens)  # Lemmatize the words
+  paste(tokens, collapse = " ")  # Combine tokens back into a single string
+}
+
+# Apply preprocessing to each article’s content
+barbie_pdf_df <- barbie_pdf_df %>%
+  ______(processed_content = map_chr(content, ________)) #Complete this section in reference to the first one
+
+# View the processed data
+head(barbie_pdf_df)
+```
+
+### Tokenization
+
+```{r eval = FALSE}
+#Tokenize and Preprocess Text for TF-IDF
+tidy_text <- barbie_pdf_df %>%
+  unnest_tokens(word, ________)  # Tokenize the `processed_content` column
+```
+
+### Calculating TF-IDF
+
+```{r eval = FALSE}
+# Step 2: Calculate TF-IDF
+tf_idf <- ____ %>%
+  count(___, ___, sort = TRUE) %>%  # Count occurrences of each word per document
+  bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
+
+# Step 3: Display Top Terms by TF-IDF
+top_tf_idf <- tf_idf %>%
+  group_by(title) %>%
+  slice_max(___, n = 10) %>%  # Select top 10 terms per document
+  ungroup()
+```
+
+### Create plots for the scores you calculated
+
+```{r eval = FALSE}
+# Step 4: Visualize Top TF-IDF Terms
+ggplot(top_tf_idf, aes(x = reorder_within(___, ___, ___), y = ___, fill = title)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~ title, scales = "free_y") +
+  scale_x_reordered() +
+  labs(x = "Words", y = "TF-IDF") +
+  coord_flip()
+
+```
