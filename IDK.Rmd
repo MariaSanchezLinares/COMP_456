@@ -1,0 +1,64 @@
+---
+title: "Sentiment Analysis"
+author: "Maria C Sanchez Linares"
+date: "2024-10-25"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Clean environment and load packages 
+
+```{r, message = FALSE}
+# clean environment 
+rm(list = ls())
+
+#install.packages("SentimentAnalysis")
+#install.packages("SnowballC")
+library(SentimentAnalysis)
+library(SnowballC)
+```
+
+
+
+## practice
+
+```{r}
+# Analyze a single string to obtain a binary response (positive / negative)
+sentiment <- analyzeSentiment("Yeah, this was a great soccer game for the German team!")
+
+convertToBinaryResponse(sentiment)$SentimentQDAP
+```
+
+```{r}
+# Create a vector of strings
+documents <- c("Wow, I really like the new light sabers!",
+               "That book was excellent.",
+               "R is a fantastic language.",
+               "The service in this restaurant was miserable.",
+               "This is neither positive or negative.",
+               "The waiter forget about my dessert -- what poor service!")
+
+# Analyze sentiment
+sentiment <- analyzeSentiment(documents)
+
+# Extract dictionary-based sentiment according to the QDAP dictionary
+sentiment$SentimentQDAP
+
+# View sentiment direction (i.e. positive, neutral and negative)
+convertToDirection(sentiment$SentimentQDAP)
+
+response <- c(+1, +1, +1, -1, 0, -1)
+
+compareToResponse(sentiment, response)
+
+compareToResponse(sentiment, convertToBinaryResponse(response))
+
+plotSentimentResponse(sentiment$SentimentQDAP, response)
+
+```
+
+
+
