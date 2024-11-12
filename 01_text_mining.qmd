@@ -182,29 +182,29 @@ el_espectador_pdf_df_2017 <- map_df(el_espectador_pdf_files_2017, extract_pdf_in
 
 ```
 
-### el espectador 2021/2020
+### el espectador 2020
 ```{r}
-# # Define PDF directory
-# el_espectador_pdf_directory_2021 <- "~/Desktop/MEN Project/2021_el_espectador/"
-# 
-# # Get a list of all PDF files in the directory
-# el_espectador_pdf_files_2021 <- dir_ls(el_espectador_pdf_directory_2021, glob = "*.PDF")
-# 
-# # Use purrr to apply the extraction function across all PDF files and combine results into one data frame
-# el_espectador_pdf_df_2021 <- map_df(el_espectador_pdf_files_2021, extract_pdf_info)
+# Define PDF directory
+el_espectador_pdf_directory_2020 <- "~/Desktop/MEN Project/2020_El_Expectador/"
+
+# Get a list of all PDF files in the directory
+el_espectador_pdf_files_2020 <- dir_ls(el_espectador_pdf_directory_2020, glob = "*.PDF")
+
+# Use purrr to apply the extraction function across all PDF files and combine results into one data frame
+el_espectador_pdf_df_2020 <- map_df(el_espectador_pdf_files_2020, extract_pdf_info)
 
 ```
 
-### el tiempo 2021/2020
+### el tiempo 2020
 ```{r}
-# # Define PDF directory
-# el_tiempo_pdf_directory_2021 <- "~/Desktop/MEN Project/2021_el_tiempo/"
-# 
-# # Get a list of all PDF files in the directory
-# el_tiempo_pdf_files_2021 <- dir_ls(el_tiempo_pdf_directory_2021, glob = "*.PDF")
-# 
-# # Use purrr to apply the extraction function across all PDF files and combine results into one data frame
-# el_tiempo_pdf_df_2021 <- map_df(el_tiempo_pdf_files_2021, extract_pdf_info)
+# Define PDF directory
+el_tiempo_pdf_directory_2020 <- "~/Desktop/MEN Project/2020_El_Tiempo/"
+
+# Get a list of all PDF files in the directory
+el_tiempo_pdf_files_2020 <- dir_ls(el_tiempo_pdf_directory_2020, glob = "*.PDF")
+
+# Use purrr to apply the extraction function across all PDF files and combine results into one data frame
+el_tiempo_pdf_df_2020 <- map_df(el_tiempo_pdf_files_2020, extract_pdf_info)
 
 ```
 
