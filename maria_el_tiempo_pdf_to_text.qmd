@@ -1,3 +1,5 @@
+
+
 ```{r}
 # 1. Load Necessary Libraries
 library(dplyr)
@@ -11,8 +13,8 @@ library(stringr)    # For string manipulation functions, including str_extract()
 library(SnowballC)  # For the wordStem function
 
 # 2. Define Paths and Load PDF Content
-pdf_path <- "webscrapping /pdf/350.000 venezolanos radicados en el país en los últimos 6 años.PDF"
-pdf_dir <- "webscrapping /pdf/"
+pdf_path <- "~/Desktop/MEN Project/2023_el_tiempo/Advertencia de EE. UU. a Venezuela _ 'sanciones volverán si no hay progreso pronto'.PDF"
+pdf_dir <- "~/Desktop/MEN Project/2023_el_tiempo/"
 
 # Load the text of the first page to check content
 pdf_text_data <- pdf_text(pdf_path)
@@ -23,14 +25,14 @@ custom_stopwords <- c(stopwords("es"), "las", "los", "que", "y", "han")
 
 # Define a text preprocessing function
 preprocess_text <- function(text) {
-  text <- tolower(text)
-  text <- str_replace_all(text, "[^[:alpha:][:space:]]", " ")
-  text <- str_replace_all(text, "\\s+", " ")
-  text <- str_trim(text)
-  tokens <- unlist(strsplit(text, "\\s+"))
-  tokens <- tokens[!tokens %in% custom_stopwords]
-  tokens <- wordStem(tokens, language = "spanish")
-  paste(tokens, collapse = " ")
+  text <- tolower(text)  # Convert to lowercase
+  text <- str_replace_all(text, "[^[:alpha:][:space:]]", " ")  # Remove punctuation/special characters
+  text <- str_replace_all(text, "\\s+", " ")  # Replace multiple spaces with a single space
+  text <- str_trim(text)  # Trim leading and trailing spaces
+  tokens <- unlist(strsplit(text, "\\s+"))  # Split text into words
+  tokens <- tokens[!tokens %in% custom_stopwords]  # Remove English stop words
+  tokens <- lemmatize_words(tokens)  # Lemmatize the words
+  paste(tokens, collapse = " ")  # Combine tokens back into a single string
 }
 
 # 4. Process All PDFs to Extract Article Data
@@ -61,6 +63,15 @@ for (file in pdf_files) {
 
 # Combine Data Frames into One
 articles_data <- do.call(rbind, articles_list)
+
+# Apply preprocessing to each article’s content
+articles_data <- articles_data %>%
+  mutate(processed_content = map_chr(content, preprocess_text))
+
+# Tokenize and Preprocess Text for TF-IDF
+tidy_text <- articles_data %>%
+  unnest_tokens(word, processed_content) %>%  # Tokenize the `processed_content` column
+  filter(!word %in% custom_stopwords)  # Remove stop words
 
 # 5. Define Date Conversion Function for Spanish Dates
 convert_date <- function(date_str) {
