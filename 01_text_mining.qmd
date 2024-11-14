@@ -26,9 +26,11 @@ library(fs)  # For file handling
 
 ```
 
+
+
 ```{r}
 # maria's path
-pdf_text_data <- pdf_text("../MEN Project/2023_el_tiempo/Advertencia de EE. UU. a Venezuela _ 'sanciones volverán si no hay progreso pronto'.PDF")
+pdf_text_data <- pdf_text("../MEN Project/2023_el_tiempo/Alex Saab_ ¿qué viene para Venezuela y Estados Unidos tras su sorprendente liberación_.PDF")
 
 
 
@@ -212,7 +214,7 @@ el_tiempo_pdf_df_2020 <- map_df(el_tiempo_pdf_files_2020, extract_pdf_info)
 ## append datasets and clean data  
 
 ```{r}
-all_articles <- rbind(el_espectador_pdf_df_2017,  el_espectador_pdf_df_2023, el_tiempo_pdf_df_2017, el_tiempo_pdf_df_2023)
+all_articles <- rbind(el_espectador_pdf_df_2017,  el_espectador_pdf_df_2023, el_tiempo_pdf_df_2017, el_tiempo_pdf_df_2023, el_tiempo_pdf_df_2020, el_espectador_pdf_df_2020)
 
 all_articles <- all_articles %>% 
   mutate(date = mdy(date),
@@ -236,7 +238,7 @@ preprocess_text <- function(text) {
   text <- str_trim(text)  # Trim leading and trailing spaces
   tokens <- unlist(strsplit(text, "\\s+"))  # Split text into words
   tokens <- tokens[!tokens %in% stop_words]  # Remove English stop words
-  tokens <- lemmatize_words(tokens)  # Lemmatize the words
+  # tokens <- lemmatize_words(tokens)  # Lemmatize the words
   paste(tokens, collapse = " ")  # Combine tokens back into a single string
 }
 
@@ -270,8 +272,10 @@ tf_idf <- tidy_text %>%
 top_tf_idf <- tf_idf %>%
   group_by(title) %>%
   slice_max(tf_idf, n = 10) %>%  # Select top 10 terms per document
-  ungroup()
+  ungroup() %>% 
+  arrange(desc(tf_idf))
 
+top_tf_idf
 # # Step 4: Visualize Top TF-IDF Terms
 # ggplot(top_tf_idf, aes(x = reorder_within(word, tf_idf, title), y = tf_idf, fill = title)) +
 #   geom_col(show.legend = FALSE) +
