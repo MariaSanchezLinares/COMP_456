@@ -224,7 +224,6 @@ y2023_articles
 # create list of datasets fir later
 all_articles <- list(y2017_articles, y2020_articles, y2023_articles)
 
-no_dups <- ea_no_dups(as.data.table(y2017_articles), opt_key_all = TRUE)
 ```
 
 # Text Processing 

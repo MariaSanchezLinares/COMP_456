@@ -344,6 +344,6 @@ tf_idf_2017 <- tidy_2017_dt %>%
   bind_tf_idf(word, title, n) %>%  # Calculate tf-idf for each term in each document
   arrange(desc(tf_idf))
 
-print(tf_idf_2017)
+print(tf_idf_2017) 
 ```
 
