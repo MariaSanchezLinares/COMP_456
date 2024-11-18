@@ -22,6 +22,8 @@ library(stringr)
 library(purrr)
 library(fs)  # For file handling
 library(textstem)
+library(text2vec)
+library(data.table)
 ```
 
 # Data Collection
@@ -221,6 +223,8 @@ y2023_articles
 
 # create list of datasets fir later
 all_articles <- list(y2017_articles, y2020_articles, y2023_articles)
+
+no_dups <- ea_no_dups(as.data.table(y2017_articles), opt_key_all = TRUE)
 ```
 
 # Text Processing 
@@ -294,23 +298,55 @@ print(aggregate_2023_dt)
 
 ```
 
-### TF-IDF
+# TF-IDF Matrix
+```{r}
+# # Function to calculate TF-IDF for a given dataset
+# calculate_tfidf <- function(tidy_data) {
+#   
+#   # Create a document-term matrix (DTM) using the tokens
+#   dtm <- tidy_data %>%
+#     count(document = row_number(), word) %>%
+#     cast_dtm(document, word, n)
+#   
+#   # Compute the TF-IDF values
+#   tfidf <- weightTfIdf(dtm)
+#   
+#   return(tfidf)
+# }
+# 
+# # Calculate TF-IDF for each dataset
+# tfidf_2017 <- calculate_tfidf(tidy_2017_dt)
+# tfidf_2020 <- calculate_tfidf(tidy_2020_dt)
+# tfidf_2023 <- calculate_tfidf(tidy_2023_dt)
+# 
+# # Convert the result to a matrix and view
+# tfidf_2017_matrix <- as.matrix(tfidf_2017)
+# tfidf_2020_matrix <- as.matrix(tfidf_2020)
+# tfidf_2023_matrix <- as.matrix(tfidf_2023)
+# 
+# # Optionally, convert to data frames for easier inspection
+# tfidf_2017_df <- as.data.frame(tfidf_2017_matrix)
+# tfidf_2020_df <- as.data.frame(tfidf_2020_matrix)
+# tfidf_2023_df <- as.data.frame(tfidf_2023_matrix)
+# 
+# # View the results
+# head(tfidf_2017_df)
+# head(tfidf_2020_df)
+# head(tfidf_2023_df)
+
+```
+
+
+### TF-IDF Table
 
 ```{r}
 # Calculate TF-IDF per document
-tf_idf <- tidy_text %>%
+tf_idf_2017 <- tidy_2017_dt %>%
   count(title, word, sort = TRUE) %>%  # Count occurrences of each word per document
-  bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
+  bind_tf_idf(word, title, n) %>%  # Calculate tf-idf for each term in each document
+  arrange(desc(tf_idf))
 
-# Step 3: Display Top Terms by TF-IDF
-top_tf_idf <- tf_idf %>%
-  group_by(title) %>%
-  slice_max(tf_idf, n = 10) %>%  # Select top 10 terms per document
-  ungroup()
-
-top_tf_idf %>%
-  arrange(desc(tf_idf)) %>% 
-  print()
+print(tf_idf_2017)
 ```
 
 

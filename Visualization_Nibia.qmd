@@ -4,7 +4,7 @@ format: html
 editor: visual
 ---
 
-### Packages
+
 
 ```{r, message = FALSE}
 # Load Necessary Libraries
@@ -23,30 +23,30 @@ library(pdftools)
 library(stringr)
 library(purrr)
 library(fs)  # For file handling
-library(dplyr)
-library(widyr)
-library(igraph)
-library(ggraph)
-
+library(textstem)
+library(text2vec)
 ```
 
-```{r}
+# Data Collection
+
+## Sample PDF
+```{r, message = FALSE}
 # maria's path
-pdf_text_data <- pdf_text("./2023_el_tiempo/Advertencia de EE. UU. a Venezuela _ 'sanciones volverán si no hay progreso pronto'.PDF")
+pdf_text_data <- pdf_text("../MEN Project/2020_el_tiempo/Alias Ariel, el poder oculto del Eln que opera en Venezuela.PDF")
+
 
 
 print(pdf_text_data[1]) #For page 1
 ```
 
 Now try this:
-
-```{r}
+## Clean Sample PDF
+```{r, message = FALSE}
 cat(pdf_text_data[1]) #For page 1
 ```
 
-### Defining the function
-
-```{r}
+## Extracting function
+```{r, message = FALSE}
 
 # Function to extract relevant information from a single PDF
 extract_pdf_info <- function(pdf_file) {
@@ -123,16 +123,16 @@ extract_pdf_info <- function(pdf_file) {
 ```
 
 ## Try on one pdf
+```{r, message = FALSE}
+pdf_1 <- extract_pdf_info("../MEN Project/2023_el_tiempo/Advertencia de EE. UU. a Venezuela _ 'sanciones volverán si no hay progreso pronto'.PDF")
 
-```{r}
-pdf_1 <- extract_pdf_info("./2023_el_tiempo/Advertencia de EE. UU. a Venezuela _ 'sanciones volverán si no hay progreso pronto'.PDF")
-
-print(pdf_1)
+# print(pdf_1)
 ```
 
-## Loading El Tiempo corpus data
+## Loading PDF Datsets 
 
-```{r}
+### El Tiempo 2023
+```{r, message = FALSE}
 # Define PDF directory
 el_tiempo_pdf_directory <- "./2023_el_tiempo/"
 
@@ -144,7 +144,8 @@ el_tiempo_pdf_df_2023 <- map_df(el_tiempo_pdf_files, extract_pdf_info)
 
 ```
 
-```{r}
+### El Espectador 2023
+```{r, message = FALSE}
 # Define PDF directory
 el_espectador_pdf_directory <- "./2023_el_espectador/"
 
@@ -156,9 +157,8 @@ el_espectador_pdf_df_2023<- map_df(el_espectador_pdf_files, extract_pdf_info)
 
 ```
 
-### el tiempo 2017
-
-```{r}
+### El Tiempo 2017
+```{r, message = FALSE}
 # Define PDF directory
 el_tiempo_pdf_directory_2017 <- "./2017_el_tiempo/"
 
@@ -170,9 +170,8 @@ el_tiempo_pdf_df_2017 <- map_df(el_tiempo_pdf_files_2017, extract_pdf_info)
 
 ```
 
-### el espectador 2017
-
-```{r}
+### El Espectador 2017
+```{r, message = FALSE}
 # Define PDF directory
 el_espectador_pdf_directory_2017 <- "./2017_el_espectador/"
 
@@ -184,9 +183,8 @@ el_espectador_pdf_df_2017 <- map_df(el_espectador_pdf_files_2017, extract_pdf_in
 
 ```
 
-### el espectador 2020
-
-```{r}
+### El Espectador 2020
+```{r, message = FALSE}
 # Define PDF directory
 el_espectador_pdf_directory_2020 <- "./2020_el_espectador/"
 
@@ -198,9 +196,8 @@ el_espectador_pdf_df_2020 <- map_df(el_espectador_pdf_files_2020, extract_pdf_in
 
 ```
 
-### el tiempo 2020
-
-```{r}
+### El Tiempo 2020
+```{r, message = FALSE}
 # Define PDF directory
 el_tiempo_pdf_directory_2020 <- "./2020_el_tiempo/"
 
@@ -212,7 +209,8 @@ el_tiempo_pdf_df_2020 <- map_df(el_tiempo_pdf_files_2020, extract_pdf_info)
 
 ```
 
-## append datasets and clean data
+
+### Append Articles
 ```{r}
 y2017_articles <- rbind(el_espectador_pdf_df_2017, el_tiempo_pdf_df_2017)
 
@@ -220,101 +218,137 @@ y2020_articles <- rbind(el_tiempo_pdf_df_2020, el_espectador_pdf_df_2020)
 
 y2023_articles <- rbind(el_espectador_pdf_df_2023, el_tiempo_pdf_df_2023)
 
-# 5. Define Date Conversion Function for Spanish Dates
-convert_date <- function(date_str) {
-  months <- c("enero" = 1, "febrero" = 2, "marzo" = 3,
-              "abril" = 4, "mayo" = 5, "junio" = 6,
-              "julio" = 7, "agosto" = 8, "septiembre" = 9,
-              "octubre" = 10, "noviembre" = 11, "diciembre" = 12)
-  date_parts <- unlist(strsplit(date_str, " "))
-  day <- as.integer(date_parts[1])
-  month <- months[date_parts[2]]
-  year <- as.integer(date_parts[3])
-  if (is.na(month)) { return(NA) }
-  return(as.Date(paste(year, month, day, sep = "-")))
-}
+y2017_articles
+y2020_articles
+y2023_articles
 
-all_articles <- y2023_articles %>%
-  mutate(date = mdy(date),
-         year = year(date),
-         month = month(date),
-         day = day(date))
-
+# create list of datasets fir later
+all_articles <- list(y2017_articles, y2020_articles, y2023_articles)
 ```
 
-### Text pre-processing
+# Text Processing 
 
-```{r}
-# Define a text pre-processing function
-stop_words <- c(stopwords("es"), "las", "los", "que", "y", "han")  # Define stop words once
+## Pre-Processing
+```{r, message=FALSE}
+# y2023_articles <- y2023_articles %>%
+#   mutate(date = mdy(date),
+#          year = year(date),
+#          month = month(date),
+#          day = day(date))
 
-# Preprocessing function
-preprocess_text <- function(text) {
-  text <- tolower(text)  # Convert to lowercase
-  text <- str_replace_all(text, "[^[:alpha:][:space:]]", " ")  # Remove punctuation/special characters
-  text <- str_replace_all(text, "\\s+", " ")  # Replace multiple spaces with a single space
-  text <- str_trim(text)  # Trim leading and trailing spaces
-  tokens <- unlist(strsplit(text, "\\s+"))  # Split text into words
-  tokens <- tokens[!tokens %in% stop_words]  # Remove stop words
-  tokens <- lemmatize_words(tokens)  # Lemmatize the words
-  paste(tokens, collapse = " ")  # Combine tokens back into a single string
+# Defining stop words 
+stop_words <- c(stopwords("es"), "las", "los", "que", "y", "han", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre") 
+
+# Defining text processing function
+preprocess_text <- function(data, text_column) {
+  data <- data %>%
+    mutate(processed_text = sapply(!!sym(text_column), function(text) {
+      # Preprocess the text
+      text <- tolower(text)  # Convert to lowercase
+      text <- str_replace_all(text, "[^[:alpha:][:space:]]", " ")  # Remove punctuation
+      text <- str_replace_all(text, "\\s+", " ")  # Replace multiple spaces with a single space
+      text <- str_trim(text)  # Trim leading and trailing spaces
+      tokens <- unlist(strsplit(text, "\\s+"))  # Split text into words
+      tokens <- tokens[!tokens %in% stop_words]  # Remove stop words
+      tokens <- lemmatize_words(tokens, lang = "es")  # Lemmatize words (in Spanish)
+      return(paste(tokens, collapse = " "))  # Combine tokens back into a single string
+    }))
+  
+  return(data)  # Return the dataset with the new column
 }
 
-# Apply preprocessing to each article’s content
-all_articles_processed <- all_articles %>%
-  mutate(processed_content = map_chr(content, preprocess_text))
+# Apply function on all years 
+processed_dts <- lapply(all_articles, preprocess_text, text_column = "content")
 
-# View the processed data
-head(all_articles_processed)
+# Re-assign datasets names
+y2017_articles <- as.data.frame(processed_dts[1])
+y2020_articles <- as.data.frame(processed_dts[2]) 
+y2023_articles <- as.data.frame(processed_dts[3])
 
 ```
 
 ### Tokenization
-
 ```{r}
-library(tidytext)
+# Tokenize and Preprocess Text 
+tidy_2023_dt <- y2023_articles %>%
+  unnest_tokens(word, processed_text) %>%  # Tokenize the `processed_text` column
+  filter(!word %in% stop_words)  # Remove stop words 
 
-# Tokenize and get total word count
-tidy_text <- all_articles_processed %>%
-  unnest_tokens(word, processed_content) %>%  # Tokenize each word
-  filter(!word %in% stop_words)  # Filter out stop words
+tidy_2020_dt <- y2020_articles %>%
+  unnest_tokens(word, processed_text) %>%  
+  filter(!word %in% stop_words)  
+
+tidy_2017_dt <- y2017_articles %>%
+  unnest_tokens(word, processed_text) %>%  
+  filter(!word %in% stop_words)  
 
 # Aggregate word counts across all documents
-total_word_counts <- tidy_text %>%
+aggregate_2023_dt <- tidy_2023_dt %>%
+  count(word, sort = TRUE)
+
+aggregate_2020_dt <- tidy_2020_dt %>%
+  count(word, sort = TRUE)
+
+aggregate_2017_dt <- tidy_2017_dt %>%
   count(word, sort = TRUE)
 
 # View the total word counts
-print(total_word_counts)
+print(aggregate_2023_dt)
 
 ```
 
-### Calculating TF-IDF
+# TF-IDF Matrix
+```{r}
+# # Function to calculate TF-IDF for a given dataset
+# calculate_tfidf <- function(tidy_data) {
+#   
+#   # Create a document-term matrix (DTM) using the tokens
+#   dtm <- tidy_data %>%
+#     count(document = row_number(), word) %>%
+#     cast_dtm(document, word, n)
+#   
+#   # Compute the TF-IDF values
+#   tfidf <- weightTfIdf(dtm)
+#   
+#   return(tfidf)
+# }
+# 
+# # Calculate TF-IDF for each dataset
+# tfidf_2017 <- calculate_tfidf(tidy_2017_dt)
+# tfidf_2020 <- calculate_tfidf(tidy_2020_dt)
+# tfidf_2023 <- calculate_tfidf(tidy_2023_dt)
+# 
+# # Convert the result to a matrix and view
+# tfidf_2017_matrix <- as.matrix(tfidf_2017)
+# tfidf_2020_matrix <- as.matrix(tfidf_2020)
+# tfidf_2023_matrix <- as.matrix(tfidf_2023)
+# 
+# # Optionally, convert to data frames for easier inspection
+# tfidf_2017_df <- as.data.frame(tfidf_2017_matrix)
+# tfidf_2020_df <- as.data.frame(tfidf_2020_matrix)
+# tfidf_2023_df <- as.data.frame(tfidf_2023_matrix)
+# 
+# # View the results
+# head(tfidf_2017_df)
+# head(tfidf_2020_df)
+# head(tfidf_2023_df)
+
+```
+
+
+### TF-IDF Table
 
 ```{r}
 # Calculate TF-IDF per document
-tf_idf <- tidy_text %>%
+tf_idf_2017 <- tidy_2017_dt %>%
   count(title, word, sort = TRUE) %>%  # Count occurrences of each word per document
-  bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
+  bind_tf_idf(word, title, n) %>%  # Calculate tf-idf for each term in each document
+  arrange(desc(tf_idf))
 
-# Step 3: Display Top Terms by TF-IDF
-top_tf_idf <- tf_idf %>%
-  group_by(title) %>%
-  slice_max(tf_idf, n = 10) %>%  # Select top 10 terms per document
-  ungroup()
-
-top_tf_idf %>%
-  arrange(desc(tf_idf)) %>% 
-  print()
-
-# # Step 4: Visualize Top TF-IDF Terms
-# ggplot(top_tf_idf, aes(x = reorder_within(word, tf_idf, title), y = tf_idf, fill = title)) +
-#   geom_col(show.legend = FALSE) +
-#   facet_wrap(~ title, scales = "free_y") +
-#   scale_x_reordered() +
-#   labs(x = "Words", y = "TF-IDF") +
-#   coord_flip()l;
-
+print(tf_idf_2017)
 ```
+
+
 
 ```{r}
 
