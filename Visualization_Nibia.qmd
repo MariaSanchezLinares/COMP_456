@@ -213,7 +213,6 @@ el_tiempo_pdf_df_2020 <- map_df(el_tiempo_pdf_files_2020, extract_pdf_info)
 ```
 
 ## append datasets and clean data
-
 ```{r}
 y2017_articles <- rbind(el_espectador_pdf_df_2017, el_tiempo_pdf_df_2017)
 
