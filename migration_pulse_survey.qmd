@@ -1,0 +1,51 @@
+---
+title: "migration_pulse_survey"
+format: html
+editor: visual
+---
+
+## Quarto
+
+```{r}
+# 
+# # Load necessary libraries
+# library(sf)
+# library(ggplot2)
+# library(dplyr)
+# 
+# # Path to the shapefile for Colombia's departments
+# shapefile_path <- "path_to_your_shapefile/colombia_departments.shp"
+# 
+# # Load the shapefile
+# colombia_map <- st_read("~/Desktop/MEN Project/col-administrative-divisions-shapefiles/col_admbnda_adm0_mgn_itos_20200416.shp")
+# survey_data <- read.csv("~/Desktop/MEN Project/Joint Data Center on Forced Displacement/col_host_mig.csv")
+# 
+# # Plot the map with color coding by 'migrants' variable
+# ggplot(data = colombia_map) +
+#   geom_sf() +  # Fill color based on the 'migrants' variable ,, aes(fill = migrants)
+#   scale_fill_viridis_c(name = "Number of Migrants") +  # Choose color scale
+#   theme_minimal() +
+#   labs(title = "Venezuelan Migrants in Colombia by Department") +
+#   theme(legend.position = "bottom")
+# 
+# # Summarize migrant data by department
+# migrant_summary <- survey_data %>%
+#   group_by(depcode) %>%
+#   summarise(migrants = sum(weight, na.rm = TRUE))  # Replace `weight` if there's a specific migrant count column
+# 
+# # Join the shapefile with migrant data by department code
+# colombia_map <- colombia_map %>%
+#   left_join(migrant_summary, by = c("depcode_column_in_shapefile" = "depcode"))  # Replace with the actual depcode column in shapefile
+# 
+# # Plot the map with color coding by 'migrants' variable
+# ggplot(data = colombia_map) +
+#   geom_sf(aes(fill = migrants)) +  # Color by the 'migrants' variable
+#   scale_fill_viridis_c(name = "Number of Migrants", na.value = "grey90") +  # Choose color scale, with grey for NA values
+#   theme_minimal() +
+#   labs(title = "Venezuelan Migrants in Colombia by Department") +
+#   theme(legend.position = "bottom")
+
+
+
+
+```

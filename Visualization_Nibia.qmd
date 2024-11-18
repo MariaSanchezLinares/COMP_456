@@ -4,16 +4,6 @@ format: html
 editor: visual
 ---
 
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
----
-title: "01_text_mining"
-format: html
-editor: visual
----
-
 ### Packages
 
 ```{r, message = FALSE}
@@ -33,13 +23,16 @@ library(pdftools)
 library(stringr)
 library(purrr)
 library(fs)  # For file handling
+library(dplyr)
+library(widyr)
+library(igraph)
+library(ggraph)
 
 ```
 
 ```{r}
 # maria's path
 pdf_text_data <- pdf_text("./2023_el_tiempo/Advertencia de EE. UU. a Venezuela _ 'sanciones volverán si no hay progreso pronto'.PDF")
-
 
 
 print(pdf_text_data[1]) #For page 1
@@ -192,6 +185,7 @@ el_espectador_pdf_df_2017 <- map_df(el_espectador_pdf_files_2017, extract_pdf_in
 ```
 
 ### el espectador 2020
+
 ```{r}
 # Define PDF directory
 el_espectador_pdf_directory_2020 <- "./2020_el_espectador/"
@@ -205,6 +199,7 @@ el_espectador_pdf_df_2020 <- map_df(el_espectador_pdf_files_2020, extract_pdf_in
 ```
 
 ### el tiempo 2020
+
 ```{r}
 # Define PDF directory
 el_tiempo_pdf_directory_2020 <- "./2020_el_tiempo/"
@@ -323,11 +318,6 @@ top_tf_idf %>%
 ```
 
 ```{r}
-library(dplyr)
-library(tidytext)
-library(widyr)
-library(igraph)
-library(ggraph)
 
 # Step 1: Tokenize the text content for each article
 tidy_text <- all_articles_processed %>%
@@ -344,6 +334,7 @@ tidy_text %>%
   group_by(word) %>% 
   count()
 ```
+
 ```{r}
 # Step 2: Calculate co-occurrence counts for pairs of words in each document
 # This creates pairs of words that appear together in the same document
@@ -386,6 +377,7 @@ top_cooccurrences <- word_pairs %>%
 print(top_cooccurrences)
 
 ```
+
 ```{r}
 # Define words to exclude
 excluded_words <- c("page", "of", "tiempo", "uso")
@@ -411,6 +403,7 @@ top_cooccurrences <- unique_pairs %>%
 print(top_cooccurrences)
 
 ```
+
 ```{r}
 # Define words to exclude
 excluded_words <- c("page", "of", "tiempo", "uso", "copyright", "dijo", "según", "dos", "ser", "si", "solo", "además", "parte", " puede", "tras", "aunque", "hoy", "pues", "luego", "mientras", "hacer", "full", "text", "hace", "ayer", "año", "años", "abstract","así", "después", "aseguró", "semana", "tres", "embargo", "mismo", "puede", "vez", "va", "menos", "reproducción", "cada", "die", "deben", "debe", "anunció", "domingo", "jueves", "hacia")
@@ -446,6 +439,7 @@ top_cooccurrences %>%
   theme_classic()
 
 ```
+
 ```{r}
 # Define quantile thresholds for high, medium, and low connection strengths
 high_threshold <- quantile(unique_pairs$n, 0.66)
@@ -457,6 +451,7 @@ medium_pairs <- unique_pairs %>% filter(n < high_threshold & n >= medium_thresho
 low_pairs <- unique_pairs %>% filter(n < medium_threshold)
 
 ```
+
 ```{r}
 # High connection graph
 high_graph <- graph_from_data_frame(high_pairs, directed = FALSE)
@@ -471,7 +466,3 @@ ggraph(high_graph, layout = "fr") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 ```
-
-
-
-

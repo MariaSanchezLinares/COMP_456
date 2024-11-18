@@ -60,5 +60,29 @@ plotSentimentResponse(sentiment$SentimentQDAP, response)
 
 ```
 
+```{r}
+library(udpipe)
+ud_model <- udpipe_download_model(language = "spanish")
+text <- "La casa es muy bonita."
+model <- udpipe_load_model(ud_model$file_model)
+result <- udpipe_annotate(model, x = text)
+as.data.frame(result)
+```
 
+```{r, message=FALSE}
+library(quanteda)
+text <- "La casa es muy bonita."
+tokens <- tokens(text, remove_punct = TRUE)
+tokens <- tokens_remove(tokens, stopwords("spanish"))
+tokens
+
+```
+```{r}
+library(stopwords)
+stopwords("es") 
+```
+
+```{r}
+
+```
 
