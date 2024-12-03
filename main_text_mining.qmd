@@ -29,6 +29,7 @@ library(data.table)
 # Data Collection
 
 ## Sample PDF
+
 ```{r, message = FALSE}
 # maria's path
 pdf_text_data <- pdf_text("../MEN Project/2020_el_tiempo/Alias Ariel, el poder oculto del Eln que opera en Venezuela.PDF")
@@ -38,13 +39,14 @@ pdf_text_data <- pdf_text("../MEN Project/2020_el_tiempo/Alias Ariel, el poder o
 print(pdf_text_data[1]) #For page 1
 ```
 
-Now try this:
-## Clean Sample PDF
+Now try this: \## Clean Sample PDF
+
 ```{r, message = FALSE}
 cat(pdf_text_data[1]) #For page 1
 ```
 
 ## Extracting function
+
 ```{r, message = FALSE}
 
 # Function to extract relevant information from a single PDF
@@ -122,15 +124,17 @@ extract_pdf_info <- function(pdf_file) {
 ```
 
 ## Try on one pdf
+
 ```{r, message = FALSE}
 pdf_1 <- extract_pdf_info("../MEN Project/2023_el_tiempo/Advertencia de EE. UU. a Venezuela _ 'sanciones volverán si no hay progreso pronto'.PDF")
 
 # print(pdf_1)
 ```
 
-## Loading PDF Datsets 
+## Loading PDF Datsets
 
 ### El Tiempo 2023
+
 ```{r, message = FALSE}
 # Define PDF directory
 el_tiempo_pdf_directory <- "./2023_el_tiempo/"
@@ -144,6 +148,7 @@ el_tiempo_pdf_df_2023 <- map_df(el_tiempo_pdf_files, extract_pdf_info)
 ```
 
 ### El Espectador 2023
+
 ```{r, message = FALSE}
 # Define PDF directory
 el_espectador_pdf_directory <- "./2023_el_espectador/"
@@ -157,6 +162,7 @@ el_espectador_pdf_df_2023<- map_df(el_espectador_pdf_files, extract_pdf_info)
 ```
 
 ### El Tiempo 2017
+
 ```{r, message = FALSE}
 # Define PDF directory
 el_tiempo_pdf_directory_2017 <- "./2017_el_tiempo/"
@@ -170,6 +176,7 @@ el_tiempo_pdf_df_2017 <- map_df(el_tiempo_pdf_files_2017, extract_pdf_info)
 ```
 
 ### El Espectador 2017
+
 ```{r, message = FALSE}
 # Define PDF directory
 el_espectador_pdf_directory_2017 <- "./2017_el_espectador/"
@@ -183,6 +190,7 @@ el_espectador_pdf_df_2017 <- map_df(el_espectador_pdf_files_2017, extract_pdf_in
 ```
 
 ### El Espectador 2020
+
 ```{r, message = FALSE}
 # Define PDF directory
 el_espectador_pdf_directory_2020 <- "./2020_el_espectador/"
@@ -196,6 +204,7 @@ el_espectador_pdf_df_2020 <- map_df(el_espectador_pdf_files_2020, extract_pdf_in
 ```
 
 ### El Tiempo 2020
+
 ```{r, message = FALSE}
 # Define PDF directory
 el_tiempo_pdf_directory_2020 <- "./2020_el_tiempo/"
@@ -208,8 +217,8 @@ el_tiempo_pdf_df_2020 <- map_df(el_tiempo_pdf_files_2020, extract_pdf_info)
 
 ```
 
-
 ### Append Articles
+
 ```{r}
 y2017_articles <- rbind(el_espectador_pdf_df_2017, el_tiempo_pdf_df_2017)
 
@@ -224,11 +233,17 @@ y2023_articles
 # create list of datasets fir later
 all_articles <- list(y2017_articles, y2020_articles, y2023_articles)
 
+# append all datasets 
+articles <- rbind(y2017_articles, y2020_articles, y2023_articles)
+
+# export data
+write.csv(articles, file = "~/Desktop/MEN Project/articles.csv")
 ```
 
-# Text Processing 
+# Text Processing
 
 ## Pre-Processing
+
 ```{r, message=FALSE}
 # y2023_articles <- y2023_articles %>%
 #   mutate(date = mdy(date),
@@ -268,6 +283,7 @@ y2023_articles <- as.data.frame(processed_dts[3])
 ```
 
 ### Tokenization
+
 ```{r}
 # Tokenize and Preprocess Text 
 tidy_2023_dt <- y2023_articles %>%
@@ -298,43 +314,43 @@ print(aggregate_2023_dt)
 ```
 
 # TF-IDF Matrix
+
 ```{r}
-# # Function to calculate TF-IDF for a given dataset
-# calculate_tfidf <- function(tidy_data) {
-#   
-#   # Create a document-term matrix (DTM) using the tokens
-#   dtm <- tidy_data %>%
-#     count(document = row_number(), word) %>%
-#     cast_dtm(document, word, n)
-#   
-#   # Compute the TF-IDF values
-#   tfidf <- weightTfIdf(dtm)
-#   
-#   return(tfidf)
-# }
-# 
-# # Calculate TF-IDF for each dataset
-# tfidf_2017 <- calculate_tfidf(tidy_2017_dt)
-# tfidf_2020 <- calculate_tfidf(tidy_2020_dt)
-# tfidf_2023 <- calculate_tfidf(tidy_2023_dt)
-# 
-# # Convert the result to a matrix and view
-# tfidf_2017_matrix <- as.matrix(tfidf_2017)
-# tfidf_2020_matrix <- as.matrix(tfidf_2020)
-# tfidf_2023_matrix <- as.matrix(tfidf_2023)
-# 
-# # Optionally, convert to data frames for easier inspection
-# tfidf_2017_df <- as.data.frame(tfidf_2017_matrix)
-# tfidf_2020_df <- as.data.frame(tfidf_2020_matrix)
-# tfidf_2023_df <- as.data.frame(tfidf_2023_matrix)
-# 
-# # View the results
-# head(tfidf_2017_df)
-# head(tfidf_2020_df)
-# head(tfidf_2023_df)
+# Function to calculate TF-IDF for a given dataset
+calculate_tfidf <- function(tidy_data) {
+
+  # Create a document-term matrix (DTM) using the tokens
+  dtm <- tidy_data %>%
+    count(document = row_number(), word) %>%
+    cast_dtm(document, word, n)
+
+  # Compute the TF-IDF values
+  tfidf <- weightTfIdf(dtm)
+
+  return(tfidf)
+}
+
+# Calculate TF-IDF for each dataset
+tfidf_2017 <- calculate_tfidf(tidy_2017_dt)
+tfidf_2020 <- calculate_tfidf(tidy_2020_dt)
+tfidf_2023 <- calculate_tfidf(tidy_2023_dt)
+
+# Convert the result to a matrix and view
+tfidf_2017_matrix <- as.matrix(tfidf_2017)
+tfidf_2020_matrix <- as.matrix(tfidf_2020)
+tfidf_2023_matrix <- as.matrix(tfidf_2023)
+
+# Optionally, convert to data frames for easier inspection
+tfidf_2017_df <- as.data.frame(tfidf_2017_matrix)
+tfidf_2020_df <- as.data.frame(tfidf_2020_matrix)
+tfidf_2023_df <- as.data.frame(tfidf_2023_matrix)
+
+# View the results
+head(tfidf_2017_df)
+head(tfidf_2020_df)
+head(tfidf_2023_df)
 
 ```
-
 
 ### TF-IDF Table
 
@@ -348,4 +364,22 @@ tf_idf_2017 <- tidy_2017_dt %>%
 print(tf_idf_2017)
 ```
 
+
+
+### LDA stuff
+```{r}
+# Install and load the topicmodels package if not already installed
+library(topicmodels)
+
+# Fit an LDA model (change k to the number of topics you want)
+lda_model <- LDA(dtm, k = 5, control = list(seed = 1234))
+
+# Inspect the topics
+topics <- topics(lda_model)
+terms(lda_model, 10)  # Show top 10 terms for each topic
+
+# View the topic assignments for each document
+df$topic <- topics
+head(df)
+```
 
