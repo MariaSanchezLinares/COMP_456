@@ -25,7 +25,7 @@ This R Markdown file implements dynamic topic modeling on Spanish newspaper arti
 
 ```{r data-preparation}
 # Load CSV data
-file_path <- "~/Desktop/MEN Project/articles.csv"  # Update with your CSV file path
+file_path <- "./articles.csv"  # Update with your CSV file path
 data <- read.csv(file_path, stringsAsFactors = FALSE)
 
 data <- data %>%
@@ -129,4 +129,86 @@ serVis(json, open.browser = TRUE)
 Incorporate dynamic topic modeling packages or manual partitioning of the data based on `date` to implement a time-series analysis.
 
 ---
+
+## Dynamic Topic Modeling
+
+To perform dynamic topic modeling (DTM) using the temporal information in the dataset, follow these steps:
+
+### 1. Data Partitioning
+
+Split the data into subsets based on a time window (e.g., by month or quarter).
+
+```{r data-partitioning}
+# Create a time-based grouping (monthly in this example)
+data$month <- floor_date(data$date, "month")
+
+# Group the content by month
+grouped_data <- data %>%
+  group_by(month) %>%
+  summarise(content = paste(content, collapse = " "))
+```
+
+### 2. Generate Time-Sliced Corpora
+
+Create a Document-Term Matrix (DTM) for each time period.
+
+```{r time-sliced-dtm}
+# Initialize an empty list to store DTMs
+dtm_list <- list()
+
+# Loop through each time period
+for (i in 1:nrow(grouped_data)) {
+  corpus_time <- Corpus(VectorSource(grouped_data$content[i]))
+  corpus_time <- tm_map(corpus_time, content_transformer(tolower))
+  corpus_time <- tm_map(corpus_time, removePunctuation)
+  corpus_time <- tm_map(corpus_time, removeNumbers)
+  corpus_time <- tm_map(corpus_time, removeWords, stopwords("spanish"))
+  dtm_time <- DocumentTermMatrix(corpus_time)
+  dtm_time <- removeSparseTerms(dtm_time, 0.99)
+  dtm_list[[i]] <- dtm_time
+}
+
+# Verify the structure
+str(dtm_list)
+```
+
+### 3. Apply Dynamic Topic Modeling
+
+Use packages like `ldaseq` or external tools for dynamic topic modeling. For example, using the `topicmodels` package:
+
+```{r dtm-analysis}
+# Analyze changes in topics over time (manual partition example)
+lda_models <- lapply(dtm_list, function(dtm) {
+  LDA(dtm, k = optimal_topics, control = list(seed = 1234))
+})
+
+# Example: Extract and compare topics for the first two time periods
+terms(lda_models[[1]], 10)
+terms(lda_models[[2]], 10)
+```
+
+### 4. Visualization and Insights
+
+Visualize the evolution of topics over time.
+
+```{r visualize-evolution}
+# Example visualization of topic proportions over time
+topic_proportions <- lapply(lda_models, function(model) {
+  posterior(model)$topics
+})
+
+# Combine results into a data frame for visualization
+proportions_df <- do.call(rbind, lapply(1:length(topic_proportions), function(i) {
+  data.frame(
+    Time = grouped_data$month[i],
+    Topic = colnames(topic_proportions[[i]]),
+    Proportion = rowMeans(topic_proportions[[i]])
+  )
+}))
+
+ggplot(proportions_df, aes(x = Time, y = Proportion, color = Topic)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Topic Proportions Over Time", x = "Time", y = "Proportion")
+```
 
