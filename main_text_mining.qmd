@@ -233,11 +233,6 @@ y2023_articles
 # create list of datasets fir later
 all_articles <- list(y2017_articles, y2020_articles, y2023_articles)
 
-# append all datasets 
-articles <- rbind(y2017_articles, y2020_articles, y2023_articles)
-
-# export data
-write.csv(articles, file = "~/Desktop/MEN Project/articles.csv")
 ```
 
 # Text Processing
@@ -279,6 +274,12 @@ processed_dts <- lapply(all_articles, preprocess_text, text_column = "content")
 y2017_articles <- as.data.frame(processed_dts[1])
 y2020_articles <- as.data.frame(processed_dts[2]) 
 y2023_articles <- as.data.frame(processed_dts[3])
+
+# append all datasets 
+articles <- rbind(y2017_articles, y2020_articles, y2023_articles)
+
+# export data
+write.csv(articles, file = "~/Desktop/MEN Project/articles.csv")
 
 ```
 
