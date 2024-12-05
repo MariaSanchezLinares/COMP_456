@@ -1,0 +1,178 @@
+---
+title: "Nibia_Dynamic Topic Modeling on Spanish Newspaper Articles"
+author: "Adapted from Bernadeta Griciūtė"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tm)
+library(topicmodels)
+library(ldatuning)
+library(LDAvis)
+library(tidytext)
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+```
+
+## Introduction
+
+This R Markdown file implements dynamic topic modeling on Spanish newspaper articles using a CSV file. The file contains columns: `date`, `source`, and `content`.
+
+## Data Preparation
+
+```{r data-preparation}
+# Load CSV data
+file_path <- "./articles.csv"  # Update with your CSV file path
+data <- read.csv(file_path, stringsAsFactors = FALSE)
+
+data <- data %>%
+  mutate(date = mdy(date) #,
+         # year = year(date),
+         # month = month(date),
+         # day = day(date)
+         )
+
+head(data)
+```
+
+## Text Preprocessing
+
+```{r text-preprocessing}
+# Create a corpus
+corpus <- Corpus(VectorSource(data$content))
+
+# Convert to lowercase
+corpus <- tm_map(corpus, content_transformer(tolower))
+
+# Remove punctuation, numbers, and stopwords
+corpus <- tm_map(corpus, removePunctuation)
+corpus <- tm_map(corpus, removeNumbers)
+corpus <- tm_map(corpus, removeWords, stopwords("spanish"))
+corpus <- tm_map(corpus, stripWhitespace)
+
+# Stem the text (optional)
+library(SnowballC)
+corpus <- tm_map(corpus, stemDocument, language = "spanish")
+
+# Convert to plain text
+#corpus <- tm_map(corpus, PlainTextDocument)
+
+# Adding important keywords to the corpus
+important_keywords <- c("nicolás maduro", "juan guaidó", "Alex Saab", "Hugo Chávez", "")
+content_with_keywords <- sapply(data$content, function(text) {
+  # Check and add missing keywords if necessary
+  for (keyword in important_keywords) {
+    if (!grepl(keyword, text, ignore.case = TRUE)) {
+      text <- paste(text, keyword)  # Append keyword to the document
+    }
+  }
+  return(text)
+})
+
+# Update the corpus with adjusted content
+corpus <- Corpus(VectorSource(content_with_keywords))
+
+```
+
+## Tokenization and Term-Document Matrix
+
+```{r tdm-creation}
+# Create a Document-Term Matrix (DTM)
+dtm <- DocumentTermMatrix(corpus)
+
+# Remove sparse terms to optimize computation
+dtm <- removeSparseTerms(dtm, 0.99)
+
+# Summary of the DTM
+dim(dtm)
+```
+
+## TF-IDF Calculation
+
+```{r}
+# Calculate term frequency-inverse document frequency
+tfidf <- weightTfIdf(dtm)
+
+# Convert TF-IDF matrix to a data frame
+tfidf_matrix <- as.matrix(tfidf)
+
+# Inspect the TF-IDF matrix
+inspect(tfidf[1:5, 1:10])  # View the top 5 documents and 10 terms
+
+# Filter out low-value terms (threshold can be adjusted)
+threshold <- 0.01
+tfidf_filtered <- tfidf_matrix[, colSums(tfidf_matrix > threshold) > 0]
+
+# Inspect the filtered TF-IDF matrix
+dim(tfidf_filtered)  # Check the dimensions of the filtered matrix
+
+```
+
+The sparsity (56%) shows the proportion of zero entries in the matrix, which is common in text data because most terms don't appear in every document.
+
+## Topic Modeling
+
+```{r lda-model}
+# Optimal number of topics
+result <- FindTopicsNumber(
+  dtm,
+  topics = seq(from = 2, to = 15, by = 1),
+  metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
+  method = "Gibbs",
+  control = list(seed = 1234),
+  mc.cores = 2L,
+  verbose = TRUE
+)
+
+FindTopicsNumber_plot(result)
+
+```
+
+-   Griffiths2004: Aims to identify coherence.
+
+-   Deveaud2014: Reflects interpretability.
+
+-   CaoJuan2009: Measures distinctiveness.
+
+-   Arun2010: Analyzes topic separation.
+
+```{r}
+
+# Fit LDA Model
+optimal_topics <- 8  # Update based on results
+lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
+
+```
+
+```{r}
+
+# Get terms and topics
+terms(lda_model, 10)
+topics(lda_model)
+```
+
+## Visualization
+
+```{r visualization}
+# Prepare LDAvis data
+library(LDAvis)
+library(servr)
+
+json <- createJSON(
+  phi = posterior(lda_model)$terms,
+  theta = posterior(lda_model)$topics,
+  doc.length = rowSums(as.matrix(dtm)),
+  vocab = colnames(as.matrix(dtm)),
+  term.frequency = colSums(as.matrix(dtm))
+)
+
+serVis(json, open.browser = TRUE)
+```
+
+## Dynamic Topic Modeling (Future Steps)
+
+Incorporate dynamic topic modeling packages or manual partitioning of the data based on `date` to implement a time-series analysis.
+
+------------------------------------------------------------------------
