@@ -59,21 +59,6 @@ corpus <- tm_map(corpus, stemDocument, language = "spanish")
 # Convert to plain text
 #corpus <- tm_map(corpus, PlainTextDocument)
 
-# Adding important keywords to the corpus
-important_keywords <- c("nicolás maduro", "juan guaidó", "Alex Saab", "Hugo Chávez", "")
-content_with_keywords <- sapply(data$content, function(text) {
-  # Check and add missing keywords if necessary
-  for (keyword in important_keywords) {
-    if (!grepl(keyword, text, ignore.case = TRUE)) {
-      text <- paste(text, keyword)  # Append keyword to the document
-    }
-  }
-  return(text)
-})
-
-# Update the corpus with adjusted content
-corpus <- Corpus(VectorSource(content_with_keywords))
-
 ```
 
 ## Tokenization and Term-Document Matrix
@@ -141,7 +126,7 @@ FindTopicsNumber_plot(result)
 ```{r}
 
 # Fit LDA Model
-optimal_topics <- 8  # Update based on results
+optimal_topics <- 6  # Update based on results
 lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
 
 ```
