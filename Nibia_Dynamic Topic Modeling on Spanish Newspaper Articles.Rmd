@@ -103,7 +103,7 @@ The sparsity (56%) shows the proportion of zero entries in the matrix, which is 
 # Optimal number of topics
 result <- FindTopicsNumber(
   dtm,
-  topics = seq(from = 2, to = 15, by = 1),
+  topics = seq(from = 2, to = 16, by = 1),
   metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
   method = "Gibbs",
   control = list(seed = 1234),
@@ -126,7 +126,7 @@ FindTopicsNumber_plot(result)
 ```{r}
 
 # Fit LDA Model
-optimal_topics <- 6  # Update based on results
+optimal_topics <- 7  # Update based on results
 lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
 
 ```
@@ -137,6 +137,10 @@ lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
 terms(lda_model, 10)
 topics(lda_model)
 ```
+
+Differenciación por migrantes en Venezuela y Colombia
+
+-   Parece que el tema de migración
 
 ## Visualization
 
