@@ -15,6 +15,7 @@ library(tidytext)
 library(dplyr)
 library(ggplot2)
 library(lubridate)
+library(tidyr)
 ```
 
 ## Introduction
@@ -142,8 +143,10 @@ Split the data into subsets based on a time window (e.g., by month or quarter).
 # Create a time-based grouping (monthly in this example)
 data$month <- floor_date(data$date, "month")
 
+
 # Group the content by month
 grouped_data <- data %>%
+  mutate(month = month(date)) %>% 
   group_by(month) %>%
   summarise(content = paste(content, collapse = " "))
 ```
@@ -211,4 +214,53 @@ ggplot(proportions_df, aes(x = Time, y = Proportion, color = Topic)) +
   theme_minimal() +
   labs(title = "Topic Proportions Over Time", x = "Time", y = "Proportion")
 ```
+```{r}
+
+# Table 1: Topic Definitions
+topic_terms <- tidy(lda_model, matrix = "beta") %>%
+  group_by(topic) %>%
+  top_n(20, beta) %>%
+  arrange(topic, -beta) %>%
+  group_by(topic) %>%
+  summarize(terms = paste(term, collapse = ", "))
+
+print(topic_terms)
+
+# Table 2: Representative Articles
+document_topics <- tidy(lda_model, matrix = "gamma") %>%
+  group_by(document) %>%
+  filter(gamma == max(gamma)) %>%
+  ungroup()
+
+data_with_topics <- data %>%
+  mutate(doc_id = as.character(row_number())) %>%
+  inner_join(document_topics, by = c("doc_id" = "document"))
+
+representative_articles <- data_with_topics %>%
+  group_by(topic) %>%
+  top_n(5, gamma) %>%
+  select(topic, gamma, content) %>%
+  arrange(topic, -gamma)
+
+print(representative_articles)
+
+# Table 3: Topic Dynamics Over Time
+topic_dynamics <- data_with_topics %>%
+  group_by(year, topic) %>%
+  summarize(topic_loading = sum(gamma), .groups = "drop") %>%
+  pivot_wider(names_from = topic, values_from = topic_loading, values_fill = 0)
+
+print(topic_dynamics)
+
+# Visualization of Topic Dynamics
+topic_dynamics_long <- topic_dynamics %>%
+  gather(key = "topic", value = "loading", -year)
+
+ggplot(topic_dynamics_long, aes(x = year, y = loading, color = topic)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Topic Dynamics Over Time", x = "Year", y = "Topic Loading")
+```
+
+
 

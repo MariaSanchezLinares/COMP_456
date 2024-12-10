@@ -365,9 +365,8 @@ tf_idf_2017 <- tidy_2017_dt %>%
 print(tf_idf_2017)
 ```
 
-
-
 ### LDA stuff
+
 ```{r}
 # Install and load the topicmodels package if not already installed
 library(topicmodels)
@@ -383,4 +382,3 @@ terms(lda_model, 10)  # Show top 10 terms for each topic
 df$topic <- topics
 head(df)
 ```
-
