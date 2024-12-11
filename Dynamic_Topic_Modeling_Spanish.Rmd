@@ -16,6 +16,12 @@ library(dplyr)
 library(ggplot2)
 library(lubridate)
 library(tidyr)
+
+
+#source script with useful functions
+
+source("./project_func.R")
+
 ```
 
 ## Introduction
@@ -39,6 +45,15 @@ data <- data %>%
 head(data)
 ```
 
+## De-duplicating data
+
+```{r}
+
+data <- as.data.frame(ea_no_dups(as.data.table(data), opt_key_all = TRUE))
+
+```
+
+
 ## Text Preprocessing
 
 ```{r text-preprocessing}
@@ -56,7 +71,7 @@ corpus <- Corpus(VectorSource(data$processed_text))
 # # Stem the text (optional)
 # library(SnowballC)
 # corpus <- tm_map(corpus, stemDocument, language = "spanish")
-
+ 
 # Convert to plain text
 #corpus <- tm_map(corpus, PlainTextDocument)
 ```
@@ -95,13 +110,12 @@ FindTopicsNumber_plot(result)
 ```{r}
 
 # Fit LDA Model
-optimal_topics <- 5  # Update based on results
+optimal_topics <- 8  # Update based on results
 lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
 
 ```
 
 ```{r}
-
 # Get terms and topics
 terms(lda_model, 10)
 topics(lda_model)

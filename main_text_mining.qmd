@@ -260,7 +260,7 @@ preprocess_text <- function(data, text_column) {
       text <- str_trim(text)  # Trim leading and trailing spaces
       tokens <- unlist(strsplit(text, "\\s+"))  # Split text into words
       tokens <- tokens[!tokens %in% stop_words]  # Remove stop words
-      tokens <- lemmatize_words(tokens, lang = "es")  # Lemmatize words (in Spanish)
+      # tokens <- lemmatize_words(tokens, lang = "es")  # Lemmatize words (in Spanish)
       return(paste(tokens, collapse = " "))  # Combine tokens back into a single string
     }))
   
