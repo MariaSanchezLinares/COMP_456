@@ -138,6 +138,35 @@ json <- createJSON(
 
 serVis(json, open.browser = TRUE)
 ```
+### tracing back articles 
+```{r}
+# # Get topic probabilities for each document
+# doc_topic_probs <- documentTopicProb(lda_model)
+
+# Extract topic probabilities for each document
+doc_topic_probs <- posterior(lda_model)$topics
+
+# Get the most probable topic for each document (dominant topic)
+dominant_topics <- apply(doc_topic_probs, 1, which.max)
+
+# Loop through documents and print titles based on dominant topic
+for (i in 1:nrow(data)) {
+  topic <- dominant_topics[i]
+  # Assuming "title" is a column in your data containing article titles
+  title <- data$title[i]
+  cat("Document:", title, " - Dominant Topic:", topic, "\n")
+}
+
+# Filter articles with a probability greater than a threshold for a specific topic (e.g., topic 3)
+topic_threshold <- 0.7
+topic_of_interest <- 7
+filtered_articles <- data[doc_topic_probs[, topic_of_interest] > topic_threshold, ]
+
+# Access the "title" column (or any other relevant column) from the filtered data
+filtered_titles <- filtered_articles$title
+```
+
+
 
 ## Dynamic Topic Modeling (Future Steps)
 
