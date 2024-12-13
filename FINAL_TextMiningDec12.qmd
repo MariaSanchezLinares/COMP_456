@@ -93,9 +93,10 @@ extract_pdf_info <- function(pdf_file) {
   )
   
   pdf_df <- pdf_df %>% 
-    muatate(main_text = gsub("Copyright Grupo de Diarios América - GDA/El Tiempo/Colombia Todos los derechos reservados. Prohibido su uso o reproducción en Colombia", 
-                             "", 
-                             main_text))
+    mutate(main_text = gsub(
+      "\nCopyright Grupo de Diarios América - GDA/El Tiempo/Colombia Todos los derechos reservados\\. Prohibido su uso\no reproducción en Colombia", 
+      "", 
+      main_text))
   
   return(pdf_df)
 }
@@ -106,20 +107,20 @@ extract_pdf_info <- function(pdf_file) {
 
 ```{r, message = FALSE}
 # PDF directory
-pdf_directory_2023 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2023"
-pdf_directory_2020 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2020"
-pdf_directory_2017 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2017"
+pdf_directory_2023 <- "~/Desktop/articles_2023/"
+# pdf_directory_2020 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2020"
+# pdf_directory_2017 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2017"
 
 
 # List of all PDF files in the directory
 pdf_files_2023 <- dir_ls(pdf_directory_2023, glob = "*.PDF")
-pdf_files_2020 <- dir_ls(pdf_directory_2020, glob = "*.PDF")
-pdf_files_2017 <- dir_ls(pdf_directory_2017, glob = "*.PDF")
+# pdf_files_2020 <- dir_ls(pdf_directory_2020, glob = "*.PDF")
+# pdf_files_2017 <- dir_ls(pdf_directory_2017, glob = "*.PDF")
 
 # Extraction function across all PDF files and combine results into one data frame
 pdf_df_2023 <- map_df(pdf_files_2023, extract_pdf_info)
-pdf_df_2020 <- map_df(pdf_files_2020, extract_pdf_info)
-pdf_df_2017 <- map_df(pdf_files_2017, extract_pdf_info)
+# pdf_df_2020 <- map_df(pdf_files_2020, extract_pdf_info)
+# pdf_df_2017 <- map_df(pdf_files_2017, extract_pdf_info)
 ```
 
 # Text Processing
