@@ -24,8 +24,16 @@ This R Markdown file implements dynamic topic modeling on Spanish newspaper arti
 
 ```{r data-preparation}
 # Load CSV data
-file_path <- "./articles.csv"  # Update with your CSV file path
-data <- read.csv(file_path, stringsAsFactors = FALSE)
+file_path2023 <- "./y2023_articles.csv"  # Update with your CSV file path
+file_path2020 <- "./y2020_articles.csv" 
+file_path2017 <- "./y2017_articles.csv" 
+data2023 <- read.csv(file_path2023, stringsAsFactors = FALSE)
+data2020 <- read.csv(file_path2020, stringsAsFactors = FALSE)
+data2017 <- read.csv(file_path2017, stringsAsFactors = FALSE)
+
+data <- data2017 %>% 
+  left_join(data2020) %>% 
+  left_join(data2023)
 
 data <- data %>%
   mutate(date = mdy(date) #,
@@ -43,21 +51,21 @@ head(data)
 # Create a corpus
 corpus <- Corpus(VectorSource(data$content))
 
-# Convert to lowercase
-corpus <- tm_map(corpus, content_transformer(tolower))
-
-# Remove punctuation, numbers, and stopwords
-corpus <- tm_map(corpus, removePunctuation)
-corpus <- tm_map(corpus, removeNumbers)
-corpus <- tm_map(corpus, removeWords, stopwords("spanish"))
-corpus <- tm_map(corpus, stripWhitespace)
-
-# Stem the text (optional)
-library(SnowballC)
-corpus <- tm_map(corpus, stemDocument, language = "spanish")
-
-# Convert to plain text
-#corpus <- tm_map(corpus, PlainTextDocument)
+# # Convert to lowercase
+# corpus <- tm_map(corpus, content_transformer(tolower))
+# 
+# # Remove punctuation, numbers, and stopwords
+# corpus <- tm_map(corpus, removePunctuation)
+# corpus <- tm_map(corpus, removeNumbers)
+# corpus <- tm_map(corpus, removeWords, stopwords("spanish"))
+# corpus <- tm_map(corpus, stripWhitespace)
+# 
+# # Stem the text (optional)
+# library(SnowballC)
+# corpus <- tm_map(corpus, stemDocument, language = "spanish")
+# 
+# # Convert to plain text
+# #corpus <- tm_map(corpus, PlainTextDocument)
 
 ```
 
@@ -95,7 +103,7 @@ dim(tfidf_filtered)  # Check the dimensions of the filtered matrix
 
 ```
 
-The sparsity (56%) shows the proportion of zero entries in the matrix, which is common in text data because most terms don't appear in every document.
+The sparsity (76%) shows the proportion of zero entries in the matrix, which is common in text data because most terms don't appear in every document.
 
 ## Topic Modeling
 
