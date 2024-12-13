@@ -91,6 +91,12 @@ extract_pdf_info <- function(pdf_file) {
     length = length,
     stringsAsFactors = FALSE
   )
+  
+  pdf_df <- pdf_df %>% 
+    muatate(main_text = gsub("Copyright Grupo de Diarios América - GDA/El Tiempo/Colombia Todos los derechos reservados. Prohibido su uso o reproducción en Colombia", 
+                             "", 
+                             main_text))
+  
   return(pdf_df)
 }
 
