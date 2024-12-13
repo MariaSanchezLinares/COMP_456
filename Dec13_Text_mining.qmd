@@ -1,0 +1,265 @@
+---
+title: "Final_TextMining"
+format: html
+editor: visual
+---
+
+```{r, message = FALSE}
+# Load Necessary Libraries
+library(dplyr)
+library(tm)
+library(tidytext)       # For tokenization
+library(pdftools) # For PDF text extraction
+library(stringr)    # For string manipulation functions, including str_extract()
+library(ggplot2)
+library(purrr)
+library(textstem)
+library(fs)  # For file handling
+```
+
+# Data Collection
+
+## Extracting functions
+
+```{r, message = FALSE}
+
+# Function to extract relevant information from a single PDF
+extract_pdf_info <- function(pdf_file) {
+  # Extract text from all pages of the PDF and concatenate
+  pdf_text_data <- pdf_text(pdf_file)
+  full_text <- paste(pdf_text_data, collapse = "\n")  # Combine all pages
+
+  # Extraction functions
+  extract_date <- function(text) {
+    date_pattern <- "(?<=Load-Date:)\\s*\\w+ \\d{1,2}, \\d{4}"
+    date <- str_extract(text, date_pattern)
+    return(date)
+  }
+  
+  extract_title <- function(text) {
+    lines <- str_split(text, "\n")[[1]]
+    title <- lines[2]  # The title is on the second line
+    return(str_trim(title))
+  }
+
+  extract_main_text <- function(text) {
+    body_start <- str_locate(text, "Body")[, 1]
+    classification_start <- str_locate(text, "Classification")[, 1]
+    end_document_start <- str_locate(text, "End of Document")[, 1]
+    main_text_end <- min(c(na.omit(c(classification_start, end_document_start))), na.rm = TRUE)
+    
+    if (!is.na(body_start) && !is.na(main_text_end)) {
+      main_text <- str_sub(text, body_start + 5, main_text_end - 1)  # +5 to skip "Body"
+    } else {
+      main_text <- text
+    }
+    return(str_trim(main_text))
+  }
+
+  extract_newspaper <- function(text) {
+    newspaper_pattern <- "(?<=Byline:)\\s*[^\\n]+"
+    newspaper <- str_extract(text, newspaper_pattern)
+    return(str_trim(newspaper))
+  }
+
+  extract_length <- function(text) {
+    length_pattern <- "(?<=Length:)\\s*\\d+ words"
+    length <- str_extract(text, length_pattern)
+    return(str_trim(length))
+  }
+
+  extract_language <- function(text) {
+    language_pattern <- "(?<=Language:)\\s*\\w+"
+    language <- str_extract(text, language_pattern)
+    return(language)
+  }
+
+  # Extraction functions on the combined text from all pages
+  date <- extract_date(full_text)
+  title <- extract_title(full_text)
+  main_text <- extract_main_text(full_text)
+  newspaper <- extract_newspaper(full_text)
+  length <- extract_length(full_text)
+  language <- extract_language(full_text)
+
+  # Create a data frame
+  pdf_df <- data.frame(
+    date = date,
+    title = title,
+    content = main_text,
+    source_name = newspaper,
+    language = language,
+    length = length,
+    stringsAsFactors = FALSE
+  )
+  return(pdf_df)
+}
+
+```
+
+# Finding directories
+
+```{r, message = FALSE}
+# PDF directory
+pdf_directory_2023 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2023"
+pdf_directory_2020 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2020"
+pdf_directory_2017 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2017"
+
+
+# List of all PDF files in the directory
+pdf_files_2023 <- dir_ls(pdf_directory_2023, glob = "*.PDF")
+pdf_files_2020 <- dir_ls(pdf_directory_2020, glob = "*.PDF")
+pdf_files_2017 <- dir_ls(pdf_directory_2017, glob = "*.PDF")
+
+# Extraction function across all PDF files and combine results into one data frame
+pdf_df_2023 <- map_df(pdf_files_2023, extract_pdf_info)
+pdf_df_2020 <- map_df(pdf_files_2020, extract_pdf_info)
+pdf_df_2017 <- map_df(pdf_files_2017, extract_pdf_info)
+```
+
+# Text Processing
+
+## Pre-Processing
+
+```{r, message=FALSE}
+
+# Defining stop words 
+stop_words <- c(stopwords("es"), "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre") 
+
+# Defining text processing function
+preprocess_text <- function(data, text_column) {
+  data <- data %>%
+    mutate(nchar = nchar(content)) %>% 
+    filter(nchar > 750) %>%  # Around 150 words
+    mutate(processed_text = sapply(!!sym(text_column), function(text) {
+      # Preprocess the text
+      text <- tolower(text)  # Convert to lowercase
+      text <- str_replace_all(text, "[^[:alpha:][:space:]]", " ")  # Remove punctuation
+      text <- str_replace_all(text, "\\s+", " ")  # Replace multiple spaces with a single space
+      text <- str_trim(text)  # Trim leading and trailing spaces
+      tokens <- unlist(strsplit(text, "\\s+"))  # Split text into words
+      tokens <- tokens[!tokens %in% stop_words]  # Remove stop words
+      tokens <- lemmatize_words(tokens, lang = "es")  # Lemmatize words (in Spanish), NO STEM since a lot of meaning was reduced
+      return(paste(tokens, collapse = " "))  # Combine tokens back into a single string
+    }))
+  
+  return(data)  # Return the dataset with the new column
+}
+
+
+# Create a function to filter low-frequency terms
+filter_low_frequency <- function(data, text_column, min_freq = 5) {
+  # Tokenize the processed text
+  tokens <- unlist(strsplit(paste(data[[text_column]], collapse = " "), "\\s+"))
+  
+  # Count the frequency of each word
+  word_freq <- table(tokens)
+  
+  # Filter out terms with frequency less than min_freq
+  frequent_terms <- names(word_freq[word_freq >= min_freq])
+  
+  # Retain only frequent terms in the processed text
+  data <- data %>%
+    mutate(processed_text = sapply(processed_text, function(text) {
+      tokens <- unlist(strsplit(text, "\\s+"))
+      tokens <- tokens[tokens %in% frequent_terms]
+      return(paste(tokens, collapse = " "))
+    }))
+  
+  return(data)
+}
+
+
+# Re-assign datasets names
+y2023_articles <- preprocess_text(pdf_df_2023, text_column = "content")
+y2020_articles <- preprocess_text(pdf_df_2020, text_column = "content")
+y2017_articles <- preprocess_text(pdf_df_2017, text_column = "content")
+
+# Apply the filter function
+y2023_articles <- filter_low_frequency(y2023_articles, "processed_text", min_freq = 5)
+y2020_articles <- filter_low_frequency(y2020_articles, "processed_text", min_freq = 5)
+y2017_articles <- filter_low_frequency(y2017_articles, "processed_text", min_freq = 5)
+
+
+dim(y2023_articles)
+dim(y2020_articles)
+dim(y2017_articles)
+```
+
+```{r}
+library(tidytext)
+
+# Convert processed text into a tidy format
+tidy_data <- function(data, text_column) {
+  data %>%
+    unnest_tokens(word, !!sym(text_column)) %>%
+    count(id = row_number(), word, sort = TRUE) %>%
+    bind_tf_idf(word, id, n)
+}
+
+# Filter words based on TF-IDF
+filter_tfidf <- function(data, text_column, threshold = 0.01) {
+  tidy_df <- tidy_data(data, text_column)
+  
+  # Retain only words with TF-IDF score above the threshold
+  filtered_words <- tidy_df %>%
+    filter(tf_idf >= threshold) %>%
+    select(word) %>%
+    distinct() %>%
+    pull(word)
+  
+  # Retain only filtered words in the processed text
+  data <- data %>%
+    mutate(processed_text = sapply(processed_text, function(text) {
+      tokens <- unlist(strsplit(text, "\\s+"))
+      tokens <- tokens[tokens %in% filtered_words]
+      return(paste(tokens, collapse = " "))
+    }))
+  
+  return(data)
+}
+
+# Apply TF-IDF filtering
+y2023_articles <- filter_tfidf(y2023_articles, "processed_text", threshold = 0.01)
+y2020_articles <- filter_tfidf(y2020_articles, "processed_text", threshold = 0.01)
+y2017_articles <- filter_tfidf(y2017_articles, "processed_text", threshold = 0.01)
+
+```
+
+```{r}
+# Create a Document-Term Matrix (DTM)
+dtm <- DocumentTermMatrix(Corpus(VectorSource(y2023_articles$processed_text)))
+
+# Remove sparse terms with a stricter threshold
+dtm <- removeSparseTerms(dtm, 0.90)  # Retain terms appearing in at least 10% of documents
+
+# Check the dimensions of the updated DTM
+dim(dtm)
+
+```
+```{r}
+# Calculate term frequency-inverse document frequency
+tfidf <- weightTfIdf(dtm)
+
+# Convert TF-IDF matrix to a data frame
+tfidf_matrix <- as.matrix(tfidf)
+
+# Filter out terms with low TF-IDF scores
+threshold <- 0.05  # Increase threshold for more aggressive filtering
+tfidf_filtered <- tfidf_matrix[, colSums(tfidf_matrix > threshold) > 0]
+
+# Check the dimensions of the filtered TF-IDF matrix
+dim(tfidf_filtered)
+
+```
+
+
+```{r}
+# Export data
+write.csv(y2023_articles, file = "~/Desktop/Fall 2024-2025/Stat 456/y2023_articles.csv")
+write.csv(y2020_articles, file = "~/Desktop/Fall 2024-2025/Stat 456/y2020_articles.csv")
+write.csv(y2017_articles, file = "~/Desktop/Fall 2024-2025/Stat 456/y2017_articles.csv")
+dim(y2023_articles)
+dim(y2020_articles)
+dim(y2017_articles)
+```
