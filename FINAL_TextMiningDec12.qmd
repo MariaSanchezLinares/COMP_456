@@ -11,9 +11,16 @@ library(tm)
 library(tidytext)       # For tokenization
 library(pdftools) # For PDF text extraction
 library(stringr)    # For string manipulation functions, including str_extract()
-library(ggplot2)
+library(ggplot2) 
 library(purrr)
+library(stopwords)
+library(textstem)
+library(data.table)
 library(fs)  # For file handling
+
+#source script with useful functions
+
+source("./project_func.R")
 ```
 
 # Data Collection
@@ -107,20 +114,30 @@ extract_pdf_info <- function(pdf_file) {
 
 ```{r, message = FALSE}
 # PDF directory
-pdf_directory_2023 <- "~/Desktop/articles_2023/"
-# pdf_directory_2020 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2020"
-# pdf_directory_2017 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2017"
+pdf_directory_2023 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2023"
+pdf_directory_2020 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2020"
+pdf_directory_2017 <- "~/Desktop/Fall 2024-2025/Stat 456/articles2017"
 
 
 # List of all PDF files in the directory
 pdf_files_2023 <- dir_ls(pdf_directory_2023, glob = "*.PDF")
-# pdf_files_2020 <- dir_ls(pdf_directory_2020, glob = "*.PDF")
-# pdf_files_2017 <- dir_ls(pdf_directory_2017, glob = "*.PDF")
+pdf_files_2020 <- dir_ls(pdf_directory_2020, glob = "*.PDF")
+pdf_files_2017 <- dir_ls(pdf_directory_2017, glob = "*.PDF")
 
 # Extraction function across all PDF files and combine results into one data frame
 pdf_df_2023 <- map_df(pdf_files_2023, extract_pdf_info)
-# pdf_df_2020 <- map_df(pdf_files_2020, extract_pdf_info)
-# pdf_df_2017 <- map_df(pdf_files_2017, extract_pdf_info)
+pdf_df_2020 <- map_df(pdf_files_2020, extract_pdf_info)
+pdf_df_2017 <- map_df(pdf_files_2017, extract_pdf_info)
+```
+
+## De-duplicating data
+
+```{r}
+
+pdf_df_2023 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2023), opt_key_all = TRUE))
+pdf_df_2020 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2020), opt_key_all = TRUE))
+pdf_df_2017 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2017), opt_key_all = TRUE))
+
 ```
 
 # Text Processing
@@ -128,64 +145,75 @@ pdf_df_2023 <- map_df(pdf_files_2023, extract_pdf_info)
 ## Pre-Processing
 
 ```{r, message=FALSE}
-
 # Defining stop words 
-stop_words <- c(stopwords("es"), "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre") 
+stop_words <- c(stopwords("es"), "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre", "vs.", "a.m", "p.m", "vs")  
 
-# Defining text processing function
 preprocess_text <- function(data, text_column) {
   data <- data %>%
     mutate(nchar = nchar(content)) %>% 
-    filter(nchar > 750) %>%  # Around 150 words
-    mutate(processed_text = sapply(!!sym(text_column), function(text) {
+    filter(nchar > 750) %>%  # Filter short documents (less than ~150 words)
+    mutate(tokens = sapply(!!sym(text_column), function(text) {
       # Preprocess the text
       text <- tolower(text)  # Convert to lowercase
       text <- str_replace_all(text, "[^[:alpha:][:space:]]", " ")  # Remove punctuation
       text <- str_replace_all(text, "\\s+", " ")  # Replace multiple spaces with a single space
       text <- str_trim(text)  # Trim leading and trailing spaces
-      tokens <- unlist(strsplit(text, "\\s+"))  # Split text into words
+      tokens <- unlist(strsplit(text, "\\s+"))  # Tokenize into words
       tokens <- tokens[!tokens %in% stop_words]  # Remove stop words
-      tokens <- lemmatize_words(tokens, lang = "es")  # Lemmatize words (in Spanish), NO STEM since a lot of meaning was reduced
+      tokens <- lemmatize_words(tokens, lang = "es")  # Lemmatize tokens
       return(paste(tokens, collapse = " "))  # Combine tokens back into a single string
     }))
   
   return(data)  # Return the dataset with the new column
 }
 
-
 # Re-assign datasets names
 y2023_articles <- preprocess_text(pdf_df_2023, text_column = "content")
 y2020_articles <- preprocess_text(pdf_df_2020, text_column = "content")
 y2017_articles <- preprocess_text(pdf_df_2017, text_column = "content")
-
-# Export data
-write.csv(y2023_articles, file = "~/Desktop/Fall 2024-2025/Stat 456/y2023_articles.csv")
-write.csv(y2020_articles, file = "~/Desktop/Fall 2024-2025/Stat 456/y2020_articles.csv")
-write.csv(y2017_articles, file = "~/Desktop/Fall 2024-2025/Stat 456/y2017_articles.csv")
 ```
 
-### Tokenization
-
+## TF-IDF 
+#### Calculating the values for all words
 ```{r}
-tidy_2023_dt <- y2023_articles %>%
-  unnest_tokens(word, processed_text) %>%  # Tokenize the `processed_text` column
-  filter(!word %in% stop_words)  # Remove stop words
+tidy_text2023 <- y2023_articles %>%
+  unnest_tokens(word, tokens) # Tokenize the `processed_content` column
+tf_idf2023 <- tidy_text2023 %>%
+  count(title, word, sort = TRUE) %>%  # Count occurrences of each word per document
+  bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
 
-tidy_2020_dt <- y2020_articles %>%
-  unnest_tokens(word, processed_text) %>%  
-  filter(!word %in% stop_words)  
+tidy_text2020 <- y2020_articles %>%
+  unnest_tokens(word, tokens) # Tokenize the `processed_content` column
+tf_idf2020 <- tidy_text2020 %>%
+  count(title, word, sort = TRUE) %>%  # Count occurrences of each word per document
+  bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
 
-tidy_2017_dt <- y2017_articles %>%
-  unnest_tokens(word, processed_text) %>%
-  filter(!word %in% stop_words)
-
-aggregate_2023_dt <- tidy_2023_dt %>%
-  count(word, sort = TRUE)
-
-aggregate_2020_dt <- tidy_2020_dt %>%
-  count(word, sort = TRUE)
-
-aggregate_2017_dt <- tidy_2017_dt %>%
-  count(word, sort = TRUE)
-
+tidy_text2017 <- y2017_articles %>%
+  unnest_tokens(word, tokens) # Tokenize the `processed_content` column
+tf_idf2017 <- tidy_text2017 %>%
+  count(title, word, sort = TRUE) %>%  # Count occurrences of each word per document
+  bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
 ```
+
+#### Filtering only words above the 0.1 threshold
+```{r}
+tf_idf2023 <- tf_idf2023 %>% 
+  filter(tf_idf >= 0.1) 
+tf_idf2023
+tf_idf2020 <- tf_idf2020 %>% 
+  filter(tf_idf >= 0.1) 
+tf_idf2020
+tf_idf2017 <- tf_idf2017 %>% 
+  filter(tf_idf >= 0.1) 
+tf_idf2017
+```
+
+
+```{r, message=FALSE}
+# Export data
+write.csv(tf_idf2023, file = "./y2023_articles.csv")
+write.csv(tf_idf2020, file = "./y2020_articles.csv")
+write.csv(tf_idf2017, file = "./y2017_articles.csv")
+```
+
+
