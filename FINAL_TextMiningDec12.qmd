@@ -134,9 +134,9 @@ pdf_df_2017 <- map_df(pdf_files_2017, extract_pdf_info)
 
 ```{r}
 
-pdf_df_2023 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2023), opt_key_all = TRUE))
-pdf_df_2020 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2020), opt_key_all = TRUE))
-pdf_df_2017 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2017), opt_key_all = TRUE))
+pdf_df_2023 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2023), in_vars_key = c("title")))
+pdf_df_2020 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2020), in_vars_key = c("title")))
+pdf_df_2017 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2017), in_vars_key = c("title")))
 
 ```
 
@@ -238,6 +238,7 @@ clean_data <- clean_data %>%
          day = day(date),
          ID = str_pad(1:nrow(clean_data), width = 4, pad = "0")
          ) %>% 
+  filter(year == 2017 | year == 2020 | year == 2023) %>% 
   select(ID, date, title , content, source_name, language, length, nchar, processed_text, year) 
 
 ```
