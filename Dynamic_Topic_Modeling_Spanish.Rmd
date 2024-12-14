@@ -44,7 +44,7 @@ head(data)
 
 ```{r}
 
-data <- as.data.frame(ea_no_dups(as.data.table(data), opt_key_all = TRUE))
+data <- as.data.frame(ea_no_dups(as.data.table(data), in_vars_key = c("title")))
 
 ```
 
@@ -96,7 +96,7 @@ FindTopicsNumber_plot(result)
 ```{r}
 
 # Fit LDA Model
-optimal_topics <- 7  # Update based on results
+optimal_topics <- 6  # Update based on results
 lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
 
 ```
@@ -104,7 +104,7 @@ lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
 ```{r}
 # Get terms and topics
 terms(lda_model, 20)
-topics(lda_model)
+#topics(lda_model)
 ```
 
 ## Visualization
@@ -272,8 +272,10 @@ print(final_table)
 
 ```{r}
 topic_5_articles <- assigned_articles %>% 
-  filter(topic == 5) %>% 
+  filter(topic == 4) %>% 
   select(ID, title, date, content, source_name, language, length, nchar, processed_text, year)
+
+# topic_5_articles <- as.data.frame(ea_no_dups(as.data.table(topic_5_articles), in_vars_key = c("title")))
 
 topic_5_articles <- topic_5_articles %>% 
     mutate(ID = str_pad(1:nrow(topic_5_articles), width = 4, pad = "0"))  

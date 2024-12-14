@@ -146,7 +146,7 @@ pdf_df_2017 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2017), in_vars_key 
 
 ```{r, message=FALSE}
 # Defining stop words 
-stop_words <- c(stopwords("es"), "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre", "vs.", "a.m", "p.m", "vs", "page", "copyright")  
+stop_words <- c(stopwords("es"), "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre", "vs.", "a.m", "p.m", "vs")  
 
 preprocess_text <- function(data, text_column) {
   data <- data %>%
@@ -171,6 +171,8 @@ preprocess_text <- function(data, text_column) {
 y2023_articles <- preprocess_text(pdf_df_2023, text_column = "content")
 y2020_articles <- preprocess_text(pdf_df_2020, text_column = "content")
 y2017_articles <- preprocess_text(pdf_df_2017, text_column = "content")
+
+all_articles <- rbind(y2020_articles, y2023_articles, y2017_articles)
 ```
 
 ## TF-IDF
@@ -178,24 +180,31 @@ y2017_articles <- preprocess_text(pdf_df_2017, text_column = "content")
 #### Calculating the values for all words
 
 ```{r}
-tidy_text2023 <- y2023_articles %>%
-  unnest_tokens(word, tokens) # Tokenize the `processed_content` column
+# tidy_text2023 <- y2023_articles %>%
+#   unnest_tokens(word, tokens) # Tokenize the `processed_content` column
+# 
+# tf_idf2023 <- tidy_text2023 %>%
+#   count(title, word, sort = TRUE) %>%  # Count occurrences of each word per document
+#   bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
+# 
+# tidy_text2020 <- y2020_articles %>%
+#   unnest_tokens(word, tokens) # Tokenize the `processed_content` column
+# 
+# tf_idf2020 <- tidy_text2020 %>%
+#   count(title, word, sort = TRUE) %>%  # Count occurrences of each word per document
+#   bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
+# 
+# tidy_text2017 <- y2017_articles %>%
+#   unnest_tokens(word, tokens) # Tokenize the `processed_content` column
 
-tf_idf2023 <- tidy_text2023 %>%
-  count(title, word, sort = TRUE) %>%  # Count occurrences of each word per document
-  bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
+# tf_idf2017 <- tidy_text2017 %>%
+#   count(title, word, sort = TRUE) %>%  # Count occurrences of each word per document
+#   bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
 
-tidy_text2020 <- y2020_articles %>%
-  unnest_tokens(word, tokens) # Tokenize the `processed_content` column
+tidy_text <- all_articles %>%
+   unnest_tokens(word, tokens) # Tokenize the `processed_content` column
 
-tf_idf2020 <- tidy_text2020 %>%
-  count(title, word, sort = TRUE) %>%  # Count occurrences of each word per document
-  bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
-
-tidy_text2017 <- y2017_articles %>%
-  unnest_tokens(word, tokens) # Tokenize the `processed_content` column
-
-tf_idf2017 <- tidy_text2017 %>%
+tf_idf <- tidy_text %>%
   count(title, word, sort = TRUE) %>%  # Count occurrences of each word per document
   bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
 ```
@@ -203,19 +212,27 @@ tf_idf2017 <- tidy_text2017 %>%
 #### Filtering only words above the 0.1 threshold
 
 ```{r}
-tf_idf2023 <- tf_idf2023 %>% 
-  filter(tf_idf <= 0.1) 
-tf_idf2023
-tf_idf2020 <- tf_idf2020 %>% 
-  filter(tf_idf <= 0.1) 
-tf_idf2020
-tf_idf2017 <- tf_idf2017 %>% 
-  filter(tf_idf <= 0.1) 
-tf_idf2017
+# tf_idf2023 <- tf_idf2023 %>% 
+#   filter(tf_idf <= 0.1) 
+# 
+# tf_idf2023
+# 
+# tf_idf2020 <- tf_idf2020 %>% 
+#   filter(tf_idf <= 0.1) 
+# 
+# tf_idf2020
+# 
+# tf_idf2017 <- tf_idf2017 %>% 
+#   filter(tf_idf <= 0.1) 
+# 
+# tf_idf2017
+
+tf_idf <- tf_idf %>% 
+  filter(tf_idf >=0.01)
 ```
 
 ```{r}
-ALL_tf_idf <- rbind(tf_idf2023, tf_idf2020, tf_idf2017)
+# ALL_tf_idf <- rbind(tf_idf2023, tf_idf2020, tf_idf2017)
 
 ALL_articles <- rbind( y2023_articles, y2020_articles, y2017_articles)
 ```
@@ -223,7 +240,7 @@ ALL_articles <- rbind( y2023_articles, y2020_articles, y2017_articles)
 #Creating
 
 ```{r}
-words_to_keep <- ALL_tf_idf$word
+words_to_keep <- tf_idf$word
 
 clean_data <- ALL_articles %>%
   unnest_tokens(word, tokens) %>%  # Tokenize the text
