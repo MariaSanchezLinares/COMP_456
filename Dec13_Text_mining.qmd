@@ -11,10 +11,16 @@ library(tm)
 library(tidytext)       # For tokenization
 library(pdftools) # For PDF text extraction
 library(stringr)    # For string manipulation functions, including str_extract()
-library(ggplot2)
+library(ggplot2) 
 library(purrr)
+library(stopwords)
 library(textstem)
+library(data.table)
 library(fs)  # For file handling
+
+#source script with useful functions
+
+source("./project_func.R")
 ```
 
 # Data Collection
@@ -92,6 +98,12 @@ extract_pdf_info <- function(pdf_file) {
     length = length,
     stringsAsFactors = FALSE
   )
+    pdf_df <- pdf_df %>% 
+    mutate(main_text = gsub(
+      "\nCopyright Grupo de Diarios América - GDA/El Tiempo/Colombia Todos los derechos reservados\\. Prohibido su uso\no reproducción en Colombia", 
+      "", 
+      main_text))
+  
   return(pdf_df)
 }
 
@@ -116,140 +128,273 @@ pdf_df_2023 <- map_df(pdf_files_2023, extract_pdf_info)
 pdf_df_2020 <- map_df(pdf_files_2020, extract_pdf_info)
 pdf_df_2017 <- map_df(pdf_files_2017, extract_pdf_info)
 ```
+## De-duplicating data
+
+```{r}
+
+pdf_df_2023 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2023), opt_key_all = TRUE))
+pdf_df_2020 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2023), opt_key_all = TRUE))
+pdf_df_2017 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2023), opt_key_all = TRUE))
+
+```
 
 # Text Processing
 
 ## Pre-Processing
 
-```{r, message=FALSE}
+# ```{r, message=FALSE}
+# 
+# # Defining stop words 
+# stop_words <- c(stopwords("es"), "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre") 
+# 
+# # Defining text processing function
+# preprocess_text <- function(data, text_column) {
+#   data <- data %>%
+#     mutate(nchar = nchar(content)) %>% 
+#     filter(nchar > 750) %>%  # Around 150 words
+#     mutate(processed_text = sapply(!!sym(text_column), function(text) {
+#       # Preprocess the text
+#       text <- tolower(text)  # Convert to lowercase
+#       text <- str_replace_all(text, "[^[:alpha:][:space:]]", " ")  # Remove punctuation
+#       text <- str_replace_all(text, "\\s+", " ")  # Replace multiple spaces with a single space
+#       text <- str_trim(text)  # Trim leading and trailing spaces
+#       tokens <- unlist(strsplit(text, "\\s+"))  # Split text into words
+#       tokens <- tokens[!tokens %in% stop_words]  # Remove stop words
+#       tokens <- lemmatize_words(tokens, lang = "es")  # Lemmatize words (in Spanish), NO STEM since a lot of meaning was reduced
+#       return(paste(tokens, collapse = " "))  # Combine tokens back into a single string
+#     }))
+#   
+#   return(data)  # Return the dataset with the new column
+# }
+# 
+# 
+# # Create a function to filter low-frequency terms
+# filter_low_frequency <- function(data, text_column, min_freq = 5) {
+#   # Tokenize the processed text
+#   tokens <- unlist(strsplit(paste(data[[text_column]], collapse = " "), "\\s+"))
+#   
+#   # Count the frequency of each word
+#   word_freq <- table(tokens)
+#   
+#   # Filter out terms with frequency less than min_freq
+#   frequent_terms <- names(word_freq[word_freq >= min_freq])
+#   
+#   # Retain only frequent terms in the processed text
+#   data <- data %>%
+#     mutate(processed_text = sapply(processed_text, function(text) {
+#       tokens <- unlist(strsplit(text, "\\s+"))
+#       tokens <- tokens[tokens %in% frequent_terms]
+#       return(paste(tokens, collapse = " "))
+#     }))
+#   
+#   return(data)
+# }
+# 
+# 
+# # Re-assign datasets names
+# y2023_articles <- preprocess_text(pdf_df_2023, text_column = "content")
+# y2020_articles <- preprocess_text(pdf_df_2020, text_column = "content")
+# y2017_articles <- preprocess_text(pdf_df_2017, text_column = "content")
+# 
+# # Apply the filter function
+# y2023_articles <- filter_low_frequency(y2023_articles, "processed_text", min_freq = 5)
+# y2020_articles <- filter_low_frequency(y2020_articles, "processed_text", min_freq = 5)
+# y2017_articles <- filter_low_frequency(y2017_articles, "processed_text", min_freq = 5)
+# 
+# 
+# dim(y2023_articles)
+# dim(y2020_articles)
+# dim(y2017_articles)
+# ```
+# 
+# ```{r}
+# library(tidytext)
+# 
+# # Convert processed text into a tidy format
+# tidy_data <- function(data, text_column) {
+#   data %>%
+#     unnest_tokens(word, !!sym(text_column)) %>%
+#     count(id = row_number(), word, sort = TRUE) %>%
+#     bind_tf_idf(word, id, n)
+# }
+# 
+# # Filter words based on TF-IDF
+# filter_tfidf <- function(data, text_column, threshold = 0.01) {
+#   tidy_df <- tidy_data(data, text_column)
+#   
+#   # Retain only words with TF-IDF score above the threshold
+#   filtered_words <- tidy_df %>%
+#     filter(tf_idf >= threshold) %>%
+#     select(word) %>%
+#     distinct() %>%
+#     pull(word)
+#   
+#   # Retain only filtered words in the processed text
+#   data <- data %>%
+#     mutate(processed_text = sapply(processed_text, function(text) {
+#       tokens <- unlist(strsplit(text, "\\s+"))
+#       tokens <- tokens[tokens %in% filtered_words]
+#       return(paste(tokens, collapse = " "))
+#     }))
+#   
+#   return(data)
+# }
+# Apply TF-IDF filtering
+# y2023_articles <- filter_tfidf(y2023_articles, "processed_text", threshold = 0.01)
+# y2020_articles <- filter_tfidf(y2020_articles, "processed_text", threshold = 0.01)
+# y2017_articles <- filter_tfidf(y2017_articles, "processed_text", threshold = 0.01)
+
+```{r}
 
 # Defining stop words 
-stop_words <- c(stopwords("es"), "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre") 
+stop_words <- c(stopwords("es"), "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre", "vs.", "a.m", "p.m", "vs")  
 
-# Defining text processing function
 preprocess_text <- function(data, text_column) {
   data <- data %>%
     mutate(nchar = nchar(content)) %>% 
-    filter(nchar > 750) %>%  # Around 150 words
-    mutate(processed_text = sapply(!!sym(text_column), function(text) {
+    filter(nchar > 750) %>%  # Filter short documents (less than ~150 words)
+    mutate(tokens = sapply(!!sym(text_column), function(text) {
       # Preprocess the text
       text <- tolower(text)  # Convert to lowercase
       text <- str_replace_all(text, "[^[:alpha:][:space:]]", " ")  # Remove punctuation
       text <- str_replace_all(text, "\\s+", " ")  # Replace multiple spaces with a single space
       text <- str_trim(text)  # Trim leading and trailing spaces
-      tokens <- unlist(strsplit(text, "\\s+"))  # Split text into words
+      tokens <- unlist(strsplit(text, "\\s+"))  # Tokenize into words
       tokens <- tokens[!tokens %in% stop_words]  # Remove stop words
-      tokens <- lemmatize_words(tokens, lang = "es")  # Lemmatize words (in Spanish), NO STEM since a lot of meaning was reduced
+      tokens <- lemmatize_words(tokens, lang = "es")  # Lemmatize tokens
       return(paste(tokens, collapse = " "))  # Combine tokens back into a single string
     }))
   
   return(data)  # Return the dataset with the new column
 }
 
+# filter_low_frequency <- function(data, token_column, min_freq = 5) {
+#   # Flatten the list of tokens to count term frequencies
+#   tokens <- unlist(data[[token_column]])
+#   term_freq <- table(tokens)
+#   
+#   # Retain only terms with frequency >= min_freq
+#   frequent_terms <- names(term_freq[term_freq >= min_freq])
+#   
+#   # Filter tokens in each document
+#   data <- data %>%
+#     mutate(tokens = sapply(tokens, function(doc_tokens) {
+#       doc_tokens <- doc_tokens[doc_tokens %in% frequent_terms]
+#       return(doc_tokens)
+#     }))
+#   
+#   return(data)  # Return filtered data
+# }
+# filter_tfidf <- function(data, token_column, threshold = 0.05) {
+#   # Convert tokens to a tidy format
+#   tidy_tokens <- data %>%
+#     unnest_tokens(word, !!sym(token_column)) %>%
+#     count(id = row_number(), word, sort = TRUE) %>%
+#     bind_tf_idf(word, id, n)
+#   
+#   # Filter terms with high TF-IDF scores
+#   high_tfidf_terms <- tidy_tokens %>%
+#     filter(tf_idf >= threshold) %>%
+#     pull(word) %>%
+#     unique()
+#   
+#   # Filter tokens in each document
+#   data <- data %>%
+#     mutate(tokens = sapply(tokens, function(doc_tokens) {
+#       doc_tokens <- doc_tokens[doc_tokens %in% high_tfidf_terms]
+#       return(doc_tokens)
+#     }))
+#   
+#   return(data)
+# }
+# # Define a function to process data in chunks
+# process_in_chunks <- function(data, chunk_size = 500) {
+#   # Split data into chunks
+#   n <- nrow(data)
+#   splits <- split(data, ceiling(seq_len(n) / chunk_size))
+#   
+#   # Apply processing to each chunk
+#   processed_chunks <- lapply(splits, function(chunk) {
+#     chunk <- preprocess_text(chunk, text_column = "content")
+#     chunk <- filter_low_frequency(chunk, "tokens", min_freq = 5)
+#     chunk <- filter_tfidf(chunk, "tokens", threshold = 0.05)
+#     return(chunk)
+#   })
+#   
+#   # Combine processed chunks back together
+#   combined <- do.call(rbind, processed_chunks)
+#   return(combined)
+# }
+# 
+# # Apply the chunking function to each dataset
+# y2023_articles <- process_in_chunks(pdf_df_2023, chunk_size = 500)
+# y2020_articles <- process_in_chunks(pdf_df_2020, chunk_size = 500)
+# y2017_articles <- process_in_chunks(pdf_df_2017, chunk_size = 500)
 
-# Create a function to filter low-frequency terms
-filter_low_frequency <- function(data, text_column, min_freq = 5) {
-  # Tokenize the processed text
-  tokens <- unlist(strsplit(paste(data[[text_column]], collapse = " "), "\\s+"))
-  
-  # Count the frequency of each word
-  word_freq <- table(tokens)
-  
-  # Filter out terms with frequency less than min_freq
-  frequent_terms <- names(word_freq[word_freq >= min_freq])
-  
-  # Retain only frequent terms in the processed text
-  data <- data %>%
-    mutate(processed_text = sapply(processed_text, function(text) {
-      tokens <- unlist(strsplit(text, "\\s+"))
-      tokens <- tokens[tokens %in% frequent_terms]
-      return(paste(tokens, collapse = " "))
-    }))
-  
-  return(data)
-}
-
-
-# Re-assign datasets names
 y2023_articles <- preprocess_text(pdf_df_2023, text_column = "content")
-y2020_articles <- preprocess_text(pdf_df_2020, text_column = "content")
-y2017_articles <- preprocess_text(pdf_df_2017, text_column = "content")
-
-# Apply the filter function
-y2023_articles <- filter_low_frequency(y2023_articles, "processed_text", min_freq = 5)
-y2020_articles <- filter_low_frequency(y2020_articles, "processed_text", min_freq = 5)
-y2017_articles <- filter_low_frequency(y2017_articles, "processed_text", min_freq = 5)
+#y2020_articles <- preprocess_text(pdf_df_2020, text_column = "content")
+#y2017_articles <- preprocess_text(pdf_df_2017, text_column = "content")
 
 
-dim(y2023_articles)
-dim(y2020_articles)
-dim(y2017_articles)
+tidy_text <- y2023_articles %>%
+  unnest_tokens(word, tokens) # Tokenize the `processed_content` column
+
+
+tf_idf <- tidy_text %>%
+  count(title, word, sort = TRUE) %>%  # Count occurrences of each word per document
+  bind_tf_idf(word, title, n)  # Calculate tf-idf for each term in each document
+
 ```
+
 
 ```{r}
-library(tidytext)
 
-# Convert processed text into a tidy format
-tidy_data <- function(data, text_column) {
-  data %>%
-    unnest_tokens(word, !!sym(text_column)) %>%
-    count(id = row_number(), word, sort = TRUE) %>%
-    bind_tf_idf(word, id, n)
-}
+tf_idf2023 <- tf_idf %>% 
+  filter(tf_idf >= 0.1) 
+tf_idf2023
 
-# Filter words based on TF-IDF
-filter_tfidf <- function(data, text_column, threshold = 0.01) {
-  tidy_df <- tidy_data(data, text_column)
-  
-  # Retain only words with TF-IDF score above the threshold
-  filtered_words <- tidy_df %>%
-    filter(tf_idf >= threshold) %>%
-    select(word) %>%
-    distinct() %>%
-    pull(word)
-  
-  # Retain only filtered words in the processed text
-  data <- data %>%
-    mutate(processed_text = sapply(processed_text, function(text) {
-      tokens <- unlist(strsplit(text, "\\s+"))
-      tokens <- tokens[tokens %in% filtered_words]
-      return(paste(tokens, collapse = " "))
-    }))
-  
-  return(data)
-}
-
-# Apply TF-IDF filtering
-y2023_articles <- filter_tfidf(y2023_articles, "processed_text", threshold = 0.01)
-y2020_articles <- filter_tfidf(y2020_articles, "processed_text", threshold = 0.01)
-y2017_articles <- filter_tfidf(y2017_articles, "processed_text", threshold = 0.01)
 
 ```
+
+
 
 ```{r}
 # Create a Document-Term Matrix (DTM)
-dtm <- DocumentTermMatrix(Corpus(VectorSource(y2023_articles$processed_text)))
+dtm23 <- DocumentTermMatrix(Corpus(VectorSource(y2023_articles$processed_text)))
+dtm20 <- DocumentTermMatrix(Corpus(VectorSource(y2020_articles$processed_text)))
+dtm17 <- DocumentTermMatrix(Corpus(VectorSource(y2017_articles$processed_text)))
 
 # Remove sparse terms with a stricter threshold
-dtm <- removeSparseTerms(dtm, 0.90)  # Retain terms appearing in at least 10% of documents
-
+dtm23 <- removeSparseTerms(dtm23, 0.90)  # Retain terms appearing in at least 10% of documents
+dtm20 <- removeSparseTerms(dtm20, 0.90)
+dtm17 <- removeSparseTerms(dtm17, 0.90)
 # Check the dimensions of the updated DTM
-dim(dtm)
+dim(dtm23)
+dim(dtm20)
+dim(dtm17)
 
 ```
 ```{r}
 # Calculate term frequency-inverse document frequency
-tfidf <- weightTfIdf(dtm)
+tfidf23 <- weightTfIdf(dtm23)
+tfidf20 <- weightTfIdf(dtm20)
+tfidf17 <- weightTfIdf(dtm17)
 
 # Convert TF-IDF matrix to a data frame
-tfidf_matrix <- as.matrix(tfidf)
+tfidf_matrix23 <- as.matrix(tfidf23)
+tfidf_matrix20 <- as.matrix(tfidf20)
+tfidf_matrix17 <- as.matrix(tfidf17)
 
 # Filter out terms with low TF-IDF scores
 threshold <- 0.05  # Increase threshold for more aggressive filtering
-tfidf_filtered <- tfidf_matrix[, colSums(tfidf_matrix > threshold) > 0]
+tfidf_filtered2023 <- tfidf_matrix23[, colSums(tfidf_matrix23 > threshold) > 0]
+tfidf_filtered2020 <- tfidf_matrix20[, colSums(tfidf_matrix20 > threshold) > 0]
+tfidf_filtered2017 <- tfidf_matrix17[, colSums(tfidf_matrix17 > threshold) > 0]
 
 # Check the dimensions of the filtered TF-IDF matrix
-dim(tfidf_filtered)
+dim(tfidf_filtered2023)
+dim(tfidf_filtered2020)
+dim(tfidf_filtered2017)
 
 ```
 
@@ -262,4 +407,12 @@ write.csv(y2017_articles, file = "~/Desktop/Fall 2024-2025/Stat 456/y2017_articl
 dim(y2023_articles)
 dim(y2020_articles)
 dim(y2017_articles)
+
+write.csv(tfidf_filtered2023, file = "~/Desktop/Fall 2024-2025/Stat 456/tfidf_filtered2023.csv")
+write.csv(tfidf_filtered2020, file = "~/Desktop/Fall 2024-2025/Stat 456/tfidf_filtered2020.csv")
+write.csv(tfidf_filtered2017, file = "~/Desktop/Fall 2024-2025/Stat 456/tfidf_filtered2017.csv")
+dim(tfidf_filtered2023)
+dim(tfidf_filtered2020)
+dim(tfidf_filtered2017)
+
 ```
