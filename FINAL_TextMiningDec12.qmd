@@ -207,10 +207,9 @@ tf_idf2017 <- tf_idf2017 %>%
   filter(tf_idf >= 0.1) 
 tf_idf2017
 ```
-
+# Export data
 
 ```{r, message=FALSE}
-# Export data
 write.csv(tf_idf2023, file = "./y2023_articles.csv")
 write.csv(tf_idf2020, file = "./y2020_articles.csv")
 write.csv(tf_idf2017, file = "./y2017_articles.csv")
