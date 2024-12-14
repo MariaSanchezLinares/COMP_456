@@ -17,7 +17,8 @@ library(ggplot2)
 library(lubridate)
 library(tidyr)
 library(data.table)
-
+library(servr)
+library(stringr)  # For str_pad
 
 #source script with useful functions
 
@@ -34,7 +35,7 @@ This R Markdown file implements dynamic topic modeling on Spanish newspaper arti
 ```{r data-preparation}
 # Load CSV data
 file_path <- "./ALL_articles.csv"  # Update with your CSV file path
-data <- read.csv(file_path, stringsAsFactors = FALSE)
+data <- read.csv(file_path, colClasses = "character")
 
 head(data)
 ```
@@ -100,18 +101,24 @@ result <- FindTopicsNumber(
 FindTopicsNumber_plot(result)
 
 ```
+-   Griffiths2004: Aims to identify coherence.
 
+-   Deveaud2014: Reflects interpretability.
+
+-   CaoJuan2009: Measures distinctiveness.
+
+-   Arun2010: Analyzes topic separation.
 ```{r}
 
 # Fit LDA Model
-optimal_topics <- 5  # Update based on results
+optimal_topics <- 6  # Update based on results
 lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
 
 ```
 
 ```{r}
 # Get terms and topics
-terms(lda_model, 10)
+terms(lda_model, 20)
 topics(lda_model)
 ```
 
@@ -119,8 +126,6 @@ topics(lda_model)
 
 ```{r visualization}
 # Prepare LDAvis data
-library(LDAvis)
-library(servr)
 
 json <- createJSON(
   phi = posterior(lda_model)$terms,
@@ -133,9 +138,9 @@ json <- createJSON(
 serVis(json, open.browser = TRUE)
 ```
 
-### tracing back articles 
+# Tracing back articles 
 
-# table 1 parte II
+## Table 1: keywords with the highest beta value per topic
 
 ```{r}
 # Get the beta values (topic-term probabilities)
@@ -160,11 +165,9 @@ print(table1)
 ```
 
 
-### Gamma values final 
+### Classify articles by topic with Gamma values  
 
 ```{r}
-library(stringr)  # For str_pad
-library(dplyr)    # For data manipulation
 
 # Calculate the document-topic probabilities
 doc_topic_probs <- posterior(lda_model)$topics  # Replace with your LDA model object
@@ -207,7 +210,9 @@ assigned_articles <- merged_data %>%
   filter(!is.na(topic)) %>%            # Remove unassigned documents
   select(ID, title, topic, max_gamma, everything())  # Retain relevant columns
 
+assigned_articles
 ```
+
 
 #Identify Representative Headlines:
 
@@ -278,144 +283,201 @@ print(final_table)
 ```
 
 
-## Dynamic Topic Modeling (Future Steps)
+# LDA within topic 5 
 
-Incorporate dynamic topic modeling packages or manual partitioning of the data based on `date` to implement a time-series analysis.
+```{r}
+topic_5_articles <- assigned_articles %>% 
+  filter(topic == 5) %>% 
+  select(ID, title, date, content, source_name, language, length, nchar, processed_text, year)
 
----
+topic_5_articles <- topic_5_articles %>% 
+    mutate(ID = str_pad(1:nrow(topic_5_articles), width = 4, pad = "0"))  
 
-## Dynamic Topic Modeling
-
-To perform dynamic topic modeling (DTM) using the temporal information in the dataset, follow these steps:
-
-### 1. Data Partitioning
-
-Split the data into subsets based on a time window (e.g., by month or quarter).
-
-```{r data-partitioning}
-# Create a time-based grouping (monthly in this example)
-data$month <- floor_date(data$date, "month")
-
-
-# Group the content by month
-grouped_data <- data %>%
-  mutate(month = month(date)) %>% 
-  group_by(month) %>%
-  summarise(content = paste(content, collapse = " "))
 ```
 
-### 2. Generate Time-Sliced Corpora
+## Text Preprocessing topic 5
 
-Create a Document-Term Matrix (DTM) for each time period.
+```{r text-preprocessing}
+# Create a corpus
+corpus5 <- Corpus(VectorSource(topic_5_articles$processed_text))
 
-```{r time-sliced-dtm}
-# Initialize an empty list to store DTMs
-dtm_list <- list()
+```
 
-# Loop through each time period
-for (i in 1:nrow(grouped_data)) {
-  corpus_time <- Corpus(VectorSource(grouped_data$content[i]))
-  corpus_time <- tm_map(corpus_time, content_transformer(tolower))
-  corpus_time <- tm_map(corpus_time, removePunctuation)
-  corpus_time <- tm_map(corpus_time, removeNumbers)
-  corpus_time <- tm_map(corpus_time, removeWords, stopwords("spanish"))
-  dtm_time <- DocumentTermMatrix(corpus_time)
-  dtm_time <- removeSparseTerms(dtm_time, 0.99)
-  dtm_list[[i]] <- dtm_time
+## Tokenization and Term-Document Matrix topic 5 
+
+```{r tdm-creation}
+# Create a Document-Term Matrix (DTM)
+dtm5 <- DocumentTermMatrix(corpus5)
+
+# Remove sparse terms to optimize computation
+dtm5 <- removeSparseTerms(dtm5, 0.99)
+
+# Summary of the DTM
+dim(dtm5)
+```
+
+```{r}
+# Optimal number of topics
+result5 <- FindTopicsNumber(
+  dtm5,
+  topics = seq(from = 2, to = 16, by = 1),
+  metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
+  method = "Gibbs",
+  control = list(seed = 1234),
+  mc.cores = 2L,
+  verbose = TRUE
+)
+
+FindTopicsNumber_plot(result5)
+
+```
+
+```{r}
+# Fit LDA Model
+optimal_topics5 <- 8  # Update based on results
+lda_model5 <- LDA(dtm5, k = optimal_topics5, control = list(seed = 1234))
+
+```
+
+```{r}
+# Get terms and topics
+terms(lda_model5, 20)
+topics(lda_model5)
+```
+
+## Table 1: keywords with the highest beta value per topic
+
+```{r}
+# Get the beta values (topic-term probabilities)
+beta_values5 <- tidy(lda_model5, matrix = "beta")
+
+# Get the top 20 terms per topic based on beta value
+top_terms5 <- beta_values5 %>%
+  group_by(topic) %>%
+  slice_max(order_by = beta, n = 20) %>%  # Select top 20 terms
+  arrange(topic, desc(beta)) %>%          # Arrange terms by beta in descending order
+  ungroup()
+
+# Create the table with each term and beta value as separate rows
+table1_5 <- top_terms5 %>%
+  select(topic, term, beta) %>%  
+  arrange(topic, desc(beta)) # Ensure terms are ordered within each topic
+
+
+# Print the final table
+print(table1_5)
+```
+
+
+# Assign topic 5 articles
+
+```{r}
+# Calculate the document-topic probabilities
+doc_topic_probs5 <- posterior(lda_model5)$topics  # Replace with your LDA model object
+
+# Assign unique IDs to each document upfront (IDs remain consistent)
+doc_ids5 <- str_pad(1:nrow(doc_topic_probs5), width = 4, pad = "0")
+
+# Calculate thresholds as the mean gamma value for each topic
+topic_thresholds5 <- colMeans(doc_topic_probs5)  # A vector with mean gamma value for each topic
+
+# Define a function to assign topics based on gamma values and per-topic thresholds
+assign_topic5 <- function(doc_prob, thresholds) {
+  max_prob <- max(doc_prob)
+  max_topic <- which.max(doc_prob)
+  
+  # Check if the maximum gamma value exceeds the threshold for the corresponding topic
+  if (max_prob > thresholds[max_topic]) {
+    return(max_topic)  # Assign the topic
+  } else {
+    return(NA)  # Exclude documents not meeting any topic's threshold
+  }
 }
 
-# Verify the structure
-str(dtm_list)
+# Assign topics to documents based on the thresholds
+topic_assignments5 <- apply(doc_topic_probs5, 1, assign_topic5, thresholds = topic_thresholds5)
+
+# Create a data frame with IDs, topics, and maximum gamma values
+topic_df5 <- data.frame(
+  ID = doc_ids5,                       # Document IDs (already assigned upfront)
+  topic = topic_assignments5,          # Assigned topics
+  max_gamma = apply(doc_topic_probs5, 1, max)  # Maximum gamma value for each document
+)
+
+# Join the topic assignments (including NA) with the original dataset to retain all documents
+merged_data5 <- topic_df5 %>%
+  left_join(topic_5_articles, by = c("ID" = "ID"))  # Ensure IDs are consistent for merging
+
+# Filter out documents with NA topic assignments (below any topic's threshold)
+assigned_articles5 <- merged_data5 %>%
+  filter(!is.na(topic)) %>%            # Remove unassigned documents
+  select(ID, title, topic, max_gamma, everything())  # Retain relevant columns
+
+assigned_articles5
 ```
 
-### 3. Apply Dynamic Topic Modeling
 
-Use packages like `ldaseq` or external tools for dynamic topic modeling. For example, using the `topicmodels` package:
+#Identify Representative Headlines:
 
-```{r dtm-analysis}
-# Analyze changes in topics over time (manual partition example)
-lda_models <- lapply(dtm_list, function(dtm) {
-  LDA(dtm, k = optimal_topics, control = list(seed = 1234))
-})
+```{r}
+# Summarize the top 10 most representative articles for each topic based on gamma values
+summary_table5 <- assigned_articles5 %>%
+  group_by(topic) %>%
+  arrange(topic, desc(max_gamma)) %>%  # Sort by gamma (descending)
+  slice_head(n = 5) %>%  # Select top 10 articles for each topic
+  select(topic, max_gamma, title)  # Keep only the relevant columns
 
-# Example: Extract and compare topics for the first two time periods
-terms(lda_models[[1]], 10)
-terms(lda_models[[2]], 10)
+# Print the summary table
+print(summary_table5)
+
 ```
 
-### 4. Visualization and Insights
-
-Visualize the evolution of topics over time.
-
-```{r visualize-evolution}
-# Example visualization of topic proportions over time
-topic_proportions <- lapply(lda_models, function(model) {
-  posterior(model)$topics
-})
-
-# Combine results into a data frame for visualization
-proportions_df <- do.call(rbind, lapply(1:length(topic_proportions), function(i) {
-  data.frame(
-    Time = grouped_data$month[i],
-    Topic = colnames(topic_proportions[[i]]),
-    Proportion = rowMeans(topic_proportions[[i]])
-  )
-}))
-
-ggplot(proportions_df, aes(x = Time, y = Proportion, color = Topic)) +
-  geom_line() +
-  theme_minimal() +
-  labs(title = "Topic Proportions Over Time", x = "Time", y = "Proportion")
-```
-
+Step 1: Calculate Topic Distribution per Year
 
 ```{r}
 
-# Table 1: Topic Definitions
-topic_terms <- tidy(lda_model, matrix = "beta") %>%
-  group_by(topic) %>%
-  top_n(20, beta) %>%
-  arrange(topic, -beta) %>%
-  group_by(topic) %>%
-  summarize(terms = paste(term, collapse = ", "))
-
-print(topic_terms)
-
-# Table 2: Representative Articles
-document_topics <- tidy(lda_model, matrix = "gamma") %>%
-  group_by(document) %>%
-  filter(gamma == max(gamma)) %>%
+# Calculate the number and percent of documents assigned to each topic per year
+topic_yearly_distribution5 <- assigned_articles5 %>%
+  group_by(year, topic) %>%
+  summarise(
+    num_docs = n(),
+    percent_docs = (num_docs / nrow(topic_5_articles[topic_5_articles$year == unique(year),])) * 100
+  ) %>%
   ungroup()
 
-data_with_topics <- data %>%
-  mutate(doc_id = as.character(row_number())) %>%
-  inner_join(document_topics, by = c("doc_id" = "document"))
+# Print the topic distribution table
+print(topic_yearly_distribution5)
 
-representative_articles <- data_with_topics %>%
-  group_by(topic) %>%
-  top_n(5, gamma) %>%
-  select(topic, gamma, content) %>%
-  arrange(topic, -gamma)
-
-print(representative_articles)
-
-# Table 3: Topic Dynamics Over Time
-topic_dynamics <- data_with_topics %>%
-  group_by(year, topic) %>%
-  summarize(topic_loading = sum(gamma), .groups = "drop") %>%
-  pivot_wider(names_from = topic, values_from = topic_loading, values_fill = 0)
-
-print(topic_dynamics)
-
-# Visualization of Topic Dynamics
-topic_dynamics_long <- topic_dynamics %>%
-  gather(key = "topic", value = "loading", -year)
-
-ggplot(topic_dynamics_long, aes(x = year, y = loading, color = topic)) +
-  geom_line() +
-  theme_minimal() +
-  labs(title = "Topic Dynamics Over Time", x = "Year", y = "Topic Loading")
 ```
 
+Step 2: Calculate the Number and Percent of Documents Using the "Top 20 Words" per Topic
+
+```{r}
+# Assuming 'top_terms' contains the top 20 terms for each topic
+top_terms_list5 <- table1_5 %>%
+  group_by(topic) %>%
+  summarise(top_words = list(term))
+
+# Add a column in assigned_articles to flag documents containing top words
+assigned_articles5 <- assigned_articles5 %>%
+  left_join(top_terms_list5, by = "topic") %>%
+  mutate(contains_top_words = mapply(document_contains_top_words, processed_text, top_words))
+
+# Calculate the number and percent of documents containing top words for each year and topic
+top_words_yearly_distribution5 <- assigned_articles5 %>%
+  group_by(year, topic) %>%
+  summarise(
+    num_docs_with_top_words = sum(contains_top_words),
+    percent_docs_with_top_words = (num_docs_with_top_words / n()) * 100
+  ) %>%
+  ungroup()
+
+# Combine both topic-year distributions in one table if needed
+final_table5 <- left_join(topic_yearly_distribution5, top_words_yearly_distribution5, by = c("year", "topic"))
+
+# Print the final table with both distributions
+print(final_table5)
+
+```
 
 

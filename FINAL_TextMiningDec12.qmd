@@ -238,7 +238,7 @@ clean_data <- ALL_articles %>%
          year = year(date),
          month = month(date),
          day = day(date),
-         ID = str_pad(X, width = 4, pad = "0")
+         ID = as.character(str_pad(X, width = 4, pad = "0"))
          ) %>% 
   select(ID, date, title , content, source_name, language, length, nchar, processed_text, year) 
 
