@@ -19,6 +19,7 @@ library(tidyr)
 library(data.table)
 library(servr)
 library(stringr)  # For str_pad
+library(ggthemes)
 
 #source script with useful functions
 
@@ -72,18 +73,18 @@ dim(dtm)
 ## Topic Modeling
 
 ```{r lda-model}
-# Optimal number of topics
-result <- FindTopicsNumber(
-  dtm,
-  topics = seq(from = 2, to = 16, by = 1),
-  metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
-  method = "Gibbs",
-  control = list(seed = 1234),
-  mc.cores = 2L,
-  verbose = TRUE
-)
-
-FindTopicsNumber_plot(result)
+# # Optimal number of topics
+# result <- FindTopicsNumber(
+#   dtm,
+#   topics = seq(from = 2, to = 16, by = 1),
+#   metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
+#   method = "Gibbs",
+#   control = list(seed = 1234),
+#   mc.cores = 2L,
+#   verbose = TRUE
+# )
+# 
+# FindTopicsNumber_plot(result)
 
 ```
 -   Griffiths2004: Aims to identify coherence.
@@ -105,8 +106,24 @@ lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
 ```{r}
 # Get terms and topics
 terms(lda_model, 20)
-#topics(lda_model)
+topics(lda_model)
 ```
+
+Topic number and name xwalk
+```{r}
+# Create a data frame with topics numbers and topic names
+topic_xwalk <- data.frame(
+  topic = c(1, 2, 3, 4, 5, 6),
+  topic_name = c("Soccer", "Venezuelan Politics", "Colombia-Venezuela Diplomacy", "Migration", "Environmental Degradation", "Guerrilla"),
+  stringsAsFactors = FALSE
+)
+
+# View the data frame
+print(topic_xwalk)
+
+
+```
+
 
 ## Visualization
 
@@ -142,7 +159,8 @@ top_terms <- beta_values %>%
 # Create the table with each term and beta value as separate rows
 table1 <- top_terms %>%
   select(topic, term, beta) %>%  
-  arrange(topic, desc(beta)) # Ensure terms are ordered within each topic
+  arrange(topic, desc(beta)) %>%  # Ensure terms are ordered within each topic
+  left_join(topic_xwalk, by = "topic")
 
 
 # Print the final table
@@ -194,7 +212,8 @@ merged_data <- topic_df %>%
 # Filter out documents with NA topic assignments (below any topic's threshold)
 assigned_articles <- merged_data %>%
   filter(!is.na(topic)) %>%            # Remove unassigned documents
-  select(ID, title, topic, max_gamma, everything())  # Retain relevant columns
+  select(ID, title, topic, max_gamma, everything()) %>%   # Retain relevant columns
+  left_join(topic_xwalk, by = "topic") # assign topic name 
 
 assigned_articles
 ```
@@ -205,10 +224,10 @@ assigned_articles
 ```{r}
 # Summarize the top 10 most representative articles for each topic based on gamma values
 summary_table <- assigned_articles %>%
-  group_by(topic) %>%
-  arrange(topic, desc(max_gamma)) %>%  # Sort by gamma (descending)
+  group_by(topic_name) %>%
+  arrange(topic_name, desc(max_gamma)) %>%  # Sort by gamma (descending)
   slice_head(n = 5) %>%  # Select top 10 articles for each topic
-  select(topic, max_gamma, title)  # Keep only the relevant columns
+  select(topic_name, max_gamma, title)   # Keep only the relevant columns
 
 # Print the summary table
 print(summary_table)
@@ -221,7 +240,7 @@ Step 1: Calculate Topic Distribution per Year
 
 # Calculate the number and percent of documents assigned to each topic per year
 topic_yearly_distribution <- assigned_articles %>%
-  group_by(year, topic) %>%
+  group_by(year, topic_name) %>%
   summarise(
     num_docs = n(),
     percent_docs = (num_docs / nrow(data[data$year == unique(year),])) * 100
@@ -238,7 +257,7 @@ Step 2: Calculate the Number and Percent of Documents Using the "Top 20 Words" p
 ```{r}
 # Assuming 'top_terms' contains the top 20 terms for each topic
 top_terms_list <- table1 %>%
-  group_by(topic) %>%
+  group_by(topic_name) %>%
   summarise(top_words = list(term))
 
 # Define a function to check if a document contains any of the top words
@@ -248,12 +267,12 @@ document_contains_top_words <- function(doc_text, top_words) {
 
 # Add a column in assigned_articles to flag documents containing top words
 assigned_articles <- assigned_articles %>%
-  left_join(top_terms_list, by = "topic") %>%
+  left_join(top_terms_list, by = "topic_name") %>%
   mutate(contains_top_words = mapply(document_contains_top_words, processed_text, top_words))
 
 # Calculate the number and percent of documents containing top words for each year and topic
 top_words_yearly_distribution <- assigned_articles %>%
-  group_by(year, topic) %>%
+  group_by(year, topic_name) %>%
   summarise(
     num_docs_with_top_words = sum(contains_top_words),
     percent_docs_with_top_words = (num_docs_with_top_words / n()) * 100
@@ -261,7 +280,7 @@ top_words_yearly_distribution <- assigned_articles %>%
   ungroup()
 
 # Combine both topic-year distributions in one table if needed
-final_table <- left_join(topic_yearly_distribution, top_words_yearly_distribution, by = c("year", "topic"))
+final_table <- left_join(topic_yearly_distribution, top_words_yearly_distribution, by = c("year", "topic_name"))
 
 # Print the final table with both distributions
 print(final_table)
@@ -274,7 +293,7 @@ print(final_table)
 ```{r}
 topic_5_articles <- assigned_articles %>% 
   filter(topic == 4) %>% 
-  select(ID, title, date, content, source_name, language, length, nchar, processed_text, year)
+  select(ID, topic_name, title, date, content, source_name, language, length, nchar, processed_text, year)
 
 # topic_5_articles <- as.data.frame(ea_no_dups(as.data.table(topic_5_articles), in_vars_key = c("title")))
 
@@ -305,18 +324,18 @@ dim(dtm5)
 ```
 
 ```{r}
-# Optimal number of topics
-result5 <- FindTopicsNumber(
-  dtm5,
-  topics = seq(from = 2, to = 16, by = 1),
-  metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
-  method = "Gibbs",
-  control = list(seed = 1234),
-  mc.cores = 2L,
-  verbose = TRUE
-)
-
-FindTopicsNumber_plot(result5)
+# # Optimal number of topics
+# result5 <- FindTopicsNumber(
+#   dtm5,
+#   topics = seq(from = 2, to = 16, by = 1),
+#   metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
+#   method = "Gibbs",
+#   control = list(seed = 1234),
+#   mc.cores = 2L,
+#   verbose = TRUE
+# )
+# 
+# FindTopicsNumber_plot(result5)
 
 ```
 
@@ -330,8 +349,19 @@ lda_model5 <- LDA(dtm5, k = optimal_topics5, control = list(seed = 1234))
 ```{r}
 # Get terms and topics
 terms(lda_model5, 20)
-topics(lda_model5)
+#topics(lda_model5)
 ```
+
+```{r}
+topic5_xwalk <- data.frame(
+  topic = c(1, 2, 3, 4, 5, 6, 7, 8),
+  topic_name = c("Gaza", "Colombia-Venezuelan Border Security", "Darien Migration Route", "Venezuela Migration Crisis", "COVID-19", "Health", "Migrant Human Trafficking", "Venezuelan Migrants-US"),
+  stringsAsFactors = FALSE
+)
+
+head(topic5_xwalk)
+```
+
 
 ## Table 1: keywords with the highest beta value per topic
 
@@ -344,12 +374,14 @@ top_terms5 <- beta_values5 %>%
   group_by(topic) %>%
   slice_max(order_by = beta, n = 20) %>%  # Select top 20 terms
   arrange(topic, desc(beta)) %>%          # Arrange terms by beta in descending order
-  ungroup()
+  ungroup() 
+
 
 # Create the table with each term and beta value as separate rows
 table1_5 <- top_terms5 %>%
-  select(topic, term, beta) %>%  
-  arrange(topic, desc(beta)) # Ensure terms are ordered within each topic
+  left_join(topic5_xwalk, by = "topic") %>% 
+  select(topic_name, term, beta) %>%  
+  arrange(topic_name, desc(beta))  # Ensure terms are ordered within each topic
 
 
 # Print the final table
@@ -399,7 +431,9 @@ merged_data5 <- topic_df5 %>%
 # Filter out documents with NA topic assignments (below any topic's threshold)
 assigned_articles5 <- merged_data5 %>%
   filter(!is.na(topic)) %>%            # Remove unassigned documents
-  select(ID, title, topic, max_gamma, everything())  # Retain relevant columns
+  select(ID, title, topic, max_gamma, date, content, source_name, language, length, nchar, processed_text, year) %>%  # Retain relevant columns
+  left_join(topic5_xwalk, by = "topic") # assign topic name 
+
 
 assigned_articles5
 ```
@@ -410,10 +444,10 @@ assigned_articles5
 ```{r}
 # Summarize the top 10 most representative articles for each topic based on gamma values
 summary_table5 <- assigned_articles5 %>%
-  group_by(topic) %>%
-  arrange(topic, desc(max_gamma)) %>%  # Sort by gamma (descending)
+  group_by(topic_name) %>%
+  arrange(topic_name, desc(max_gamma)) %>%  # Sort by gamma (descending)
   slice_head(n = 5) %>%  # Select top 10 articles for each topic
-  select(topic, max_gamma, title)  # Keep only the relevant columns
+  select(topic_name, max_gamma, title)  # Keep only the relevant columns
 
 # Print the summary table
 print(summary_table5)
@@ -426,7 +460,7 @@ Step 1: Calculate Topic Distribution per Year
 
 # Calculate the number and percent of documents assigned to each topic per year
 topic_yearly_distribution5 <- assigned_articles5 %>%
-  group_by(year, topic) %>%
+  group_by(year, topic_name) %>%
   summarise(
     num_docs = n(),
     percent_docs = (num_docs / nrow(topic_5_articles[topic_5_articles$year == unique(year),])) * 100
@@ -443,17 +477,17 @@ Step 2: Calculate the Number and Percent of Documents Using the "Top 20 Words" p
 ```{r}
 # Assuming 'top_terms' contains the top 20 terms for each topic
 top_terms_list5 <- table1_5 %>%
-  group_by(topic) %>%
+  group_by(topic_name) %>%
   summarise(top_words = list(term))
 
 # Add a column in assigned_articles to flag documents containing top words
 assigned_articles5 <- assigned_articles5 %>%
-  left_join(top_terms_list5, by = "topic") %>%
+  left_join(top_terms_list5, by = "topic_name") %>%
   mutate(contains_top_words = mapply(document_contains_top_words, processed_text, top_words))
 
 # Calculate the number and percent of documents containing top words for each year and topic
 top_words_yearly_distribution5 <- assigned_articles5 %>%
-  group_by(year, topic) %>%
+  group_by(year, topic_name) %>%
   summarise(
     num_docs_with_top_words = sum(contains_top_words),
     percent_docs_with_top_words = (num_docs_with_top_words / n()) * 100
@@ -461,11 +495,24 @@ top_words_yearly_distribution5 <- assigned_articles5 %>%
   ungroup()
 
 # Combine both topic-year distributions in one table if needed
-final_table5 <- left_join(topic_yearly_distribution5, top_words_yearly_distribution5, by = c("year", "topic"))
+final_table5 <- left_join(topic_yearly_distribution5, top_words_yearly_distribution5, by = c("year", "topic_name"))
 
 # Print the final table with both distributions
 print(final_table5)
 
 ```
 
+#Visualization
+
+Topic Distribution per Year
+```{r}
+ggplot(topic_yearly_distribution, aes(x = year, y = percent_docs, fill = as.factor(topic_name))) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Topic Distribution per Year (Main LDA)", 
+       x = "Year", 
+       y = "Percentage of Documents", 
+       fill = "Topic") +
+  theme_minimal()
+
+```
 
