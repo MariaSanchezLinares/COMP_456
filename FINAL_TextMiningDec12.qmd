@@ -146,7 +146,7 @@ pdf_df_2017 <- as.data.frame(ea_no_dups(as.data.table(pdf_df_2017), opt_key_all 
 
 ```{r, message=FALSE}
 # Defining stop words 
-stop_words <- c(stopwords("es"), "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre", "vs.", "a.m", "p.m", "vs", "copyright", "reservados", "page", "dijo", "según", "así", "ser", "diarios", "grupo")  
+stop_words <- c(stopwords("es"), "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve", "diez", "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre", "vs.", "a.m", "p.m", "vs", "copyright", "reservados", "page", "dijo", "según", "así", "ser", "diarios", "grupo", "GDA", "gda")  
 
 preprocess_text <- function(data, text_column) {
   data <- data %>%
