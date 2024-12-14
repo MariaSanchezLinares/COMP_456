@@ -16,6 +16,7 @@ library(dplyr)
 library(ggplot2)
 library(lubridate)
 library(tidyr)
+library(data.table)
 
 
 #source script with useful functions
@@ -32,17 +33,8 @@ This R Markdown file implements dynamic topic modeling on Spanish newspaper arti
 
 ```{r data-preparation}
 # Load CSV data
-file_path <- "./y2023_articles.csv"  # Update with your CSV file path
+file_path <- "./ALL_articles.csv"  # Update with your CSV file path
 data <- read.csv(file_path, stringsAsFactors = FALSE)
-
-data <- data %>%
-  mutate(date = mdy(date),
-         year = year(date),
-         month = month(date),
-         day = day(date),
-         ID = str_pad(X, width = 4, pad = "0")
-         ) %>% 
-  select(ID, date, title , content, source_name, language, length, nchar, processed_text)
 
 head(data)
 ```
@@ -112,7 +104,7 @@ FindTopicsNumber_plot(result)
 ```{r}
 
 # Fit LDA Model
-optimal_topics <- 8  # Update based on results
+optimal_topics <- 5  # Update based on results
 lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
 
 ```
@@ -140,90 +132,8 @@ json <- createJSON(
 
 serVis(json, open.browser = TRUE)
 ```
+
 ### tracing back articles 
-```{r}
-# # Get topic probabilities for each document
-# doc_topic_probs <- documentTopicProb(lda_model)
-
-# # Get the most probable topic for each document (dominant topic)
-# dominant_topics <- apply(doc_topic_probs, 1, which.max)
-# 
-# # Loop through documents and print titles based on dominant topic
-# for (i in 1:nrow(data)) {
-#   topic <- dominant_topics[i]
-#   # Assuming "title" is a column in your data containing article titles
-#   title <- data$title[i]
-#   cat("Document:", title, " - Dominant Topic:", topic, "\n")
-# }
-# 
-# # Filter articles with a probability greater than a threshold for a specific topic (e.g., topic 3)
-# topic_threshold <- 0.7
-# topic_of_interest <- 7
-# filtered_articles <- data[doc_topic_probs[, topic_of_interest] > topic_threshold, ]
-# 
-# # Access the "title" column (or any other relevant column) from the filtered data
-# filtered_titles <- filtered_articles$title
-```
-
-# output table 1
-
-```{r}
-# # Extract beta matrix (word-topic probabilities)
-# beta_values <- tidy(lda_model, matrix = "beta")  # Extract beta values from LDA model
-# 
-# # Get the top 20 keywords for each topic
-# top_keywords <- beta_values %>%
-#   group_by(topic) %>%
-#   slice_max(order_by = beta, n = 20) %>%  # Select top 20 words with the highest beta values per topic
-#   ungroup() %>%
-#   arrange(topic, -beta)
-# 
-# # Summarize keywords for each topic as a comma-separated string
-# table1_keywords <- top_keywords %>%
-#   group_by(topic) %>%
-#   summarise(keywords = paste(term, collapse = ", ")) %>%
-#   ungroup()
-
-```
-
-Identify Representative Headlines:
-
-```{r}
-# # Extract gamma matrix (document-topic probabilities)
-# gamma_values <- tidy(lda_model, matrix = "gamma")
-# 
-# # Convert `document` to integer
-# gamma_values <- gamma_values %>%
-#   mutate(document = as.integer(document))
-# 
-# # Join with the data to get article details
-# top_articles <- gamma_values %>%
-#   group_by(topic) %>%
-#   slice_max(order_by = gamma, n = 10) %>%  # Select the article with the highest gamma value per topic
-#   ungroup() %>%
-#   left_join(data, by = c("document" = "X")) %>%  # Join with `X` from the data frame
-#   mutate(topic = topic.x) %>% 
-#   select(topic, headline = title, date)  # Use 'title' for headlines and 'date' for publication date
-
-```
-
-```{r}
-# # Combine keywords and representative headlines into Table 1
-# table1 <- table1_keywords %>%
-#   left_join(top_articles, by = "topic")
-# 
-# # View Table 1
-# table1
-
-```
-
-```{r}
-kable(
-  table1,
-  caption = "Table 1: Summary of Topics with Top Keywords and Representative Headlines"
-)
-
-```
 
 # table 1 parte II
 
@@ -240,8 +150,9 @@ top_terms <- beta_values %>%
 
 # Create the table with each term and beta value as separate rows
 table1 <- top_terms %>%
-  select(Topic = topic, Term = term, Beta = beta) %>%  # Rename columns for clarity
-  arrange(Topic, desc(Beta))                          # Ensure terms are ordered within each topic
+  select(topic, term, beta) %>%  
+  arrange(topic, desc(beta)) # Ensure terms are ordered within each topic
+
 
 # Print the final table
 print(table1)
@@ -249,53 +160,122 @@ print(table1)
 ```
 
 
-
-# Gamma values
-
+### Gamma values final 
 
 ```{r}
+library(stringr)  # For str_pad
+library(dplyr)    # For data manipulation
 
-# Function to assign documents to topics based on gamma values
-assign_topic <- function(doc_prob, threshold) {
+# Calculate the document-topic probabilities
+doc_topic_probs <- posterior(lda_model)$topics  # Replace with your LDA model object
+
+# Assign unique IDs to each document upfront (IDs remain consistent)
+doc_ids <- str_pad(1:nrow(doc_topic_probs), width = 4, pad = "0")
+
+# Calculate thresholds as the mean gamma value for each topic
+topic_thresholds <- colMeans(doc_topic_probs)  # A vector with mean gamma value for each topic
+
+# Define a function to assign topics based on gamma values and per-topic thresholds
+assign_topic <- function(doc_prob, thresholds) {
   max_prob <- max(doc_prob)
-  if (max_prob > threshold) {
-    return(which.max(doc_prob))
+  max_topic <- which.max(doc_prob)
+  
+  # Check if the maximum gamma value exceeds the threshold for the corresponding topic
+  if (max_prob > thresholds[max_topic]) {
+    return(max_topic)  # Assign the topic
   } else {
-    return(NA)
+    return(NA)  # Exclude documents not meeting any topic's threshold
   }
 }
 
-# Set a threshold (adjust as needed)
-threshold <- mean(apply(doc_topic_probs, 1, max))
+# Assign topics to documents based on the thresholds
+topic_assignments <- apply(doc_topic_probs, 1, assign_topic, thresholds = topic_thresholds)
 
-# Assign topics to documents
-topic_assignments <- apply(doc_topic_probs, 1, assign_topic, threshold = threshold)
-
-# Create a data frame with document IDs, topics, and gamma values
+# Create a data frame with IDs, topics, and maximum gamma values
 topic_df <- data.frame(
-  doc_id = 1:nrow(doc_topic_probs),
-  topic = topic_assignments,
-  max_gamma = apply(doc_topic_probs, 1, max)
+  ID = doc_ids,                       # Document IDs (already assigned upfront)
+  topic = topic_assignments,          # Assigned topics
+  max_gamma = apply(doc_topic_probs, 1, max)  # Maximum gamma value for each document
 )
 
-# Filter out documents with NA topic assignments
-topic_df <- topic_df[!is.na(topic_df$topic), ]
+# Join the topic assignments (including NA) with the original dataset to retain all documents
+merged_data <- topic_df %>%
+  left_join(data, by = c("ID" = "ID"))  # Ensure IDs are consistent for merging
 
-# Create a table summarizing topic assignments
-topic_table <- table(topic_df$topic)
+# Filter out documents with NA topic assignments (below any topic's threshold)
+assigned_articles <- merged_data %>%
+  filter(!is.na(topic)) %>%            # Remove unassigned documents
+  select(ID, title, topic, max_gamma, everything())  # Retain relevant columns
 
-# Calculate topic prevalence over time (assuming you have a "year" column in your data)
-topic_df$year <- data$year  # Replace 'data' with your actual data frame
-
-topic_prevalence <- aggregate(topic ~ year, data = topic_df, FUN = function(x) length(unique(x)))
-
-# Print the table
-print(topic_table)
-
-# Plot topic prevalence over time
-plot(topic_prevalence, type = "l", xlab = "Year", ylab = "Number of Documents")
 ```
 
+#Identify Representative Headlines:
+
+```{r}
+# Summarize the top 10 most representative articles for each topic based on gamma values
+summary_table <- assigned_articles %>%
+  group_by(topic) %>%
+  arrange(topic, desc(max_gamma)) %>%  # Sort by gamma (descending)
+  slice_head(n = 5) %>%  # Select top 10 articles for each topic
+  select(topic, max_gamma, title)  # Keep only the relevant columns
+
+# Print the summary table
+print(summary_table)
+
+```
+
+Step 1: Calculate Topic Distribution per Year
+
+```{r}
+
+# Calculate the number and percent of documents assigned to each topic per year
+topic_yearly_distribution <- assigned_articles %>%
+  group_by(year, topic) %>%
+  summarise(
+    num_docs = n(),
+    percent_docs = (num_docs / nrow(data[data$year == unique(year),])) * 100
+  ) %>%
+  ungroup()
+
+# Print the topic distribution table
+print(topic_yearly_distribution)
+
+```
+
+Step 2: Calculate the Number and Percent of Documents Using the "Top 20 Words" per Topic
+
+```{r}
+# Assuming 'top_terms' contains the top 20 terms for each topic
+top_terms_list <- table1 %>%
+  group_by(topic) %>%
+  summarise(top_words = list(term))
+
+# Define a function to check if a document contains any of the top words
+document_contains_top_words <- function(doc_text, top_words) {
+  any(sapply(top_words, grepl, x = doc_text, ignore.case = TRUE))
+}
+
+# Add a column in assigned_articles to flag documents containing top words
+assigned_articles <- assigned_articles %>%
+  left_join(top_terms_list, by = "topic") %>%
+  mutate(contains_top_words = mapply(document_contains_top_words, processed_text, top_words))
+
+# Calculate the number and percent of documents containing top words for each year and topic
+top_words_yearly_distribution <- assigned_articles %>%
+  group_by(year, topic) %>%
+  summarise(
+    num_docs_with_top_words = sum(contains_top_words),
+    percent_docs_with_top_words = (num_docs_with_top_words / n()) * 100
+  ) %>%
+  ungroup()
+
+# Combine both topic-year distributions in one table if needed
+final_table <- left_join(topic_yearly_distribution, top_words_yearly_distribution, by = c("year", "topic"))
+
+# Print the final table with both distributions
+print(final_table)
+
+```
 
 
 ## Dynamic Topic Modeling (Future Steps)
@@ -387,6 +367,8 @@ ggplot(proportions_df, aes(x = Time, y = Proportion, color = Topic)) +
   theme_minimal() +
   labs(title = "Topic Proportions Over Time", x = "Time", y = "Proportion")
 ```
+
+
 ```{r}
 
 # Table 1: Topic Definitions
