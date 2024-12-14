@@ -504,15 +504,5 @@ print(final_table5)
 
 #Visualization
 
-Topic Distribution per Year
-```{r}
-ggplot(topic_yearly_distribution, aes(x = year, y = percent_docs, fill = as.factor(topic_name))) +
-  geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Topic Distribution per Year (Main LDA)", 
-       x = "Year", 
-       y = "Percentage of Documents", 
-       fill = "Topic") +
-  theme_minimal()
 
-```
 
