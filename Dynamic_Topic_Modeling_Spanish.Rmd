@@ -54,21 +54,6 @@ data <- as.data.frame(ea_no_dups(as.data.table(data), opt_key_all = TRUE))
 ```{r text-preprocessing}
 # Create a corpus
 corpus <- Corpus(VectorSource(data$processed_text))
-
-# # Convert to lowercase
-# corpus <- tm_map(corpus, content_transformer(tolower))
-# 
-# # Remove punctuation, numbers, and stopwords
-# corpus <- tm_map(corpus, removePunctuation)
-# corpus <- tm_map(corpus, removeNumbers)
-# corpus <- tm_map(corpus, removeWords, stopwords("spanish"))
-# 
-# # Stem the text (optional)
-# library(SnowballC)
-# corpus <- tm_map(corpus, stemDocument, language = "spanish")
- 
-# Convert to plain text
-#corpus <- tm_map(corpus, PlainTextDocument)
 ```
 
 ## Tokenization and Term-Document Matrix
@@ -111,7 +96,7 @@ FindTopicsNumber_plot(result)
 ```{r}
 
 # Fit LDA Model
-optimal_topics <- 6  # Update based on results
+optimal_topics <- 7  # Update based on results
 lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
 
 ```
