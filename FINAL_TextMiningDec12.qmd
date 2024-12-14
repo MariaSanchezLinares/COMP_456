@@ -173,8 +173,10 @@ y2020_articles <- preprocess_text(pdf_df_2020, text_column = "content")
 y2017_articles <- preprocess_text(pdf_df_2017, text_column = "content")
 ```
 
-## TF-IDF 
+## TF-IDF
+
 #### Calculating the values for all words
+
 ```{r}
 tidy_text2023 <- y2023_articles %>%
   unnest_tokens(word, tokens) # Tokenize the `processed_content` column
@@ -196,6 +198,7 @@ tf_idf2017 <- tidy_text2017 %>%
 ```
 
 #### Filtering only words above the 0.1 threshold
+
 ```{r}
 tf_idf2023 <- tf_idf2023 %>% 
   filter(tf_idf <= 0.1) 
@@ -207,13 +210,15 @@ tf_idf2017 <- tf_idf2017 %>%
   filter(tf_idf <= 0.1) 
 tf_idf2017
 ```
+
 ```{r}
 ALL_tf_idf <- rbind(tf_idf2023, tf_idf2020, tf_idf2017)
 
 ALL_articles <- rbind( y2023_articles, y2020_articles, y2017_articles)
 ```
 
-#Creating 
+#Creating
+
 ```{r}
 words_to_keep <- ALL_tf_idf$word
 
@@ -227,11 +232,17 @@ words_to_keep <- ALL_tf_idf$word
 clean_data <- ALL_articles %>%
   unnest_tokens(word, tokens) %>%  # Tokenize the text
   filter(word %in% words_to_keep) %>%  # Keep only words in `words_to_keep`
-  group_by(title, date, content, source_name, language, length, main_text, nchar) %>%  # Group by all columns you want to retain
-  summarize(processed_text = str_c(word, collapse = " "), .groups = "drop")  # Collapse words into a single string per group
+  group_by(title, date, content, source_name, language, length, main_text, nchar) %>% # Group by all columns you want to retain
+  summarize(processed_text = str_c(word, collapse = " "), .groups = "drop") %>% # Collapse words into a single string per group
+  mutate(date = mdy(date),
+         year = year(date),
+         month = month(date),
+         day = day(date),
+         ID = str_pad(X, width = 4, pad = "0")
+         ) %>% 
+  select(ID, date, title , content, source_name, language, length, nchar, processed_text, year) 
 
 ```
-
 
 # Export data
 
@@ -239,5 +250,3 @@ clean_data <- ALL_articles %>%
 write.csv(clean_data, file = "./ALL_articles.csv")
 
 ```
-
-
