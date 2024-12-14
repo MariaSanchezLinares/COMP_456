@@ -93,6 +93,7 @@ FindTopicsNumber_plot(result)
 -   CaoJuan2009: Measures distinctiveness.
 
 -   Arun2010: Analyzes topic separation.
+
 ```{r}
 
 # Fit LDA Model

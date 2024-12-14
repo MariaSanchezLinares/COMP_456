@@ -17,6 +17,7 @@ library(stopwords)
 library(textstem)
 library(data.table)
 library(fs)  # For file handling
+library(lubridate)
 
 #source script with useful functions
 
@@ -252,10 +253,12 @@ clean_data <- clean_data %>%
   mutate(date = mdy(date),
          year = year(date),
          month = month(date),
-         day = day(date),
-         ID = str_pad(1:nrow(clean_data), width = 4, pad = "0")
+         day = day(date)
          ) %>% 
-  filter(year == 2017 | year == 2020 | year == 2023) %>% 
+  filter(year == 2017 | year == 2020 | year == 2023) 
+
+clean_data<- clean_data %>% 
+  mutate(ID = str_pad(1:nrow(clean_data), width = 4, pad = "0")) %>% 
   select(ID, date, title , content, source_name, language, length, nchar, processed_text, year) 
 
 ```
