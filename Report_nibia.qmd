@@ -74,6 +74,10 @@ The data for this analysis consists of newspaper articles from El Tiempo and El 
 
 ![Key General Themes](Key_GeneralThemes.png){width=300}
 
+This bar graph displays the number of papers assigned to each topic across the years 2017, 2020, and 2023. The topics include Colombia-Venezuela Diplomacy, Guerrilla, Soccer, Environmental Degradation, Migration, and Venezuelan Politics. The height of each bar represents the count of papers discussing a specific topic in a given year.
+Brief Analysis
+
+Overall, there are more articles published in 2023 compared to 2017 and 2020, leading to a general increase across all topics. However, the proportions of topics have shifted over time. For example, topics like Colombia-Venezuela Diplomacy and Guerrilla showed significant increases in 2023, while Environmental Degradation and Venezuelan Politics remained more stable relative to other topics. This indicates a growing emphasis on international relations and conflict in the later years.
 
 **Topic Identification and Interpretation within "Migration: 2nd LDA**
 
@@ -88,7 +92,7 @@ The data for this analysis consists of newspaper articles from El Tiempo and El 
 
 The bar graph illustrates the distribution of papers assigned to each topic across three years: 2017, 2020, and 2023. Topics include Colombia-Venezuelan Border Security, the Darien Migration Route, COVID-19, Health, Gaza, Migrant Human Trafficking, Venezuelan Migration Crisis, and Venezuelan Migrants to the United States. Each bar's height represents the number of papers discussing a specific topic in a given year.
 The graph highlights shifting focus over time, with COVID-19 dominating coverage in 2020 and a significant increase in articles related to Venezuelan Migrants to the US in 2023. Meanwhile, topics like the Darien Migration Route and Migrant Human Trafficking gained more attention in 2023 compared to earlier years, reflecting the evolving priorities in migration-related reporting. 
-All topics increased their coverage in 2023, reflecting the significantly larger amount of articles in 2023 than other years. However, we can observe different proportions within the years. 
+"Gaza" and "Venezuelan Migrants to the US" are topics that gained relevance in 2023. However, there are some articles in previous years 
 
 **Topic Evolution Over Time:**
 
