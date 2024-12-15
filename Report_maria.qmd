@@ -151,7 +151,9 @@ Explain the final topic names for general
 
 * **Topic Distribution:** The distribution of topics across different years was analyzed to identify trends and shifts.
 ```{r}
-plotly(topic_dist)
+
+# plotly(topic_dist)
+
 ```
 
 # Inter-Topic Modeling: Migration
@@ -160,21 +162,27 @@ plotly(topic_dist)
 
 * **Top Terms and Themes:** 
 ```{r}
+
 kable(migration_keywords, caption = "Top 5 Words per Migration Topic", align = "c", format = "html")
+
 ```
 
 * **Topic Assignments:** 
 
 * **Representative Documents:** The most representative documents for each topic were identified and analyzed.
 ```{r}
-kable(migration_titles, caption = "Top 5 Articles per Migratin Topic", align = "c", format = "html")
+
+kable(migration_titles, caption = "Top 5 Articles per Migratoin Topic", align = "c", format = "html")
+
 ```
 
 **Topic Evolution Over Time:**
 
 * **Topic Distribution:** 
 ```{r}
-plotly(migration_topic_dist)
+
+# plotly(migration_topic_dist)
+
 ```
 
 ## Conclusion
