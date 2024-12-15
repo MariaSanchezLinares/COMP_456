@@ -147,7 +147,6 @@ y2023_df <- map_df(y2023_pdf_files, extract_pdf_info)
 
 ```
 
-
 ### 2017
 
 ```{r, message = FALSE}
@@ -161,7 +160,6 @@ y2023_df <- map_df(y2023_pdf_files, extract_pdf_info)
 # y2017_df <- map_df(y2020_pdf_files, extract_pdf_info)
 
 ```
-
 
 ###2020
 
@@ -343,3 +341,4 @@ terms(lda_model, 10)  # Show top 10 terms for each topic
 df$topic <- topics
 head(df)
 ```
+

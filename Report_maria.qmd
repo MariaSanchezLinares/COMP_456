@@ -6,9 +6,25 @@ theme: journal
 
 ---
 
-## Introduction
+```{r, message=FALSE}
+library(plotly)
+library(knitr)
+library(rmarkdown)
 
-This project is inspired by the intricate historical and ongoing dynamics of Venezuela-Colombia relations, particularly in the context of migration, political tensions, and economic challenges.This relationship has been shaped by significant historical events that have deeply influenced migration patterns, political tensions, and economic ties. In the 1980s, the internal conflicts in Colombia and Venezuela's oil boom led to a massive influx of Colombians seeking refuge in Venezuela, with an estimated 4-5 million Colombian migrants. However, in the 2000s, political tensions escalated as Venezuela's left-wing president openly supported Colombian guerrilla groups, further straining relations. The humanitarian crisis in Venezuela sparked a massive migration flow from 2017 to 2019, with millions of Venezuelans seeking refuge in Colombia. By 2022, Venezuela had the second-largest refugee crisis in the world, with approximately 7.7 million displaced people, and Colombia hosted around 2.8 million of these migrants. That same year, Colombia’s first left-wing president, Gustavo Petro, was elected and worked to re-establish diplomatic ties with Venezuela, signaling a shift in the political landscape and opening new opportunities for cooperation in addressing migration and economic challenges. This dynamic history of migration, political conflict, and economic disparity inspired my project, which aims to examine how these factors continue to shape the lives of individuals and the relationship between the two countries.
+```
+
+```{r source_rmd, include=FALSE}
+#source script with useful functions and graphs 
+source("Dynamic_Topic_Modeling_Spanish.R")
+```
+
+# Introduction
+
+This project is inspired by the intricate historical and ongoing dynamics of Venezuela-Colombia relations, particularly in the context of migration, political tensions, and economic challenges.This relationship has been shaped by significant historical events that have deeply influenced migration patterns, political tensions, and economic ties. To better illustrate this, we draw a broad timeline to highlight some of the main events: 
+
+![*Figure 1: Timeline of Events*](timeline.png){width=700}
+
+This dynamic history of migration, political conflict, and economic instability inspired our project, which aims to examine how these factors, and more specifically migration, continue to shape the relationship between the two countries. 
 
 By focusing on a large corpus of news articles from Colombian newspapers like El Tiempo and El Espectador, the project seeks to computationally analyze how these factors have manifested in media narratives over time. The use of topic modeling, specifically Latent Dirichlet Allocation (LDA), will allow us to identify and track the key themes that have shaped the discourse around Venezuela and Colombia, providing insights into how political events, economic crises, and migration trends have influenced public perception and bilateral relations. Through this analysis, the project aims to uncover the evolving nature of their relationship and explore the role of media in framing these complex dynamics.
 
@@ -18,24 +34,26 @@ By focusing on a large corpus of news articles from Colombian newspapers like El
 
 **Data Source:**
 
-The data for this analysis consists of newspaper articles from El Tiempo and El Espectador, covering the years 2017, 2020, and 2023.
+The data for this analysis consists **5,061 news articles** published by Colombian newspapers **El Tiempo** and **El Espectador**. El Tiempo is currently the most widely read newspaper in Colombia and has historically been right-leaning, while El Espectador, the country's oldest newspaper, is known for its left-leaning stance.
 
-## Data and Methodology
+We downloaded these articles from the **Nexus Uni** database under the keyword *"Venezuela"*, filtering for all articles published in years 2017, 2020 and 2023. 
 
-**Data Collection and Preprocessing:**
+## Methodolody
 
-1. **Data Extraction:** Articles were extracted from PDF files using `pdftools` and other relevant libraries.
+### Data Collection and Pre-processing
+
+1. **Data Extraction:** Articles were extracted from PDF files using `pdftools` and other relevant libraries to create a text extraction function.
 2. **Text Cleaning:** Text was cleaned by removing stop words, punctuation, and special characters.
-3. **Tokenization:** Text was tokenized into individual words.
-4. **Lemmatization:** Words were lemmatized to their root forms using a Spanish lemmatizer.
+3. **Tokenization:** Text was *tokenized* into individual words.
+4. **Lemmatization:** Words were *lemmatized* to their root forms using a Spanish lemmatizer.
+5. **TF-IDF:** To reduce noise from frequently occurring words that do not convey important information, we applied the TF-IDF statistic, which adjusts word importance by down-weighting common terms and emphasizing less frequent but significant ones. Thus,words with a TF-IDF score below 0.01 were removed from the corpus to improve topic coherence. 
 
-**Topic Modeling:**
 
 ### Topic Modeling
 
 1. **Document-Term Matrix (DTM):** A Document-Term Matrix (DTM) was created to represent the occurrence of words in each document. The DTM is a matrix where rows represent documents and columns represent unique words from the corpus. 
    
-2. **Optimal Number of Topics:** We used model fitness scores to validate the optimal number of topics for LDA. Specifically, the `FindTopicNumber()` function from the `ldatuning` package was applied. This function allows for the input of multiple values for the number of topics (k) and calculates four different model fitness scores simultaneously: Griffiths2004, Deveaud2014, CaoJuan2009, and Arun2010. The use of multiple fitness scores provided a comprehensive approach to determining the optimal number of topics for the LDA model. 
+2. **Optimal Number of Topics:** We used model fitness scores to validate the optimal number of topics for LDA. Specifically, the `FindTopicNumber()` function from the `ldatuning` package was applied. Using a DTM, this function allows for the input of multiple values for the number of topics (k) and calculates four different model fitness scores simultaneously: *Griffiths2004, Deveaud2014, CaoJuan2009, and Arun2010.* The use of multiple fitness scores provided a comprehensive approach to determining the optimal number of topics for the LDA model. 
 
 -   Griffiths2004: Aims to identify coherence.
 
@@ -46,38 +64,118 @@ The data for this analysis consists of newspaper articles from El Tiempo and El 
 -   Arun2010: Analyzes topic separation.
 
 
-![Figure 1. Line Graphs Showing Four Model Fitness Scores of k Topics](general_fitness_scores.png)
+![*Figure 2: Line Graphs Showing Four Model Fitness Scores of k Topics*](general fitness scores copy.png){width=500}
 
-3. **LDA Model:** A Latent Dirichlet Allocation (LDA) model was fitted to the DTM to identify latent topics. LDA is a probabilistic model that discovers topics by analyzing patterns of word co-occurrence across documents. Each topic is characterized by a set of words that frequently appear together, and each document is a mixture of these topics. LDA assigns a topic to each document based on the probability of word co-occurrence.
+Based on the fitness score analysis we decided on 6 topic as the optimal parameter our LDA model. 
 
-4. **Topic Interpretation and Refinement:** After identifying the latent topics, in consultation with Prof. Busse-Cárdenas, additional analysis was performed to ensure that meaningful themes emerged from the model. The identified topics were interpreted by examining the most frequent words associated with each topic in the context of Venezuela-Colombia relations.
+3. **LDA Model:** Latent Dirichlet Allocation (LDA) is a probabilistic model that uncovers hidden topics within a corpus by analyzing patterns of word co-occurrence.
 
-```{r}
-#terms(lda_model, 20)
-```
+    - **Bayesian Inference:**  
+      LDA employs Bayesian statistics to infer the hidden structure of the text. It estimates the probability distributions of topics and words based on the observed documents. 
+      
+    - **Generative Model:**  
+      LDA assumes that:  
+        - Each document is a mixture of multiple topics.  
+        - Each topic is represented as a probability distribution over a set of words.  
+      Using Bayesian inference, LDA works backward from the observed words to:  
+        - Identify the most probable topics for each document.  
+        - Determine the most representative words for each topic.
 
-5. **Time-Series Analysis:** To observe how the prominence of different topics evolved over time, a time-series analysis was conducted. This involved tracking the load of topics across different time periods, based on the frequency with which words associated with each topic appeared in the articles. Each document was assigned to the topic with the highest probability *gamma value* and the number and percentage of articles corresponding to each topic were tracked annually. This approach, similar to methods used by Roh and Yang (2019), helped identify shifts in public discourse and media representation over time, especially in relation to key political, economic, and migration-related events.
+4. **Article Classification:**Each newspaper article was categorized based on its topic-document affiliation, determined by Gamma Values derived from the LDA model.  
+
+    - **Gamma Value:**  
+      Gamma values represent the degree of association between a document and each topic. See the sample distribution of gamma values below: 
+      
+      ![Gamma Values Distribution and Average Threshold](gamma_values.png){width=500}
+
+    - **Assignment Criteria:**  
+      - Each document was assigned to the topic with the highest gamma value.  
+      - To ensure data quality and relevance, documents with ambiguous affiliations (i.e., gamma values below the average threshold) were excluded from the analysis.  
+
+5. **Topic Interpretation and Refinement:** After identifying the latent topics, in consultation with Prof. Busse-Cárdenas, additional analysis was performed to ensure that meaningful themes emerged from the model. The identified topics were interpreted by examining the 20 most frequent words associated with each topic in addition to the top 10 most relevant articles headlines for each topic.
+
+5. **Time-Series Analysis:** To observe how the prominence of different topics evolved over time, a time-series analysis was conducted. This involved tracking the load of topics across different time periods, based on the frequency with which words associated with each topic appeared in the articles. Each document was assigned to the topic with the highest probability *gamma value* and the number and percentage of articles corresponding to each topic were tracked annually. This approach, similar to methods used by Roh and Yang (2019), helped identify shifts in public discourse and main traditional media channels representation over time, especially in relation to key political, economic, and migration-related events.
+
+6. **Inter-Topic Analysis:** After identifying a number of topics from the entire corpus, we selected the topic that we identified as *migration* and replicated the methodology described above to dive into more specific areas withing this theme. 
 
 ## Results and Discussion
 
 **Topic Identification and Interpretation:**
 
 * **Top Terms and Themes:** The top terms for each topic were identified, providing insights into the underlying themes.
+
+```{r}
+kable(keywords, caption = "Top 5 Words per Topic", align = "c", format = "html")
+```
+
+
 * **Inter-Topic Distance:** The relationships between topics were visualized using an inter-topic distance map.
 
-**Topic Evolution Over Time:**
+```{r}
+# ## Topic Modeling
+# # Fit LDA Model
+# optimal_topics <- 6  # Update based on results
+# lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
+# 
+# ## Visualization
+# 
+# # Prepare LDAvis data
+# 
+# json <- createJSON(
+#   phi = posterior(lda_model)$terms,
+#   theta = posterior(lda_model)$topics,
+#   doc.length = rowSums(as.matrix(dtm)),
+#   vocab = colnames(as.matrix(dtm)),
+#   term.frequency = colSums(as.matrix(dtm))
+# )
+# 
+# serVis(json, open.browser = TRUE)
 
-* **Topic Distribution:** The distribution of topics across different years was analyzed to identify trends and shifts.
-* **Time Series Analysis:** Time series analysis was used to track the evolution of topics over time.
+```
+
+
 
 **Document-Level Analysis:**
 
 * **Topic Assignments:** Documents were assigned to topics based on their content.
+
 * **Representative Documents:** The most representative documents for each topic were identified and analyzed.
+```{r}
+kable(titles, caption = "Top 5 Articles per Topic", align = "c", format = "html")
+```
+ 
+# NIBIAAAA
+Explain the final topic names for general 
 
-**Comparative Analysis:**
+**Topic Evolution Over Time:**
 
-* **Newspaper Comparison:** The dominant topics in El Tiempo and El Espectador were compared to identify differences and similarities.
+* **Topic Distribution:** The distribution of topics across different years was analyzed to identify trends and shifts.
+```{r}
+plotly(topic_dist)
+```
+
+# Inter-Topic Modeling: Migration
+
+**Topic Identification and Interpretation:**
+
+* **Top Terms and Themes:** 
+```{r}
+kable(migration_keywords, caption = "Top 5 Words per Migration Topic", align = "c", format = "html")
+```
+
+* **Topic Assignments:** 
+
+* **Representative Documents:** The most representative documents for each topic were identified and analyzed.
+```{r}
+kable(migration_titles, caption = "Top 5 Articles per Migratin Topic", align = "c", format = "html")
+```
+
+**Topic Evolution Over Time:**
+
+* **Topic Distribution:** 
+```{r}
+plotly(migration_topic_dist)
+```
 
 ## Conclusion
 

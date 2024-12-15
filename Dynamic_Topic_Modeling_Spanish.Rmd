@@ -158,13 +158,15 @@ top_terms <- beta_values %>%
 
 # Create the table with each term and beta value as separate rows
 table1 <- top_terms %>%
-  select(topic, term, beta) %>%  
+  left_join(topic_xwalk, by = "topic") %>% 
   arrange(topic, desc(beta)) %>%  # Ensure terms are ordered within each topic
-  left_join(topic_xwalk, by = "topic")
-
+    select(topic_name, term, beta) 
 
 # Print the final table
 print(table1)
+
+#export table
+write.csv(table1, "./tables/topic_keywords.csv", row.names = FALSE)
 
 ```
 
@@ -216,6 +218,12 @@ assigned_articles <- merged_data %>%
   left_join(topic_xwalk, by = "topic") # assign topic name 
 
 assigned_articles
+
+# flatten top words column in order to export as csv
+assigned_articles$top_words <- sapply(assigned_articles$top_words, paste, collapse = ", ")
+
+#export table
+write.csv(assigned_articles, "./tables/classified_articles.csv", row.names = FALSE)
 ```
 
 
@@ -231,6 +239,9 @@ summary_table <- assigned_articles %>%
 
 # Print the summary table
 print(summary_table)
+
+#export table
+write.csv(summary_table, "./tables/top_titles.csv", row.names = FALSE)
 
 ```
 
@@ -250,6 +261,8 @@ topic_yearly_distribution <- assigned_articles %>%
 # Print the topic distribution table
 print(topic_yearly_distribution)
 
+#export table
+write.csv(topic_yearly_distribution, "./tables/topic_yearly_distribution.csv", row.names = FALSE)
 ```
 
 Step 2: Calculate the Number and Percent of Documents Using the "Top 20 Words" per Topic
@@ -285,6 +298,8 @@ final_table <- left_join(topic_yearly_distribution, top_words_yearly_distributio
 # Print the final table with both distributions
 print(final_table)
 
+write.csv(final_table, "./tables/doc_list_using_keywords", row.names = FALSE)
+
 ```
 
 
@@ -300,11 +315,14 @@ topic_5_articles <- assigned_articles %>%
 topic_5_articles <- topic_5_articles %>% 
     mutate(ID = str_pad(1:nrow(topic_5_articles), width = 4, pad = "0"))  
 
+#export
+write.csv(topic_5_articles, "./tables/migration_articles.csv", row.names = FALSE)
+
 ```
 
 ## Text Preprocessing topic 5
 
-```{r text-preprocessing}
+```{r}
 # Create a corpus
 corpus5 <- Corpus(VectorSource(topic_5_articles$processed_text))
 
@@ -312,7 +330,7 @@ corpus5 <- Corpus(VectorSource(topic_5_articles$processed_text))
 
 ## Tokenization and Term-Document Matrix topic 5 
 
-```{r tdm-creation}
+```{r}
 # Create a Document-Term Matrix (DTM)
 dtm5 <- DocumentTermMatrix(corpus5)
 
@@ -386,6 +404,10 @@ table1_5 <- top_terms5 %>%
 
 # Print the final table
 print(table1_5)
+
+# export
+write.csv(table1_5, "./tables/migration_keywords.csv", row.names = FALSE)
+
 ```
 
 
@@ -436,6 +458,13 @@ assigned_articles5 <- merged_data5 %>%
 
 
 assigned_articles5
+
+# flatten top words column in order to export as csv
+assigned_articles5$top_words <- sapply(assigned_articles5$top_words, paste, collapse = ", ")
+
+#export table
+write.csv(assigned_articles5, "./tables/classified_migration.csv", row.names = FALSE)
+
 ```
 
 
@@ -451,6 +480,9 @@ summary_table5 <- assigned_articles5 %>%
 
 # Print the summary table
 print(summary_table5)
+
+#export
+write.csv(summary_table5, "./tables/migration_top_titles.csv", row.names = FALSE)
 
 ```
 
@@ -469,6 +501,9 @@ topic_yearly_distribution5 <- assigned_articles5 %>%
 
 # Print the topic distribution table
 print(topic_yearly_distribution5)
+
+# export
+write.csv(topic_yearly_distribution5, "./tables/migration_topic_yearly_distribution.csv", row.names = FALSE)
 
 ```
 
@@ -500,6 +535,9 @@ final_table5 <- left_join(topic_yearly_distribution5, top_words_yearly_distribut
 # Print the final table with both distributions
 print(final_table5)
 
+# export
+write.csv(final_table5, "./tables/migration_top_list_keywords", row.names = FALSE)
+
 ```
 
 #Visualization
@@ -528,6 +566,7 @@ ggplot(topic_yearly_distribution, aes(x = year, y = num_docs, fill = as.factor(t
   )
 
 ```
+
 ```{r}
 ggplot(topic_yearly_distribution5, aes(x = year, y = num_docs, fill = as.factor(topic_name))) +
   geom_bar(stat = "identity", position = "dodge", width = 0.7) +  # "dodge" separates the bars for each topic
@@ -553,6 +592,50 @@ ggplot(topic_yearly_distribution5, aes(x = year, y = num_docs, fill = as.factor(
   )
 
 ```
+
+```{r}
+# Extract maximum gamma values and thresholds
+gamma_values <- topic_df$max_gamma  # Largest gamma values per document
+thresholds <- topic_thresholds  # Mean gamma values per topic
+
+# export 
+write.csv(gamma_values, "./tables/gamma_values.csv", row.names = FALSE)
+write.csv(thresholds, "./tables/thresholds.csv", row.names = FALSE)
+
+# Overall average threshold for visualization
+average_gamma <- mean(thresholds)
+
+
+# NYT-inspired theme customization
+nyt_theme <- theme(
+  panel.background = element_rect(fill = "white", color = "white"),
+  panel.grid.major = element_line(color = "grey90"),
+  panel.grid.minor = element_blank(),
+  axis.title = element_text(size = 14, face = "bold"),
+  axis.text = element_text(size = 12, color = "black"),
+  plot.title = element_text(size = 16, face = "bold", hjust = 0.5),
+  plot.subtitle = element_text(size = 12, hjust = 0.5, color = "grey40"),
+  plot.caption = element_text(size = 10, hjust = 1, color = "grey40"),
+  legend.position = "none"
+)
+
+# NYT-style histogram plot
+gamma_hist<- ggplot(data.frame(gamma_values), aes(x = gamma_values)) +
+  geom_histogram(binwidth = 0.05, fill = "#00468B", color = "white", alpha = 0.85) +
+  geom_vline(xintercept = average_gamma, color = "#E3120B", linetype = "dashed", size = 1) +
+  labs(
+    title = "Distribution of Largest Gamma Values",
+    subtitle = "Highlighting the average threshold for topic assignment",
+    x = "Gamma Value",
+    y = "Frequency",
+  ) +
+  annotate("text", x = average_gamma + 0.05, y = max(table(cut(gamma_values, breaks = seq(0, 1, 0.05)))) - 2, 
+           label = paste("Mean Threshold:", round(average_gamma, 2)), 
+           color = "#E3120B", size = 4.5, hjust = 0) +
+  nyt_theme
+gamma_hist
+```
+
 
 
 

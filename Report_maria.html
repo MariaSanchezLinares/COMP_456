@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Maria Sanchez Linares, Nibia Becerra Santillan, Emanuel Deleon Otazu">
+
+<title>Venezuela-Colombia Relations through the News: A Topic Modeling Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="Report_maria_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Report_maria_files/libs/quarto-html/quarto.js"></script>
+<script src="Report_maria_files/libs/quarto-html/popper.min.js"></script>
+<script src="Report_maria_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Report_maria_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Report_maria_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Report_maria_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Report_maria_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Report_maria_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Report_maria_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Venezuela-Colombia Relations through the News: A Topic Modeling Analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Maria Sanchez Linares, Nibia Becerra Santillan, Emanuel Deleon Otazu </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>This project is inspired by the intricate historical and ongoing dynamics of Venezuela-Colombia relations, particularly in the context of migration, political tensions, and economic challenges.This relationship has been shaped by significant historical events that have deeply influenced migration patterns, political tensions, and economic ties. To better illustrate this, we draw a broad timeline to highlight some of the main events:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="timeline.png" class="img-fluid figure-img" width="700"></p>
+<figcaption class="figure-caption"><em>Figure 1: Timeline of Events</em></figcaption>
+</figure>
+</div>
+<p>This dynamic history of migration, political conflict, and economic instability inspired our project, which aims to examine how these factors, and more specifically migration, continue to shape the relationship between the two countries.</p>
+<p>By focusing on a large corpus of news articles from Colombian newspapers like El Tiempo and El Espectador, the project seeks to computationally analyze how these factors have manifested in media narratives over time. The use of topic modeling, specifically Latent Dirichlet Allocation (LDA), will allow us to identify and track the key themes that have shaped the discourse around Venezuela and Colombia, providing insights into how political events, economic crises, and migration trends have influenced public perception and bilateral relations. Through this analysis, the project aims to uncover the evolving nature of their relationship and explore the role of media in framing these complex dynamics.</p>
+<p><strong>Research Question:</strong></p>
+<p><em>What are the main themes discussed in Colombian newspapers about Venezuela-Colombia relations and how do they change in response to significant historical/political events?</em></p>
+<p><strong>Data Source:</strong></p>
+<p>The data for this analysis consists <strong>5,061 news articles</strong> published by Colombian newspapers <strong>El Tiempo</strong> and <strong>El Espectador</strong>. El Tiempo is currently the most widely read newspaper in Colombia and has historically been right-leaning, while El Espectador, the country’s oldest newspaper, is known for its left-leaning stance.</p>
+<p>We downloaded these articles from the <strong>Nexus Uni</strong> database under the keyword <em>“Venezuela”</em>, filtering for all articles published in years 2017, 2020 and 2023.</p>
+<section id="methodolody" class="level2">
+<h2 class="anchored" data-anchor-id="methodolody">Methodolody</h2>
+<section id="data-collection-and-pre-processing" class="level3">
+<h3 class="anchored" data-anchor-id="data-collection-and-pre-processing">Data Collection and Pre-processing</h3>
+<ol type="1">
+<li><strong>Data Extraction:</strong> Articles were extracted from PDF files using <code>pdftools</code> and other relevant libraries to create a text extraction function.</li>
+<li><strong>Text Cleaning:</strong> Text was cleaned by removing stop words, punctuation, and special characters.</li>
+<li><strong>Tokenization:</strong> Text was <em>tokenized</em> into individual words.</li>
+<li><strong>Lemmatization:</strong> Words were <em>lemmatized</em> to their root forms using a Spanish lemmatizer.</li>
+<li><strong>TF-IDF:</strong> To reduce noise from frequently occurring words that do not convey important information, we applied the TF-IDF statistic, which adjusts word importance by down-weighting common terms and emphasizing less frequent but significant ones. Thus,words with a TF-IDF score below 0.01 were removed from the corpus to improve topic coherence.</li>
+</ol>
+</section>
+<section id="topic-modeling" class="level3">
+<h3 class="anchored" data-anchor-id="topic-modeling">Topic Modeling</h3>
+<ol type="1">
+<li><p><strong>Document-Term Matrix (DTM):</strong> A Document-Term Matrix (DTM) was created to represent the occurrence of words in each document. The DTM is a matrix where rows represent documents and columns represent unique words from the corpus.</p></li>
+<li><p><strong>Optimal Number of Topics:</strong> We used model fitness scores to validate the optimal number of topics for LDA. Specifically, the <code>FindTopicNumber()</code> function from the <code>ldatuning</code> package was applied. Using a DTM, this function allows for the input of multiple values for the number of topics (k) and calculates four different model fitness scores simultaneously: <em>Griffiths2004, Deveaud2014, CaoJuan2009, and Arun2010.</em> The use of multiple fitness scores provided a comprehensive approach to determining the optimal number of topics for the LDA model.</p></li>
+</ol>
+<ul>
+<li><p>Griffiths2004: Aims to identify coherence.</p></li>
+<li><p>Deveaud2014: Reflects interpretability.</p></li>
+<li><p>CaoJuan2009: Measures distinctiveness.</p></li>
+<li><p>Arun2010: Analyzes topic separation.</p></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="general%20fitness%20scores%20copy.png" class="img-fluid figure-img" width="500"></p>
+<figcaption class="figure-caption"><em>Figure 2: Line Graphs Showing Four Model Fitness Scores of k Topics</em></figcaption>
+</figure>
+</div>
+<p>Based on the fitness score analysis we decided on 6 topic as the optimal parameter our LDA model.</p>
+<ol start="3" type="1">
+<li><p><strong>LDA Model:</strong> Latent Dirichlet Allocation (LDA) is a probabilistic model that uncovers hidden topics within a corpus by analyzing patterns of word co-occurrence.</p>
+<ul>
+<li><p><strong>Bayesian Inference:</strong><br>
+LDA employs Bayesian statistics to infer the hidden structure of the text. It estimates the probability distributions of topics and words based on the observed documents.</p></li>
+<li><p><strong>Generative Model:</strong><br>
+LDA assumes that:</p>
+<ul>
+<li>Each document is a mixture of multiple topics.<br>
+</li>
+<li>Each topic is represented as a probability distribution over a set of words.<br>
+Using Bayesian inference, LDA works backward from the observed words to:<br>
+</li>
+<li>Identify the most probable topics for each document.<br>
+</li>
+<li>Determine the most representative words for each topic.</li>
+</ul></li>
+</ul></li>
+<li><p><strong>Article Classification:</strong> Each newspaper article was categorized based on its topic-document affiliation, determined by Gamma Values derived from the LDA model.</p>
+<ul>
+<li><p><strong>Gamma Value:</strong><br>
+Gamma values represent the degree of association between a document and each topic.</p></li>
+<li><p><strong>Assignment Criteria:</strong></p>
+<ul>
+<li>Each document was assigned to the topic with the highest gamma value.<br>
+</li>
+<li>To ensure data quality and relevance, documents with ambiguous affiliations (i.e., gamma values below the average threshold) were excluded from the analysis.</li>
+</ul></li>
+</ul></li>
+<li><p><strong>Topic Interpretation and Refinement:</strong> After identifying the latent topics, in consultation with Prof.&nbsp;Busse-Cárdenas, additional analysis was performed to ensure that meaningful themes emerged from the model. The identified topics were interpreted by examining the most frequent words associated with each topic in the context of Venezuela-Colombia relations.</p></li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#terms(lda_model, 20)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="5" type="1">
+<li><strong>Time-Series Analysis:</strong> To observe how the prominence of different topics evolved over time, a time-series analysis was conducted. This involved tracking the load of topics across different time periods, based on the frequency with which words associated with each topic appeared in the articles. Each document was assigned to the topic with the highest probability <em>gamma value</em> and the number and percentage of articles corresponding to each topic were tracked annually. This approach, similar to methods used by Roh and Yang (2019), helped identify shifts in public discourse and media representation over time, especially in relation to key political, economic, and migration-related events.</li>
+</ol>
+</section>
+</section>
+<section id="results-and-discussion" class="level2">
+<h2 class="anchored" data-anchor-id="results-and-discussion">Results and Discussion</h2>
+<p><strong>Topic Identification and Interpretation:</strong></p>
+<ul>
+<li><strong>Top Terms and Themes:</strong> The top terms for each topic were identified, providing insights into the underlying themes.</li>
+<li><strong>Inter-Topic Distance:</strong> The relationships between topics were visualized using an inter-topic distance map.</li>
+</ul>
+<p><strong>Topic Evolution Over Time:</strong></p>
+<ul>
+<li><strong>Topic Distribution:</strong> The distribution of topics across different years was analyzed to identify trends and shifts.</li>
+<li><strong>Time Series Analysis:</strong> Time series analysis was used to track the evolution of topics over time.</li>
+</ul>
+<p><strong>Document-Level Analysis:</strong></p>
+<ul>
+<li><strong>Topic Assignments:</strong> Documents were assigned to topics based on their content.</li>
+<li><strong>Representative Documents:</strong> The most representative documents for each topic were identified and analyzed.</li>
+</ul>
+<p><strong>Comparative Analysis:</strong></p>
+<ul>
+<li><strong>Newspaper Comparison:</strong> The dominant topics in El Tiempo and El Espectador were compared to identify differences and similarities.</li>
+</ul>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>[Summarize the key findings and their implications. Discuss the limitations of the study and potential future research directions.]</p>
+</section>
+<section id="appendix-optional" class="level2">
+<h2 class="anchored" data-anchor-id="appendix-optional">Appendix (Optional)</h2>
+<ul>
+<li><strong>Code Snippets:</strong> Include relevant R code snippets for data cleaning, preprocessing, topic modeling, and visualization.</li>
+<li><strong>Additional Visualizations:</strong> Provide additional visualizations, such as word clouds, bar charts, and network diagrams.</li>
+<li><strong>Technical Details:</strong> Discuss specific implementation details, such as hyperparameter tuning and model evaluation metrics.</li>
+</ul>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
