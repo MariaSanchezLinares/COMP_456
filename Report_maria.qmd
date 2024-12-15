@@ -6,14 +6,14 @@ theme: journal
 
 ---
 
-```{r, message=FALSE}
+```{r, echo=FALSE, message = FALSE}
 library(plotly)
 library(knitr)
 library(rmarkdown)
 
 ```
 
-```{r source_rmd, include=FALSE}
+```{r source_rmd, include=FALSE, echo=FALSE}
 #source script with useful functions and graphs 
 source("Dynamic_Topic_Modeling_Spanish.R")
 ```
@@ -104,14 +104,14 @@ Based on the fitness score analysis we decided on 6 topic as the optimal paramet
 
 * **Top Terms and Themes:** The top terms for each topic were identified, providing insights into the underlying themes.
 
-```{r}
+```{r, echo=FALSE}
 kable(keywords, caption = "Top 5 Words per Topic", align = "c", format = "html")
 ```
 
 
 * **Inter-Topic Distance:** The relationships between topics were visualized using an inter-topic distance map.
 
-```{r}
+```{r, echo=FALSE}
 # ## Topic Modeling
 # # Fit LDA Model
 # optimal_topics <- 6  # Update based on results
@@ -140,7 +140,7 @@ kable(keywords, caption = "Top 5 Words per Topic", align = "c", format = "html")
 * **Topic Assignments:** Documents were assigned to topics based on their content.
 
 * **Representative Documents:** The most representative documents for each topic were identified and analyzed.
-```{r}
+```{r, echo=FALSE}
 kable(titles, caption = "Top 5 Articles per Topic", align = "c", format = "html")
 ```
  
@@ -150,10 +150,10 @@ Explain the final topic names for general
 **Topic Evolution Over Time:**
 
 * **Topic Distribution:** The distribution of topics across different years was analyzed to identify trends and shifts.
-```{r}
+```{r, echo=FALSE}
 
 # plotly(topic_dist)
-
+topic_dist
 ```
 
 # Inter-Topic Modeling: Migration
@@ -161,7 +161,7 @@ Explain the final topic names for general
 **Topic Identification and Interpretation:**
 
 * **Top Terms and Themes:** 
-```{r}
+```{r, echo=FALSE}
 
 kable(migration_keywords, caption = "Top 5 Words per Migration Topic", align = "c", format = "html")
 
@@ -170,7 +170,7 @@ kable(migration_keywords, caption = "Top 5 Words per Migration Topic", align = "
 * **Topic Assignments:** 
 
 * **Representative Documents:** The most representative documents for each topic were identified and analyzed.
-```{r}
+```{r, echo=FALSE}
 
 kable(migration_titles, caption = "Top 5 Articles per Migratoin Topic", align = "c", format = "html")
 
@@ -179,10 +179,10 @@ kable(migration_titles, caption = "Top 5 Articles per Migratoin Topic", align = 
 **Topic Evolution Over Time:**
 
 * **Topic Distribution:** 
-```{r}
+```{r, echo=FALSE}
 
 # plotly(migration_topic_dist)
-
+migration_topic_dist
 ```
 
 ## Conclusion
