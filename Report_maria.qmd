@@ -10,6 +10,8 @@ theme: journal
 library(plotly)
 library(knitr)
 library(rmarkdown)
+library(htmltools)
+
 
 ```
 
@@ -130,6 +132,7 @@ kable(keywords, caption = "Top 5 Words per Topic", align = "c", format = "html")
 # )
 # 
 # serVis(json, open.browser = TRUE)
+includeHTML("lda_vis/index.html")
 
 ```
 

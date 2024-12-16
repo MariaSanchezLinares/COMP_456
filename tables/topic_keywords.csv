@@ -1,121 +1,121 @@
-"","topic_name","term","beta"
-"1","Soccer","colombia",0.0171755119422355
-"2","Soccer","años",0.0077826526709935
-"3","Soccer","tiempo",0.00689182141538149
-"4","Soccer","américa",0.00532056488704216
-"5","Soccer","grupo",0.00519171101803498
-"6","Soccer","equipo",0.00454193847113153
-"7","Soccer","selección",0.00426194138830301
-"8","Soccer","ser",0.00419461410987245
-"9","Soccer","vida",0.0039463027400848
-"10","Soccer","gda",0.00370283083869749
-"11","Soccer","brasil",0.00363603927071132
-"12","Soccer","partido",0.00362813669232936
-"13","Soccer","así",0.00346227785032495
-"14","Soccer","argentina",0.00343616772966181
-"15","Soccer","historia",0.00321188737943594
-"16","Soccer","vez",0.00316549155965481
-"17","Soccer","primera",0.00312775355806232
-"18","Soccer","mundial",0.00310545863486109
-"19","Soccer","prohibido",0.00310281873815137
-"20","Soccer","solo",0.00309885210061278
-"21","Venezuelan Politics","maduro",0.020367137473636
-"22","Venezuelan Politics","unidos",0.010114563575213
-"23","Venezuelan Politics","colombia",0.00903326598223881
-"24","Venezuelan Politics","país",0.0089208765318773
-"25","Venezuelan Politics","venezolano",0.00887901874305248
-"26","Venezuelan Politics","caracas",0.00779171394756414
-"27","Venezuelan Politics","gobierno",0.00745383535513248
-"28","Venezuelan Politics","tiempo",0.00718138454238973
-"29","Venezuelan Politics","según",0.00623549041846358
-"30","Venezuelan Politics","nicolás",0.00611084620619802
-"31","Venezuelan Politics","saab",0.00534006745845797
-"32","Venezuelan Politics","dijo",0.00492690996288661
-"33","Venezuelan Politics","presidente",0.00490258918832365
-"34","Venezuelan Politics","venezolana",0.00455044503319151
-"35","Venezuelan Politics","régimen",0.00443204247381437
-"36","Venezuelan Politics","grupo",0.00443081853730059
-"37","Venezuelan Politics","años",0.00435160946335206
-"38","Venezuelan Politics","dólares",0.00435146241748629
-"39","Venezuelan Politics","nacional",0.00434339400926342
-"40","Venezuelan Politics","millones",0.00426827620931643
-"41","Colombia-Venezuela Diplomacy","presidente",0.0174835187307309
-"42","Colombia-Venezuela Diplomacy","petro",0.0146662675762394
-"43","Colombia-Venezuela Diplomacy","gobierno",0.0145862918614774
-"44","Colombia-Venezuela Diplomacy","colombia",0.010200743569096
-"45","Colombia-Venezuela Diplomacy","maduro",0.00695524139277758
-"46","Colombia-Venezuela Diplomacy","política",0.00691398762657758
-"47","Colombia-Venezuela Diplomacy","país",0.00681773627361351
-"48","Colombia-Venezuela Diplomacy","oposición",0.00570866640203445
-"49","Colombia-Venezuela Diplomacy","elecciones",0.00557600389767925
-"50","Colombia-Venezuela Diplomacy","dijo",0.0051046739877376
-"51","Colombia-Venezuela Diplomacy","unidos",0.00434116915527323
-"52","Colombia-Venezuela Diplomacy","gustavo",0.00401114087549557
-"53","Colombia-Venezuela Diplomacy","político",0.00397983575753295
-"54","Colombia-Venezuela Diplomacy","internacional",0.00375823407063749
-"55","Colombia-Venezuela Diplomacy","proceso",0.00371681292810627
-"56","Colombia-Venezuela Diplomacy","trump",0.00368795563392707
-"57","Colombia-Venezuela Diplomacy","nicolás",0.00363072045950795
-"58","Colombia-Venezuela Diplomacy","congreso",0.00357038347041164
-"59","Colombia-Venezuela Diplomacy","nacional",0.00353568534864997
-"60","Colombia-Venezuela Diplomacy","electoral",0.0035286568507425
-"61","Migration","persona",0.0147271469264909
-"62","Migration","colombia",0.012636645117202
-"63","Migration","migrantes",0.0120543852901685
-"64","Migration","país",0.010432883239864
-"65","Migration","venezolanos",0.00740644361941518
-"66","Migration","frontera",0.00676327104810828
-"67","Migration","salud",0.00664996700057642
-"68","Migration","migración",0.00632423794818743
-"69","Migration","según",0.00507132831262357
-"70","Migration","unidos",0.00500906282125554
-"71","Migration","coronavirus",0.00491923013160262
-"72","Migration","casos",0.00458605716785408
-"73","Migration","población",0.0044301592686998
-"74","Migration","situación",0.00439083546670024
-"75","Migration","bogotá",0.00414688297488871
-"76","Migration","países",0.00402732559519897
-"77","Migration","gobierno",0.00396275381085279
-"78","Migration","autoridades",0.00384730182752592
-"79","Migration","ciudad",0.00370970875119251
-"80","Migration","dijo",0.00364774641951637
-"81","Environmental Degradation","colombia",0.0127928120157423
-"82","Environmental Degradation","países",0.00833462038509984
-"83","Environmental Degradation","país",0.00810552583528245
-"84","Environmental Degradation","ciento",0.00719714945925086
-"85","Environmental Degradation","años",0.00631339901092662
-"86","Environmental Degradation","américa",0.00537046494063857
-"87","Environmental Degradation","año",0.00535954264168293
-"88","Environmental Degradation","millones",0.00495056808921561
-"89","Environmental Degradation","región",0.00464236593374362
-"90","Environmental Degradation","mundo",0.00452466091614864
-"91","Environmental Degradation","solo",0.00432689690119244
-"92","Environmental Degradation","puede",0.00412311690264223
-"93","Environmental Degradation","ser",0.0040950809881506
-"94","Environmental Degradation","parte",0.00406372199296373
-"95","Environmental Degradation","latina",0.00369546073107597
-"96","Environmental Degradation","tiempo",0.00324504964818261
-"97","Environmental Degradation","cada",0.00324418927331505
-"98","Environmental Degradation","cómo",0.00322217378374534
-"99","Environmental Degradation","mayor",0.00318155045636298
-"100","Environmental Degradation","hace",0.0030958920759685
-"101","Guerrilla","eln",0.0090287049686973
-"102","Guerrilla","fiscalía",0.00737353613046627
-"103","Guerrilla","colombia",0.00735633527771963
-"104","Guerrilla","paz",0.00700201159338528
-"105","Guerrilla","caso",0.00594945413087851
-"106","Guerrilla","gobierno",0.00525713087886259
-"107","Guerrilla","policía",0.00502289746591856
-"108","Guerrilla","farc",0.00497216653099081
-"109","Guerrilla","grupo",0.00471691491233958
-"110","Guerrilla","investigación",0.00451407004390152
-"111","Guerrilla","justicia",0.00450038426431061
-"112","Guerrilla","según",0.00449969743307382
-"113","Guerrilla","persona",0.00448556775518817
-"114","Guerrilla","corte",0.00447861542076884
-"115","Guerrilla","proceso",0.0043436576483177
-"116","Guerrilla","merlano",0.00432127350476894
-"117","Guerrilla","fiscal",0.00390793148864275
-"118","Guerrilla","dijo",0.00369663078031421
-"119","Guerrilla","parte",0.00367525139384757
-"120","Guerrilla","general",0.00353966068722421
+"topic_name","term","beta"
+"Soccer","colombia",0.0171755119422355
+"Soccer","años",0.0077826526709935
+"Soccer","tiempo",0.00689182141538149
+"Soccer","américa",0.00532056488704216
+"Soccer","grupo",0.00519171101803498
+"Soccer","equipo",0.00454193847113153
+"Soccer","selección",0.00426194138830301
+"Soccer","ser",0.00419461410987245
+"Soccer","vida",0.0039463027400848
+"Soccer","gda",0.00370283083869749
+"Soccer","brasil",0.00363603927071132
+"Soccer","partido",0.00362813669232936
+"Soccer","así",0.00346227785032495
+"Soccer","argentina",0.00343616772966181
+"Soccer","historia",0.00321188737943594
+"Soccer","vez",0.00316549155965481
+"Soccer","primera",0.00312775355806232
+"Soccer","mundial",0.00310545863486109
+"Soccer","prohibido",0.00310281873815137
+"Soccer","solo",0.00309885210061278
+"Venezuelan Politics","maduro",0.020367137473636
+"Venezuelan Politics","unidos",0.010114563575213
+"Venezuelan Politics","colombia",0.00903326598223881
+"Venezuelan Politics","país",0.0089208765318773
+"Venezuelan Politics","venezolano",0.00887901874305248
+"Venezuelan Politics","caracas",0.00779171394756414
+"Venezuelan Politics","gobierno",0.00745383535513248
+"Venezuelan Politics","tiempo",0.00718138454238973
+"Venezuelan Politics","según",0.00623549041846358
+"Venezuelan Politics","nicolás",0.00611084620619802
+"Venezuelan Politics","saab",0.00534006745845797
+"Venezuelan Politics","dijo",0.00492690996288661
+"Venezuelan Politics","presidente",0.00490258918832365
+"Venezuelan Politics","venezolana",0.00455044503319151
+"Venezuelan Politics","régimen",0.00443204247381437
+"Venezuelan Politics","grupo",0.00443081853730059
+"Venezuelan Politics","años",0.00435160946335206
+"Venezuelan Politics","dólares",0.00435146241748629
+"Venezuelan Politics","nacional",0.00434339400926342
+"Venezuelan Politics","millones",0.00426827620931643
+"Colombia-Venezuela Diplomacy","presidente",0.0174835187307309
+"Colombia-Venezuela Diplomacy","petro",0.0146662675762394
+"Colombia-Venezuela Diplomacy","gobierno",0.0145862918614774
+"Colombia-Venezuela Diplomacy","colombia",0.010200743569096
+"Colombia-Venezuela Diplomacy","maduro",0.00695524139277758
+"Colombia-Venezuela Diplomacy","política",0.00691398762657758
+"Colombia-Venezuela Diplomacy","país",0.00681773627361351
+"Colombia-Venezuela Diplomacy","oposición",0.00570866640203445
+"Colombia-Venezuela Diplomacy","elecciones",0.00557600389767925
+"Colombia-Venezuela Diplomacy","dijo",0.0051046739877376
+"Colombia-Venezuela Diplomacy","unidos",0.00434116915527323
+"Colombia-Venezuela Diplomacy","gustavo",0.00401114087549557
+"Colombia-Venezuela Diplomacy","político",0.00397983575753295
+"Colombia-Venezuela Diplomacy","internacional",0.00375823407063749
+"Colombia-Venezuela Diplomacy","proceso",0.00371681292810627
+"Colombia-Venezuela Diplomacy","trump",0.00368795563392707
+"Colombia-Venezuela Diplomacy","nicolás",0.00363072045950795
+"Colombia-Venezuela Diplomacy","congreso",0.00357038347041164
+"Colombia-Venezuela Diplomacy","nacional",0.00353568534864997
+"Colombia-Venezuela Diplomacy","electoral",0.0035286568507425
+"Migration","persona",0.0147271469264909
+"Migration","colombia",0.012636645117202
+"Migration","migrantes",0.0120543852901685
+"Migration","país",0.010432883239864
+"Migration","venezolanos",0.00740644361941518
+"Migration","frontera",0.00676327104810828
+"Migration","salud",0.00664996700057642
+"Migration","migración",0.00632423794818743
+"Migration","según",0.00507132831262357
+"Migration","unidos",0.00500906282125554
+"Migration","coronavirus",0.00491923013160262
+"Migration","casos",0.00458605716785408
+"Migration","población",0.0044301592686998
+"Migration","situación",0.00439083546670024
+"Migration","bogotá",0.00414688297488871
+"Migration","países",0.00402732559519897
+"Migration","gobierno",0.00396275381085279
+"Migration","autoridades",0.00384730182752592
+"Migration","ciudad",0.00370970875119251
+"Migration","dijo",0.00364774641951637
+"Environmental Degradation","colombia",0.0127928120157423
+"Environmental Degradation","países",0.00833462038509984
+"Environmental Degradation","país",0.00810552583528245
+"Environmental Degradation","ciento",0.00719714945925086
+"Environmental Degradation","años",0.00631339901092662
+"Environmental Degradation","américa",0.00537046494063857
+"Environmental Degradation","año",0.00535954264168293
+"Environmental Degradation","millones",0.00495056808921561
+"Environmental Degradation","región",0.00464236593374362
+"Environmental Degradation","mundo",0.00452466091614864
+"Environmental Degradation","solo",0.00432689690119244
+"Environmental Degradation","puede",0.00412311690264223
+"Environmental Degradation","ser",0.0040950809881506
+"Environmental Degradation","parte",0.00406372199296373
+"Environmental Degradation","latina",0.00369546073107597
+"Environmental Degradation","tiempo",0.00324504964818261
+"Environmental Degradation","cada",0.00324418927331505
+"Environmental Degradation","cómo",0.00322217378374534
+"Environmental Degradation","mayor",0.00318155045636298
+"Environmental Degradation","hace",0.0030958920759685
+"Guerrilla","eln",0.0090287049686973
+"Guerrilla","fiscalía",0.00737353613046627
+"Guerrilla","colombia",0.00735633527771963
+"Guerrilla","paz",0.00700201159338528
+"Guerrilla","caso",0.00594945413087851
+"Guerrilla","gobierno",0.00525713087886259
+"Guerrilla","policía",0.00502289746591856
+"Guerrilla","farc",0.00497216653099081
+"Guerrilla","grupo",0.00471691491233958
+"Guerrilla","investigación",0.00451407004390152
+"Guerrilla","justicia",0.00450038426431061
+"Guerrilla","según",0.00449969743307382
+"Guerrilla","persona",0.00448556775518817
+"Guerrilla","corte",0.00447861542076884
+"Guerrilla","proceso",0.0043436576483177
+"Guerrilla","merlano",0.00432127350476894
+"Guerrilla","fiscal",0.00390793148864275
+"Guerrilla","dijo",0.00369663078031421
+"Guerrilla","parte",0.00367525139384757
+"Guerrilla","general",0.00353966068722421

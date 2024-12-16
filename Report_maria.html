@@ -337,6 +337,28 @@ Gamma values represent the degree of association between a document and each top
 <ul>
 <li><strong>Inter-Topic Distance:</strong> The relationships between topics were visualized using an inter-topic distance map.</li>
 </ul>
+<div class="cell">
+<div class="cell-output-display">
+
+
+  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>LDAvis</title>
+    <script src="d3.v3.js"></script>
+    <script src="ldavis.js"></script>
+    <link rel="stylesheet" type="text/css" href="lda.css">
+  
+
+  
+    <div id="lda"></div>
+    <script>
+      var vis = new LDAvis("#lda", "lda.json");
+    </script>
+  
+
+
+</div>
+</div>
 <p><strong>Document-Level Analysis:</strong></p>
 <ul>
 <li><p><strong>Topic Assignments:</strong> Documents were assigned to topics based on their content.</p></li>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.3.353">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -65,17 +65,20 @@ ul.task-list li input[type="checkbox"] {
   </div>
   
 
-
 </header>
 
-
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: package 'knitr' was built under R version 4.3.3</code></pre>
+</div>
+</div>
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
 <p>This project is inspired by the intricate historical and ongoing dynamics of Venezuela-Colombia relations, particularly in the context of migration, political tensions, and economic challenges.This relationship has been shaped by significant historical events that have deeply influenced migration patterns, political tensions, and economic ties. To better illustrate this, we draw a broad timeline to highlight some of the main events:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="timeline.png" class="img-fluid figure-img" width="700"></p>
-<figcaption><em>Figure 1: Timeline of Events</em></figcaption>
+<figcaption class="figure-caption"><em>Figure 1: Timeline of Events</em></figcaption>
 </figure>
 </div>
 <p>This dynamic history of migration, political conflict, and economic instability inspired our project, which aims to examine how these factors, and more specifically migration, continue to shape the relationship between the two countries.</p>
@@ -112,7 +115,7 @@ ul.task-list li input[type="checkbox"] {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="general%20fitness%20scores%20copy.png" class="img-fluid figure-img" width="500"></p>
-<figcaption><em>Figure 2: Line Graphs Showing Four Model Fitness Scores of k Topics</em></figcaption>
+<figcaption class="figure-caption"><em>Figure 2: Line Graphs Showing Four Model Fitness Scores of k Topics</em></figcaption>
 </figure>
 </div>
 <p>Based on the fitness score analysis we decided on 6 topic as the optimal parameter our LDA model.</p>
@@ -141,7 +144,7 @@ Gamma values represent the degree of association between a document and each top
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="gamma_values.png" class="img-fluid figure-img" width="500"></p>
-<figcaption>Gamma Values Distribution and Average Threshold</figcaption>
+<figcaption class="figure-caption">Gamma Values Distribution and Average Threshold</figcaption>
 </figure>
 </div></li>
 <li><p><strong>Assignment Criteria:</strong></p>
@@ -166,7 +169,7 @@ Gamma values represent the degree of association between a document and each top
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
 <caption>Top 5 Words per Topic</caption>
 <thead>
 <tr class="header">
@@ -335,8 +338,8 @@ Gamma values represent the degree of association between a document and each top
 <ul>
 <li><strong>Inter-Topic Distance:</strong> The relationships between topics were visualized using an inter-topic distance map.</li>
 </ul>
-<p>In the previous interactive plot, we recommend stablishing the lambda value to be in a 0.5, as it provides the best balance between word frequency in the overall corpus, and it’s relevance in the selected topic. However, the toggle is useful to explore the two ends of relevance per given topic.</p>
-<p>The amount of topics, and the seed used in this LDA model showed no overlap between any of our topic. The topics with the largest percentage of marginal topic distribution are 1 (Colombia-Venezuela Diplomacy) and 2 (Environmental Degradation). Conversely, Topic 6 (Venezuela Politics) has the smallest distribution. In other iterations of LDA’s for our data, we observed that topics overlapped more often when they had a larger marginal topic distributions.</p>
+<p>In the previous interactive plot, we recommend establishing the lambda value to be in a 0.5, as it provides the best balance between word frequency in the overall corpus, and it’s relevance in the selected topic. However, the toggle is useful to explore the two ends of relevance per given topic.</p>
+<p>The amount of topics, and the seed used in this LDA model showed no overlap between any of our topics. The topics with the largest percentage of marginal topic distribution are 1 (Colombia-Venezuela Diplomacy) and 2 (Environmental Degradation). Conversely, Topic 6 (Venezuela Politics) has the smallest distribution. In other iterations of LDA’s for our data, we observed that topics overlapped more often when they had a larger marginal topic distributions.</p>
 <p><strong>Document-Level Analysis:</strong></p>
 <ul>
 <li><p><strong>Top Representative Documents:</strong></p>
@@ -344,7 +347,7 @@ Gamma values represent the degree of association between a document and each top
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
 <caption>Top 5 Articles per Topic</caption>
 <thead>
 <tr class="header">
@@ -510,47 +513,39 @@ Gamma values represent the degree of association between a document and each top
 
 </div>
 </div>
-</section>
-</section>
-<section id="nibiaaaa" class="level1">
-<h1>NIBIAAAA</h1>
-<p>Explain the final topic names for general</p>
 <p><strong>Topic Breakdown:</strong></p>
-<p>Colombia-Venezuela Diplomacy:</p>
-<p>This topic focuses on articles discussing international conference agreements concerning Venezuela, meetings between Colombia’s president, Gustavo Petro, and the opposition group of the current Chavista regime, <em>Plataforma Unitaria Democrática de Venezuela</em>. It also includes coverage of the controversy surrounding a comment made by the former Colombian ambassador to Venezuela, which influenced public opinion on a Colombian health reform.</p>
-<p>Notably, all top articles for this topic are from 2023, closely tied to the <em>Cumbre sobre Venezuela en Bogotá</em> (Venezuela Summit) that took place this year. The summit highlighted Petro’s widely reported stance on Venezuela, in which he attributes the country’s challenges to U.S. sanctions (<a href="https://latinoamerica21.com/en/the-progressive-paradox-petros-regressive-measures-against-venezuelan-migration/">Rojas Silva, 2024</a>).</p>
-<p>Environmental Degradation:</p>
-<p>This topic covered articles focusing on environmental relief strategies for the amazon region that regularly include Brasil, Colombia, Ecuador, Perú y Venezuela in response to climate change (like switching to natural gas, or making the carbon market more appealing for companies). Also, they talk about biodiversity loss due to deforestation. There is one of the top articles that covers concerns regarding companies and entrepreneurs in colombia and business relationships with venezuela, but we can connect the content from above with the fact that articles covering the environmental devastation all included the role of companies in it.</p>
-<p>Guerrilla:</p>
-<p>The most relevant articles in this topic were related to the Caso Uribe, a former Colombian president that had presuntos vínculos con grupos narcotraficantes y paramilitares de ultraderecha a lo largo de su carrera política. All the top articles also are related to 2023 since the prosecutor’s office formally accused him of these allegations. This topic related to venezuela, in that the layer of Uribe is also been investigated and he was the lawyer of a former Colombian ambassador in Venezeula. Other topics are related to Aida Merlano’s a colombian polititian that was convicted of conspiracy, weapons possession, and electoral crimes in connection with her campaign for senator (<a href="https://www.bbc.com/mundo/noticias-america-latina-49906275">BBC News Mundo, 2019</a>). Both articles are connected to ongoing legal processes to politicians allegedly connected to guerrilla groups.</p>
-<p>Migration:</p>
-<p>The most relevant articles in this topic covered the vulnerable positions of venezuelan immigrants during the COVID-19 pandemic, while also reporting in how colombian cities were responding to the immigration wave during at that time. Another topic covered was about the dangers that venezuelan immigrants have to face when crossing one on the most dangerous routes to migrate to the north of the american country (often to the United states) (<a href="https://www.cfr.org/article/crossing-darien-gap-migrants-risk-death-journey-us">Roy, D, 2024</a>). Then we had an article covering the need of colombia to recognize Venezuela immigrants as refugees to protect their rights. And finally, we had an article covering the changes of policies after the removal of the Title 42 restrictions a policy that gave the right to the. US border security to turn away any immigrant under the public heath threat that covid was, but that was changed in 2023 to turning away anyone seeking asylum who didn’t first seek protection in a country they traveled through, or first applied online (<a href="https://apnews.com/article/immigration-biden-border-title-42-mexico-asylum-be4e0b15b27adb9bede87b9bbefb798d">Long, C, 2023</a>). And since Colombia is a neighbour of Venezuela, now that country is usually passed by and therefore make Venezuela immigrants not applicable for assylum. All this articles cover the challenges that Venezuelan immigrants are encountering in direct or indirect response to Colombia.</p>
-<p>Soccer:</p>
-<p>The articles in this topic covered news on soccer matches, players, regional and international matches in this sport.</p>
-<p>Venezuela Politics:</p>
+<ul>
+<li><p><strong>Colombia-Venezuela Diplomacy:</strong> This topic focuses on articles discussing international conference agreements concerning Venezuela, meetings between Colombia’s president, Gustavo Petro, and the opposition group of the current Chavista regime, <em>Plataforma Unitaria Democrática de Venezuela</em>. It also includes coverage of the controversy surrounding a comment made by the former Colombian ambassador to Venezuela, which influenced public opinion on a Colombian health reform.</p>
+<p>Notably, all top articles for this topic are from 2023, closely tied to the <em>Cumbre sobre Venezuela en Bogotá</em> (Venezuela Summit) that took place this year. The summit highlighted Petro’s widely reported stance on Venezuela, in which he attributes the country’s challenges to U.S. sanctions (<a href="https://latinoamerica21.com/en/the-progressive-paradox-petros-regressive-measures-against-venezuelan-migration/">Rojas Silva, 2024</a>).</p></li>
+<li><p><strong>Environmental Degradation:</strong> The most relevant articles in this topic focus on environmental relief strategies for the Amazon region, involving Brazil, Colombia, Ecuador, Peru, and Venezuela, in response to climate change. These strategies include initiatives such as transitioning to natural gas and making carbon markets more appealing to companies. Articles also highlight biodiversity loss caused by deforestation. One notable article raises concerns about Colombian businesses and their relationships with Venezuela, connecting the broader theme of environmental devastation to the role of companies in these processes. These articles are united by their focus on the environmental challenges and the influence of economic actors in addressing or exacerbating these issues.</p></li>
+<li><p><strong>Guerrilla:</strong> The top articles in this topic center on ongoing legal cases involving Colombian politicians. A primary focus is the <em>Caso Uribe</em>, where former Colombian president Álvaro Uribe is accused of alleged ties to right-wing paramilitary and narcotrafficking groups, with key developments occurring in 2023 as the prosecutor’s office formally accused him. The topic connects to Venezuela through Uribe’s lawyer, who is also under investigation and linked to a former Colombian ambassador in Venezuela. Additionally, the topic includes articles about Aida Merlano, a Colombian politician convicted in 2019 for conspiracy, weapons possession, and electoral crimes (<a href="https://www.bbc.com/mundo/noticias-america-latina-49906275">BBC News Mundo, 2019</a>). Collectively, these articles connect through their focus on legal proceedings involving politicians with alleged links to guerrilla and criminal groups.</p></li>
+<li><p><strong>Migration:</strong> The most relevant articles in this topic address the challenges faced by Venezuelan immigrants. Some articles highlight their vulnerability during the COVID-19 pandemic and Colombian cities’ responses to the large immigration wave at that time. Others focus on the dangers Venezuelan migrants face crossing one of the most perilous routes on their way to North America, particularly the United States (<a href="https://www.cfr.org/article/crossing-darien-gap-migrants-risk-death-journey-us">Roy, D, 2024</a>). Additionally, one article advocates for Colombia to recognize Venezuelan immigrants as refugees to ensure their rights are protected. Another article discusses the 2023 policy changes in the U.S. after the removal of <em>Title 42</em>, which previously allowed border authorities to turn away migrants under COVID-19 health restrictions. The new policy prevents asylum seekers from applying if they did not first seek protection in transit countries or apply online (<a href="https://apnews.com/article/immigration-biden-border-title-42-mexico-asylum-be4e0b15b27adb9bede87b9bbefb798d">Long, C, 2023</a>). These articles are connected through their examination of the challenges Venezuelan immigrants face due to shifting policies in Colombia and the United States.</p></li>
+<li><p><strong>Soccer:</strong> The articles in this topic report on soccer matches, players, and regional and international competitions. These articles are connected by their focus on major events and news related to soccer as a sport.</p></li>
+<li><p><strong>Venezuela Politics:</strong> The most relevant articles in this topic cover significant events in Venezuela’s political landscape. One article highlights the conflict between Portugal and Venezuela’s president Maduro, following an attack on a Portuguese cruise ship by the Venezuelan navy. Other top articles focus on Alex Saab, a Venezuelan politician accused of business deals worth an estimated <strong>$135 million</strong> with the Venezuelan government (<a href="https://www.elespectador.com/judicial/justicia-de-ee-uu-acusa-a-empresario-alex-saab-de-lavado-de-dinero-article-872825/">Redacción Judicial, 2019</a>). Coverage intensified in 2023 when Saab was released as part of a prisoner exchange with the U.S. These articles are connected through their coverage of key political events in Venezuela, showcasing both internal controversies and international conflicts.</p></li>
+</ul>
 <p><strong>Topic Evolution Over Time:</strong></p>
 <ul>
-<li><strong>Topic Distribution:</strong> The distribution of topics across different years was analyzed to identify trends and shifts.</li>
+<li><p><strong>Topic Distribution:</strong></p>
+<p>The following graph shows the distribution of topics across different years. It allows to identify trends and shifts over time.</p></li>
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Report_nibia_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
+<p><img src="Report_nibia_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-</div>
+</section>
 </section>
 <section id="inter-topic-modeling-migration" class="level1">
 <h1>Inter-Topic Modeling: Migration</h1>
-<p><strong>Topic Identification and Interpretation:</strong></p>
+<p>Based on the results of our initial LDA model, we chose to focus on the <strong>Migration</strong> topic to analyze more specifically how Venezuelan migration is discussed in Colombian newspapers.</p>
+<p><strong>Sub-topic Identification and Interpretation:</strong></p>
 <ul>
-<li><strong>Top Terms and Themes:</strong></li>
+<li><p><strong>Top Terms and Themes:</strong></p>
+<p>The following table shows the finalized list of topic names and some examples of words that belong to each specific sub-topic.</p></li>
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
 <caption>Top 5 Words per Migration Topic</caption>
 <thead>
 <tr class="header">
@@ -767,12 +762,12 @@ Gamma values represent the degree of association between a document and each top
 </div>
 </div>
 <ul>
-<li><p><strong>Topic Assignments:</strong></p></li>
-<li><p><strong>Representative Documents:</strong> The most representative documents for each topic were identified and analyzed.</p></li>
+<li><p><strong>Representative Documents:</strong></p>
+<p>The following table shows the 5 most representative documents for each topic that were identified and analyzed to provide context to our topic naming process.</p></li>
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
 <caption>Top 5 Articles per Migratoin Topic</caption>
 <thead>
 <tr class="header">
@@ -988,22 +983,32 @@ Gamma values represent the degree of association between a document and each top
 
 </div>
 </div>
+<p><strong>Topic Breakdown:</strong></p>
+<ul>
+<li><p><strong>COVID-19:</strong> The most relevant articles highlight the heightened vulnerability and additional challenges faced by Venezuelan immigrants during the pandemic.</p></li>
+<li><p><strong>Colombia-Venezuela Border Security:</strong> The most relevant articles focus on the deaths of Venezuelan immigrants during migration, particularly near Colombia. Two articles also cover related cases in the United States, expanding the scope of border-related issues.</p></li>
+<li><p><strong>Darién Migration Route: </strong> The most relevant articles address the significant risks Venezuelan immigrants face while crossing the Darién Gap. Additionally, they explore how surrounding Colombian communities are economically benefiting from the needs of these migrants.</p></li>
+<li><p><strong>Gaza: </strong> Although the coverage does not mention Venezuelan immigrants directly, it focuses on the displacement of Gaza’s population due to Israeli attacks. The connection to Venezuelan migration lies in the shared theme of vulnerability during forced movement and displacement.</p></li>
+<li><p><strong>Health: </strong> The most relevant articles focus on how Venezuelan immigrants are impacted within the health sector, particularly in urban areas like Bogotá. Coverage includes the effects of issues such as contaminated air on migrants and the challenges faced by Venezuelan doctors whose work permits were not being accepted.</p></li>
+<li><p><strong>Migrant Human Trafficking: </strong> The most relevant articles highlight cases of human trafficking along the border, as well as violence directed toward women. These articles are connected by the recurring theme of women being the primary victims of such exploitation.</p></li>
+<li><p><strong>Venezuela Migration Crisis: </strong> The most relevant articles discuss the growing number of Venezuelan immigrants and their significant impact on Colombia, emphasizing the scale and consequences of the migration crisis.</p></li>
+<li><p><strong>Venezuela Migrants-US: </strong> The most relevant articles covered how the change in Title 42 has impacted Colombia as the first country of transit for Venezuelan immigrants seeking asylum for the U.S.</p></li>
+</ul>
 <p><strong>Topic Evolution Over Time:</strong></p>
 <ul>
 <li><strong>Topic Distribution:</strong></li>
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="Report_nibia_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
+<p><img src="Report_nibia_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>[Summarize the key findings and their implications. Discuss the limitations of the study and potential future research directions.]</p>
+<p>Our analysis revealed key themes that deepen the understanding of Venezuelan migration in Colombian media. A central finding is the recurring narrative of vulnerability faced by migrants—whether through the risks of crossing the Darien Gap, struggles during the COVID-19 pandemic, or exploitation in human trafficking cases. Policies, such as the U.S. removal of Title 42, further complicated their journey, positioning Colombia as a critical transit country.</p>
+<p>Having Gaza as a subtopic was a surprising insight. While unrelated to Venezuelan migration, the coverage of forced displacement in Gaza highlighted a global pattern of vulnerability during movement. This parallel broadens the scope of our findings and situates Venezuelan migration within a larger context.</p>
+<p>Locally, Colombian communities seemed to play a mixed role— topics like Venezuelan Migration Crisis described ways in which Colombians would be impacted by the immigrants, while the topic of Darien Migration route revelead that others benefiting economically, especially in border areas. Challenges within institutions, like issues for Venezuelan doctors in the health sector, reveal the structural struggles migrants face in Colombia.</p>
+<p>Finally, the sharp increase in coverage in 2023 reflects migration’s growing importance in Colombian media. Topics such as Migration, Diplomacy, and Guerrilla gained prominence, illustrating shifting political and social priorities. By applying LDA iteratively, we uncovered both broad themes and nuanced subtopics, demonstrating the value of focused modeling in revealing the complexities of migration narratives and their global connections. Additionally, we also understood the importance of pairing this style of modelling with a strong method for determining the topic names and capture the nuances of the ways how different articles connect.</p>
 </section>
 <section id="appendix-optional" class="level2">
 <h2 class="anchored" data-anchor-id="appendix-optional">Appendix (Optional)</h2>
@@ -1052,7 +1057,18 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const onCopySuccess = function(e) {
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1084,50 +1100,11 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
-  }
-  const getTextToCopy = function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-  }
-  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
-    text: getTextToCopy
   });
-  clipboard.on('success', onCopySuccess);
-  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
-    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
-      text: getTextToCopy,
-      container: window.document.getElementById('quarto-embedded-source-code-modal')
-    });
-    clipboardModal.on('success', onCopySuccess);
-  }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-    var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
-    }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-        // undo the damage that might have been done by quarto-nav.js in the case of
-        // links that we want to consider external
-        if (link.dataset.originalHref !== undefined) {
-          link.href = link.dataset.originalHref;
-        }
-      }
-    }
-  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+  function tippyHover(el, contentFn) {
     const config = {
       allowHTML: true,
+      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1137,17 +1114,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start',
+      placement: 'bottom-start'
     };
-    if (contentFn) {
-      config.content = contentFn;
-    }
-    if (onTriggerFn) {
-      config.onTrigger = onTriggerFn;
-    }
-    if (onUntriggerFn) {
-      config.onUntrigger = onUntriggerFn;
-    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1159,130 +1127,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      if (note) {
-        return note.innerHTML;
-      } else {
-        return "";
-      }
-    });
-  }
-  const xrefs = window.document.querySelectorAll('a.quarto-xref');
-  const processXRef = (id, note) => {
-    // Strip column container classes
-    const stripColumnClz = (el) => {
-      el.classList.remove("page-full", "page-columns");
-      if (el.children) {
-        for (const child of el.children) {
-          stripColumnClz(child);
-        }
-      }
-    }
-    stripColumnClz(note)
-    if (id === null || id.startsWith('sec-')) {
-      // Special case sections, only their first couple elements
-      const container = document.createElement("div");
-      if (note.children && note.children.length > 2) {
-        container.appendChild(note.children[0].cloneNode(true));
-        for (let i = 1; i < note.children.length; i++) {
-          const child = note.children[i];
-          if (child.tagName === "P" && child.innerText === "") {
-            continue;
-          } else {
-            container.appendChild(child.cloneNode(true));
-            break;
-          }
-        }
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(container);
-        }
-        return container.innerHTML
-      } else {
-        if (window.Quarto?.typesetMath) {
-          window.Quarto.typesetMath(note);
-        }
-        return note.innerHTML;
-      }
-    } else {
-      // Remove any anchor links if they are present
-      const anchorLink = note.querySelector('a.anchorjs-link');
-      if (anchorLink) {
-        anchorLink.remove();
-      }
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(note);
-      }
-      // TODO in 1.5, we should make sure this works without a callout special case
-      if (note.classList.contains("callout")) {
-        return note.outerHTML;
-      } else {
-        return note.innerHTML;
-      }
-    }
-  }
-  for (var i=0; i<xrefs.length; i++) {
-    const xref = xrefs[i];
-    tippyHover(xref, undefined, function(instance) {
-      instance.disable();
-      let url = xref.getAttribute('href');
-      let hash = undefined; 
-      if (url.startsWith('#')) {
-        hash = url;
-      } else {
-        try { hash = new URL(url).hash; } catch {}
-      }
-      if (hash) {
-        const id = hash.replace(/^#\/?/, "");
-        const note = window.document.getElementById(id);
-        if (note !== null) {
-          try {
-            const html = processXRef(id, note.cloneNode(true));
-            instance.setContent(html);
-          } finally {
-            instance.enable();
-            instance.show();
-          }
-        } else {
-          // See if we can fetch this
-          fetch(url.split('#')[0])
-          .then(res => res.text())
-          .then(html => {
-            const parser = new DOMParser();
-            const htmlDoc = parser.parseFromString(html, "text/html");
-            const note = htmlDoc.getElementById(id);
-            if (note !== null) {
-              const html = processXRef(id, note);
-              instance.setContent(html);
-            } 
-          }).finally(() => {
-            instance.enable();
-            instance.show();
-          });
-        }
-      } else {
-        // See if we can fetch a full url (with no hash to target)
-        // This is a special case and we should probably do some content thinning / targeting
-        fetch(url)
-        .then(res => res.text())
-        .then(html => {
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(html, "text/html");
-          const note = htmlDoc.querySelector('main.content');
-          if (note !== null) {
-            // This should only happen for chapter cross references
-            // (since there is no id in the URL)
-            // remove the first header
-            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
-              note.children[0].remove();
-            }
-            const html = processXRef(null, note);
-            instance.setContent(html);
-          } 
-        }).finally(() => {
-          instance.enable();
-          instance.show();
-        });
-      }
-    }, function(instance) {
+      return note.innerHTML;
     });
   }
       let selectedAnnoteEl;
@@ -1326,7 +1171,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
-            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -1352,32 +1196,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
-        // Handle positioning of the toggle
-    window.addEventListener(
-      "resize",
-      throttle(() => {
-        elRect = undefined;
-        if (selectedAnnoteEl) {
-          selectCodeLines(selectedAnnoteEl);
-        }
-      }, 10)
-    );
-    function throttle(fn, ms) {
-    let throttle = false;
-    let timer;
-      return (...args) => {
-        if(!throttle) { // first call gets through
-            fn.apply(this, args);
-            throttle = true;
-        } else { // all the others get throttled
-            if(timer) clearTimeout(timer); // cancel #2
-            timer = setTimeout(() => {
-              fn.apply(this, args);
-              timer = throttle = false;
-            }, ms);
-        }
-      };
-    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1438,7 +1256,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-
 
 
 

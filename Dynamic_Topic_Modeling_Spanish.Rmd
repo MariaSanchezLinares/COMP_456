@@ -20,6 +20,8 @@ library(data.table)
 library(servr)
 library(stringr)  # For str_pad
 library(ggthemes)
+library(htmltools)
+
 
 #source script with useful functions
 
@@ -128,17 +130,23 @@ print(topic_xwalk)
 ## Visualization
 
 ```{r visualization}
-# Prepare LDAvis data
+# # Prepare LDAvis data
+# 
+# json <- createJSON(
+#   phi = posterior(lda_model)$terms,
+#   theta = posterior(lda_model)$topics,
+#   doc.length = rowSums(as.matrix(dtm)),
+#   vocab = colnames(as.matrix(dtm)),
+#   term.frequency = colSums(as.matrix(dtm))
+# )
+# 
+# serVis(json, open.browser = TRUE)
+# serVis(json, out.dir = "lda_vis")
+```
 
-json <- createJSON(
-  phi = posterior(lda_model)$terms,
-  theta = posterior(lda_model)$topics,
-  doc.length = rowSums(as.matrix(dtm)),
-  vocab = colnames(as.matrix(dtm)),
-  term.frequency = colSums(as.matrix(dtm))
-)
+```{r}
 
-serVis(json, open.browser = TRUE)
+includeHTML("lda_vis/index.html")
 ```
 
 # Tracing back articles 

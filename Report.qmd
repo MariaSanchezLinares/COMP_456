@@ -133,9 +133,9 @@ kable(keywords, caption = "Top 5 Words per Topic", align = "c", format = "html")
 
 ```
 
-In the previous interactive plot, we recommend stablishing the lambda value to be in a 0.5, as it provides the best balance between word frequency in the overall corpus, and it's relevance in the selected topic. However, the toggle is useful to explore the two ends of relevance per given topic.
+In the previous interactive plot, we recommend establishing the lambda value to be in a 0.5, as it provides the best balance between word frequency in the overall corpus, and it's relevance in the selected topic. However, the toggle is useful to explore the two ends of relevance per given topic.
 
-The amount of topics, and the seed used in this LDA model showed no overlap between any of our topic. The topics with the largest percentage of marginal topic distribution are 1 (Colombia-Venezuela Diplomacy) and 2 (Environmental Degradation). Conversely, Topic 6 (Venezuela Politics) has the smallest distribution. In other iterations of LDA's for our data, we observed that topics overlapped more often when they had a larger marginal topic distributions.
+The amount of topics, and the seed used in this LDA model showed no overlap between any of our topics. The topics with the largest percentage of marginal topic distribution are 1 (Colombia-Venezuela Diplomacy) and 2 (Environmental Degradation). Conversely, Topic 6 (Venezuela Politics) has the smallest distribution. In other iterations of LDA's for our data, we observed that topics overlapped more often when they had a larger marginal topic distributions.
 
 **Document-Level Analysis:**
 
@@ -149,30 +149,24 @@ kable(titles, caption = "Top 5 Articles per Topic", align = "c", format = "html"
 
 **Topic Breakdown:**
 
-Colombia-Venezuela Diplomacy:
-
+-   **Colombia-Venezuela Diplomacy:**
 This topic focuses on articles discussing international conference agreements concerning Venezuela, meetings between Colombia's president, Gustavo Petro, and the opposition group of the current Chavista regime, *Plataforma Unitaria Democrática de Venezuela*. It also includes coverage of the controversy surrounding a comment made by the former Colombian ambassador to Venezuela, which influenced public opinion on a Colombian health reform.
 
-Notably, all top articles for this topic are from 2023, closely tied to the *Cumbre sobre Venezuela en Bogotá* (Venezuela Summit) that took place this year. The summit highlighted Petro's widely reported stance on Venezuela, in which he attributes the country’s challenges to U.S. sanctions ([Rojas Silva, 2024](https://latinoamerica21.com/en/the-progressive-paradox-petros-regressive-measures-against-venezuelan-migration/)).
+    Notably, all top articles for this topic are from 2023, closely tied to the *Cumbre sobre Venezuela en Bogotá* (Venezuela Summit) that took place this year. The summit highlighted Petro's widely reported stance on Venezuela, in which he attributes the country’s challenges to U.S. sanctions ([Rojas Silva, 2024](https://latinoamerica21.com/en/the-progressive-paradox-petros-regressive-measures-against-venezuelan-migration/)).
 
-Environmental Degradation:
-
+-   **Environmental Degradation:**
 The most relevant articles in this topic focus on environmental relief strategies for the Amazon region, involving Brazil, Colombia, Ecuador, Peru, and Venezuela, in response to climate change. These strategies include initiatives such as transitioning to natural gas and making carbon markets more appealing to companies. Articles also highlight biodiversity loss caused by deforestation. One notable article raises concerns about Colombian businesses and their relationships with Venezuela, connecting the broader theme of environmental devastation to the role of companies in these processes. These articles are united by their focus on the environmental challenges and the influence of economic actors in addressing or exacerbating these issues.
 
-Guerrilla:
-
+-   **Guerrilla:**
 The top articles in this topic center on ongoing legal cases involving Colombian politicians. A primary focus is the *Caso Uribe*, where former Colombian president Álvaro Uribe is accused of alleged ties to right-wing paramilitary and narcotrafficking groups, with key developments occurring in 2023 as the prosecutor's office formally accused him. The topic connects to Venezuela through Uribe’s lawyer, who is also under investigation and linked to a former Colombian ambassador in Venezuela. Additionally, the topic includes articles about Aida Merlano, a Colombian politician convicted in 2019 for conspiracy, weapons possession, and electoral crimes ([BBC News Mundo, 2019](https://www.bbc.com/mundo/noticias-america-latina-49906275)). Collectively, these articles connect through their focus on legal proceedings involving politicians with alleged links to guerrilla and criminal groups.
 
-Migration:
-
+-   **Migration:**
 The most relevant articles in this topic address the challenges faced by Venezuelan immigrants. Some articles highlight their vulnerability during the COVID-19 pandemic and Colombian cities' responses to the large immigration wave at that time. Others focus on the dangers Venezuelan migrants face crossing one of the most perilous routes on their way to North America, particularly the United States ([Roy, D, 2024](https://www.cfr.org/article/crossing-darien-gap-migrants-risk-death-journey-us)). Additionally, one article advocates for Colombia to recognize Venezuelan immigrants as refugees to ensure their rights are protected. Another article discusses the 2023 policy changes in the U.S. after the removal of *Title 42*, which previously allowed border authorities to turn away migrants under COVID-19 health restrictions. The new policy prevents asylum seekers from applying if they did not first seek protection in transit countries or apply online ([Long, C, 2023](https://apnews.com/article/immigration-biden-border-title-42-mexico-asylum-be4e0b15b27adb9bede87b9bbefb798d)). These articles are connected through their examination of the challenges Venezuelan immigrants face due to shifting policies in Colombia and the United States.
 
-Soccer:
-
+-   **Soccer:**
 The articles in this topic report on soccer matches, players, and regional and international competitions. These articles are connected by their focus on major events and news related to soccer as a sport.
 
-Venezuela Politics:
-
+-   **Venezuela Politics:**
 The most relevant articles in this topic cover significant events in Venezuela’s political landscape. One article highlights the conflict between Portugal and Venezuela’s president Maduro, following an attack on a Portuguese cruise ship by the Venezuelan navy. Other top articles focus on Alex Saab, a Venezuelan politician accused of business deals worth an estimated **\$135 million** with the Venezuelan government ([Redacción Judicial, 2019](https://www.elespectador.com/judicial/justicia-de-ee-uu-acusa-a-empresario-alex-saab-de-lavado-de-dinero-article-872825/)). Coverage intensified in 2023 when Saab was released as part of a prisoner exchange with the U.S. These articles are connected through their coverage of key political events in Venezuela, showcasing both internal controversies and international conflicts.
 
 **Topic Evolution Over Time:**
@@ -214,36 +208,28 @@ kable(migration_titles, caption = "Top 5 Articles per Migratoin Topic", align = 
 ```
 **Topic Breakdown:**
 
-COVID-19
-
+-   **COVID-19:**
 The most relevant articles highlight the heightened vulnerability and additional challenges faced by Venezuelan immigrants during the pandemic.
 
-Colombia-Venezuela Border Security
-
+-   **Colombia-Venezuela Border Security:**
 The most relevant articles focus on the deaths of Venezuelan immigrants during migration, particularly near Colombia. Two articles also cover related cases in the United States, expanding the scope of border-related issues.
 
-Darién Migration Route
-
+-   **Darién Migration Route: **
 The most relevant articles address the significant risks Venezuelan immigrants face while crossing the Darién Gap. Additionally, they explore how surrounding Colombian communities are economically benefiting from the needs of these migrants.
 
-Gaza
-
+-   **Gaza: **
 Although the coverage does not mention Venezuelan immigrants directly, it focuses on the displacement of Gaza’s population due to Israeli attacks. The connection to Venezuelan migration lies in the shared theme of vulnerability during forced movement and displacement.
 
-Health
-
+-   **Health: **
 The most relevant articles focus on how Venezuelan immigrants are impacted within the health sector, particularly in urban areas like Bogotá. Coverage includes the effects of issues such as contaminated air on migrants and the challenges faced by Venezuelan doctors whose work permits were not being accepted.
 
-Migrant Human Trafficking
-
+-   **Migrant Human Trafficking: **
 The most relevant articles highlight cases of human trafficking along the border, as well as violence directed toward women. These articles are connected by the recurring theme of women being the primary victims of such exploitation.
 
-Venezuela Migration Crisis
-
+-   **Venezuela Migration Crisis: **
 The most relevant articles discuss the growing number of Venezuelan immigrants and their significant impact on Colombia, emphasizing the scale and consequences of the migration crisis.
 
-Venezuela Migrants-US
-
+-   **Venezuela Migrants-US: **
 The most relevant articles covered how the change in Title 42 has impacted Colombia as the first country of transit for Venezuelan immigrants seeking asylum for the U.S.
 
 **Topic Evolution Over Time:**
