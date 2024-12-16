@@ -21,40 +21,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -103,30 +69,39 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>This project is inspired by the intricate historical and ongoing dynamics of Venezuela-Colombia relations, particularly in the context of migration, political tensions, and economic challenges.This relationship has been shaped by significant historical events that have deeply influenced migration patterns, political tensions, and economic ties. In the 1980s, the internal conflicts in Colombia and Venezuela’s oil boom led to a massive influx of Colombians seeking refuge in Venezuela, with an estimated 4-5 million Colombian migrants. However, in the 2000s, political tensions escalated as Venezuela’s left-wing president openly supported Colombian guerrilla groups, further straining relations. The humanitarian crisis in Venezuela sparked a massive migration flow from 2017 to 2019, with millions of Venezuelans seeking refuge in Colombia. By 2022, Venezuela had the second-largest refugee crisis in the world, with approximately 7.7 million displaced people, and Colombia hosted around 2.8 million of these migrants. That same year, Colombia’s first left-wing president, Gustavo Petro, was elected and worked to re-establish diplomatic ties with Venezuela, signaling a shift in the political landscape and opening new opportunities for cooperation in addressing migration and economic challenges. This dynamic history of migration, political conflict, and economic disparity inspired my project, which aims to examine how these factors continue to shape the lives of individuals and the relationship between the two countries.</p>
+<section id="introduction" class="level1">
+<h1>Introduction</h1>
+<p>This project is inspired by the intricate historical and ongoing dynamics of Venezuela-Colombia relations, particularly in the context of migration, political tensions, and economic challenges.This relationship has been shaped by significant historical events that have deeply influenced migration patterns, political tensions, and economic ties. To better illustrate this, we draw a broad timeline to highlight some of the main events:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="timeline.png" class="img-fluid figure-img" width="700"></p>
+<figcaption><em>Figure 1: Timeline of Events</em></figcaption>
+</figure>
+</div>
+<p>This dynamic history of migration, political conflict, and economic instability inspired our project, which aims to examine how these factors, and more specifically migration, continue to shape the relationship between the two countries.</p>
 <p>By focusing on a large corpus of news articles from Colombian newspapers like El Tiempo and El Espectador, the project seeks to computationally analyze how these factors have manifested in media narratives over time. The use of topic modeling, specifically Latent Dirichlet Allocation (LDA), will allow us to identify and track the key themes that have shaped the discourse around Venezuela and Colombia, providing insights into how political events, economic crises, and migration trends have influenced public perception and bilateral relations. Through this analysis, the project aims to uncover the evolving nature of their relationship and explore the role of media in framing these complex dynamics.</p>
 <p><strong>Research Question:</strong></p>
 <p><em>What are the main themes discussed in Colombian newspapers about Venezuela-Colombia relations and how do they change in response to significant historical/political events?</em></p>
 <p><strong>Data Source:</strong></p>
-<p>The data for this analysis consists of newspaper articles from El Tiempo and El Espectador, covering the years 2017, 2020, and 2023.</p>
-</section>
-<section id="data-and-methodology" class="level2">
-<h2 class="anchored" data-anchor-id="data-and-methodology">Data and Methodology</h2>
-<p><strong>Data Collection and Preprocessing:</strong></p>
+<p>The data for this analysis consists <strong>5,061 news articles</strong> published by Colombian newspapers <strong>El Tiempo</strong> and <strong>El Espectador</strong>. El Tiempo is currently the most widely read newspaper in Colombia and has historically been right-leaning, while El Espectador, the country’s oldest newspaper, is known for its left-leaning stance.</p>
+<p>We downloaded these articles from the <strong>Nexus Uni</strong> database under the keyword <em>“Venezuela”</em>, filtering for all articles published in years 2017, 2020 and 2023.</p>
+<section id="methodolody" class="level2">
+<h2 class="anchored" data-anchor-id="methodolody">Methodolody</h2>
+<section id="data-collection-and-pre-processing" class="level3">
+<h3 class="anchored" data-anchor-id="data-collection-and-pre-processing">Data Collection and Pre-processing</h3>
 <ol type="1">
-<li><strong>Data Extraction:</strong> Articles were extracted from PDF files using <code>pdftools</code> and other relevant libraries.</li>
+<li><strong>Data Extraction:</strong> Articles were extracted from PDF files using <code>pdftools</code> and other relevant libraries to create a text extraction function.</li>
 <li><strong>Text Cleaning:</strong> Text was cleaned by removing stop words, punctuation, and special characters.</li>
-<li><strong>Tokenization:</strong> Text was tokenized into individual words.</li>
-<li><strong>Lemmatization:</strong> Words were lemmatized to their root forms using a Spanish lemmatizer.</li>
+<li><strong>Tokenization:</strong> Text was <em>tokenized</em> into individual words.</li>
+<li><strong>Lemmatization:</strong> Words were <em>lemmatized</em> to their root forms using a Spanish lemmatizer.</li>
+<li><strong>TF-IDF:</strong> To reduce noise from frequently occurring words that do not convey important information, we applied the TF-IDF statistic, which adjusts word importance by down-weighting common terms and emphasizing less frequent but significant ones. Thus,words with a TF-IDF score below 0.01 were removed from the corpus to improve topic coherence.</li>
 </ol>
-<p><strong>Topic Modeling:</strong></p>
+</section>
 <section id="topic-modeling" class="level3">
 <h3 class="anchored" data-anchor-id="topic-modeling">Topic Modeling</h3>
 <ol type="1">
 <li><p><strong>Document-Term Matrix (DTM):</strong> A Document-Term Matrix (DTM) was created to represent the occurrence of words in each document. The DTM is a matrix where rows represent documents and columns represent unique words from the corpus.</p></li>
-<li><p><strong>Optimal Number of Topics:</strong> We used model fitness scores to validate the optimal number of topics for LDA. Specifically, the <code>FindTopicNumber()</code> function from the <code>ldatuning</code> package was applied. This function allows for the input of multiple values for the number of topics (k) and calculates four different model fitness scores simultaneously: Griffiths2004, Deveaud2014, CaoJuan2009, and Arun2010. The use of multiple fitness scores provided a comprehensive approach to determining the optimal number of topics for the LDA model.</p></li>
+<li><p><strong>Optimal Number of Topics:</strong> We used model fitness scores to validate the optimal number of topics for LDA. Specifically, the <code>FindTopicNumber()</code> function from the <code>ldatuning</code> package was applied. Using a DTM, this function allows for the input of multiple values for the number of topics (k) and calculates four different model fitness scores simultaneously: <em>Griffiths2004, Deveaud2014, CaoJuan2009, and Arun2010.</em> The use of multiple fitness scores provided a comprehensive approach to determining the optimal number of topics for the LDA model.</p></li>
 </ol>
 <ul>
 <li><p>Griffiths2004: Aims to identify coherence.</p></li>
@@ -136,123 +111,896 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="general_fitness_scores.png" class="img-fluid figure-img"></p>
-<figcaption>Figure 1. Line Graphs Showing Four Model Fitness Scores of k Topics</figcaption>
+<p><img src="general%20fitness%20scores%20copy.png" class="img-fluid figure-img" width="500"></p>
+<figcaption><em>Figure 2: Line Graphs Showing Four Model Fitness Scores of k Topics</em></figcaption>
 </figure>
 </div>
+<p>Based on the fitness score analysis we decided on 6 topic as the optimal parameter our LDA model.</p>
 <ol start="3" type="1">
-<li><p><strong>LDA Model:</strong> A Latent Dirichlet Allocation (LDA) model was fitted to the DTM to identify latent topics. LDA is a probabilistic model that discovers topics by analyzing patterns of word co-occurrence across documents. Each topic is characterized by a set of words that frequently appear together, and each document is a mixture of these topics. LDA assigns a topic to each document based on the probability of word co-occurrence.</p></li>
-<li><p><strong>Topic Interpretation and Refinement:</strong> After identifying the latent topics, in consultation with Prof.&nbsp;Busse-Cárdenas, additional analysis was performed to ensure that meaningful themes emerged from the model. The identified topics were interpreted by examining the most frequent words associated with each topic in the context of Venezuela-Colombia relations.</p></li>
-</ol>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#terms(lda_model, 20)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<ol start="5" type="1">
-<li><strong>Time-Series Analysis:</strong> To observe how the prominence of different topics evolved over time, a time-series analysis was conducted. This involved tracking the load of topics across different time periods, based on the frequency with which words associated with each topic appeared in the articles. Each document was assigned to the topic with the highest probability <em>gamma value</em> and the number and percentage of articles corresponding to each topic were tracked annually. This approach, similar to methods used by Roh and Yang (2019), helped identify shifts in public discourse and media representation over time, especially in relation to key political, economic, and migration-related events.</li>
+<li><p><strong>LDA Model:</strong> Latent Dirichlet Allocation (LDA) is a probabilistic model that uncovers hidden topics within a corpus by analyzing patterns of word co-occurrence.</p>
+<ul>
+<li><p><strong>Bayesian Inference:</strong><br>
+LDA employs Bayesian statistics to infer the hidden structure of the text. It estimates the probability distributions of topics and words based on the observed documents.</p></li>
+<li><p><strong>Generative Model:</strong><br>
+LDA assumes that:</p>
+<ul>
+<li>Each document is a mixture of multiple topics.<br>
+</li>
+<li>Each topic is represented as a probability distribution over a set of words.<br>
+Using Bayesian inference, LDA works backward from the observed words to:<br>
+</li>
+<li>Identify the most probable topics for each document.<br>
+</li>
+<li>Determine the most representative words for each topic.</li>
+</ul></li>
+</ul></li>
+<li><p><strong>Article Classification:</strong>Each newspaper article was categorized based on its topic-document affiliation, determined by Gamma Values derived from the LDA model.</p>
+<ul>
+<li><p><strong>Gamma Value:</strong><br>
+Gamma values represent the degree of association between a document and each topic. See the sample distribution of gamma values below:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="gamma_values.png" class="img-fluid figure-img" width="500"></p>
+<figcaption>Gamma Values Distribution and Average Threshold</figcaption>
+</figure>
+</div></li>
+<li><p><strong>Assignment Criteria:</strong></p>
+<ul>
+<li>Each document was assigned to the topic with the highest gamma value.<br>
+</li>
+<li>To ensure data quality and relevance, documents with ambiguous affiliations (i.e., gamma values below the average threshold) were excluded from the analysis.</li>
+</ul></li>
+</ul></li>
+<li><p><strong>Topic Interpretation and Refinement:</strong> After identifying the latent topics, in consultation with Prof.&nbsp;Busse-Cárdenas, additional analysis was performed to ensure that meaningful themes emerged from the model. The identified topics were interpreted by examining the 20 most frequent words associated with each topic in addition to the top 10 most relevant articles headlines for each topic.</p></li>
+<li><p><strong>Time-Series Analysis:</strong> To observe how the prominence of different topics evolved over time, a time-series analysis was conducted. This involved tracking the load of topics across different time periods, based on the frequency with which words associated with each topic appeared in the articles. Each document was assigned to the topic with the highest probability <em>gamma value</em> and the number and percentage of articles corresponding to each topic were tracked annually. This approach, similar to methods used by Roh and Yang (2019), helped identify shifts in public discourse and main traditional media channels representation over time, especially in relation to key political, economic, and migration-related events.</p></li>
+<li><p><strong>Inter-Topic Analysis:</strong> After identifying a number of topics from the entire corpus, we selected the topic that we identified as <em>migration</em> and replicated the methodology described above to dive into more specific areas withing this theme.</p></li>
 </ol>
 </section>
 </section>
 <section id="results-and-discussion" class="level2">
 <h2 class="anchored" data-anchor-id="results-and-discussion">Results and Discussion</h2>
-<p><strong>General Topic Identification and Interpretation: 1st LDA</strong></p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-<col style="width: 16%">
-</colgroup>
+<p><strong>Topic Identification and Interpretation:</strong></p>
+<ul>
+<li><p><strong>Top Terms and Themes:</strong></p>
+<p>The following table shows the finalized list of topic names and some examples of words that belong to each specific topic.</p></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Top 5 Words per Topic</caption>
 <thead>
 <tr class="header">
-<th><strong>Topic 1</strong></th>
-<th><strong>Topic 2</strong></th>
-<th><strong>Topic 3</strong></th>
-<th><strong>Topic 4</strong></th>
-<th><strong>Topic 5</strong></th>
-<th><strong>Topic 6</strong></th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Topic Name</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">beta</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Term</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>años (years), colombia (Colombia), vida (life), ser (to be), tiempo (time), solo (only), cómo (how), hace (does), día (day), así (so), persona (person), gente (people), vez (time), historia (history), país (country), hacer (to do), mundo (world), bogotá (Bogotá), cada (each), después (after)</td>
-<td>presidente (president), petro (Petro), venezuela (Venezuela), gobierno (government), maduro (Maduro), colombia (Colombia), dijo (said), oposición (opposition), nicolás (Nicolás), país (country), elecciones (elections), nacional (national), gustavo (Gustavo), política (politics), guaidó (Guaidó), campaña (campaign), benedetti (Benedetti), electoral (electoral), político (political), tiempo (time)</td>
-<td>venezuela (Venezuela), eln (ELN), colombia (Colombia), paz (peace), fiscalía (prosecutor’s office), gobierno (government), según (according to), grupo (group), policía (police), justicia (justice), farc (FARC), autoridades (authorities), persona (person), general (general), país (country), caso (case), unidos (United States), corte (court), dijo (said), fiscal (prosecutor)</td>
-<td>colombia (Colombia), brasil (Brazil), argentina (Argentina), américa (America), selección (selection), venezuela (Venezuela), equipo (team), tiempo (time), chile (Chile), grupo (group), partido (party), mundial (world), ecuador (Ecuador), uruguay (Uruguay), perú (Peru), gda (GDA), fútbol (soccer), diarios (newspapers), copyright (copyright), reservados (reserved)</td>
-<td>colombia (Colombia), persona (person), país (country), migrantes (migrants), venezuela (Venezuela), venezolanos (Venezuelans), ciento (percent), salud (health), según (according to), frontera (border), migración (migration), países (countries), millones (millions), año (year), coronavirus (coronavirus), población (population), casos (cases), unidos (United States), situación (situation), merlano (Merlano)</td>
-<td>colombia (Colombia), países (countries), país (country), venezuela (Venezuela), unidos (United States), gobierno (government), américa (America), política (politics), región (region), presidente (president), puede (can), internacional (international), ser (to be), mundo (world), trump (Trump), años (years), parte (part), biden (Bide</td>
+<td style="text-align: center;">Colombia-Venezuela Diplomacy</td>
+<td style="text-align: center;">0.0174835</td>
+<td style="text-align: center;">presidente</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Colombia-Venezuela Diplomacy</td>
+<td style="text-align: center;">0.0146663</td>
+<td style="text-align: center;">petro</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Colombia-Venezuela Diplomacy</td>
+<td style="text-align: center;">0.0145863</td>
+<td style="text-align: center;">gobierno</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Colombia-Venezuela Diplomacy</td>
+<td style="text-align: center;">0.0102007</td>
+<td style="text-align: center;">colombia</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Colombia-Venezuela Diplomacy</td>
+<td style="text-align: center;">0.0069552</td>
+<td style="text-align: center;">maduro</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Environmental Degradation</td>
+<td style="text-align: center;">0.0127928</td>
+<td style="text-align: center;">colombia</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Environmental Degradation</td>
+<td style="text-align: center;">0.0083346</td>
+<td style="text-align: center;">países</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Environmental Degradation</td>
+<td style="text-align: center;">0.0081055</td>
+<td style="text-align: center;">país</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Environmental Degradation</td>
+<td style="text-align: center;">0.0071971</td>
+<td style="text-align: center;">ciento</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Environmental Degradation</td>
+<td style="text-align: center;">0.0063134</td>
+<td style="text-align: center;">años</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Guerrilla</td>
+<td style="text-align: center;">0.0090287</td>
+<td style="text-align: center;">eln</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Guerrilla</td>
+<td style="text-align: center;">0.0073735</td>
+<td style="text-align: center;">fiscalía</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Guerrilla</td>
+<td style="text-align: center;">0.0073563</td>
+<td style="text-align: center;">colombia</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Guerrilla</td>
+<td style="text-align: center;">0.0070020</td>
+<td style="text-align: center;">paz</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Guerrilla</td>
+<td style="text-align: center;">0.0059495</td>
+<td style="text-align: center;">caso</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Migration</td>
+<td style="text-align: center;">0.0147271</td>
+<td style="text-align: center;">persona</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Migration</td>
+<td style="text-align: center;">0.0126366</td>
+<td style="text-align: center;">colombia</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Migration</td>
+<td style="text-align: center;">0.0120544</td>
+<td style="text-align: center;">migrantes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Migration</td>
+<td style="text-align: center;">0.0104329</td>
+<td style="text-align: center;">país</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Migration</td>
+<td style="text-align: center;">0.0074064</td>
+<td style="text-align: center;">venezolanos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Soccer</td>
+<td style="text-align: center;">0.0171755</td>
+<td style="text-align: center;">colombia</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Soccer</td>
+<td style="text-align: center;">0.0077827</td>
+<td style="text-align: center;">años</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Soccer</td>
+<td style="text-align: center;">0.0068918</td>
+<td style="text-align: center;">tiempo</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Soccer</td>
+<td style="text-align: center;">0.0053206</td>
+<td style="text-align: center;">américa</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Soccer</td>
+<td style="text-align: center;">0.0051917</td>
+<td style="text-align: center;">grupo</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuelan Politics</td>
+<td style="text-align: center;">0.0203671</td>
+<td style="text-align: center;">maduro</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuelan Politics</td>
+<td style="text-align: center;">0.0101146</td>
+<td style="text-align: center;">unidos</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuelan Politics</td>
+<td style="text-align: center;">0.0090333</td>
+<td style="text-align: center;">colombia</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuelan Politics</td>
+<td style="text-align: center;">0.0089209</td>
+<td style="text-align: center;">país</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuelan Politics</td>
+<td style="text-align: center;">0.0088790</td>
+<td style="text-align: center;">venezolano</td>
 </tr>
 </tbody>
 </table>
-<ul>
-<li><p><strong>Inter-Topic Distance:</strong> The relationships between topics were visualized using an inter-topic distance map.</p></li>
-<li><p><strong>Top Terms and Themes:</strong> “Soccer”, “Venezuelan Politics”, “Colombia-Venezuela Diplomacy”, “Migration”, “Environmental Degradation”, “Guerrilla”</p></li>
-</ul>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="Key_GeneralThemes.png" class="img-fluid figure-img" width="300"></p>
-<figcaption>Key General Themes</figcaption>
-</figure>
+
+
 </div>
-<p>This bar graph displays the number of papers assigned to each topic across the years 2017, 2020, and 2023. The topics include Colombia-Venezuela Diplomacy, Guerrilla, Soccer, Environmental Degradation, Migration, and Venezuelan Politics. The height of each bar represents the count of papers discussing a specific topic in a given year. Brief Analysis</p>
-<p>Overall, there are more articles published in 2023 compared to 2017 and 2020, leading to a general increase across all topics. However, the proportions of topics have shifted over time. For example, topics like Colombia-Venezuela Diplomacy and Guerrilla showed significant increases in 2023, while Environmental Degradation and Venezuelan Politics remained more stable relative to other topics. This indicates a growing emphasis on international relations and conflict in the later years.</p>
-<p><strong>Topic Identification and Interpretation within “Migration: 2nd LDA</strong></p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 13%">
-<col style="width: 13%">
-<col style="width: 13%">
-<col style="width: 13%">
-<col style="width: 13%">
-<col style="width: 13%">
-<col style="width: 13%">
-<col style="width: 7%">
-</colgroup>
+</div>
+<ul>
+<li><strong>Inter-Topic Distance:</strong> The relationships between topics were visualized using an inter-topic distance map.</li>
+</ul>
+<p>In the previous interactive plot, we recommend stablishing the lambda value to be in a 0.5, as it provides the best balance between word frequency in the overall corpus, and it’s relevance in the selected topic. However, the toggle is useful to explore the two ends of relevance per given topic.</p>
+<p>The amount of topics, and the seed used in this LDA model showed no overlap between any of our topic. The topics with the largest percentage of marginal topic distribution are 1 (Colombia-Venezuela Diplomacy) and 2 (Environmental Degradation). Conversely, Topic 6 (Venezuela Politics) has the smallest distribution. In other iterations of LDA’s for our data, we observed that topics overlapped more often when they had a larger marginal topic distributions.</p>
+<p><strong>Document-Level Analysis:</strong></p>
+<ul>
+<li><p><strong>Top Representative Documents:</strong></p>
+<p>The following table shows the 5 most representative documents for each topic that were identified and analyzed to provide context to our topic naming process.</p></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Top 5 Articles per Topic</caption>
 <thead>
 <tr class="header">
-<th><strong>Topic 1</strong></th>
-<th><strong>Topic 2</strong></th>
-<th><strong>Topic 3</strong></th>
-<th><strong>Topic 4</strong></th>
-<th><strong>Topic 5</strong></th>
-<th><strong>Topic 6</strong></th>
-<th><strong>Topic 7</strong></th>
-<th><strong>Topic 8</strong></th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Topic Name</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">max_gamma</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Title</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>israel, gaza, hamás, mundo, guerra, presidente, persona, franja, palestino, unidos, dijo, según, israelíes, conflicto, noticias, gobierno, palestinos, ataque, país, israelí</td>
-<td>venezolanos, persona, migrantes, autoridades, ciudad, país, dijo, según, frontera, años, policía, grupo, gobierno, colombia, tiempo, centro, crisis, venezolano, zona, derechos</td>
-<td>migrantes, persona, darién, migración, dijo, selva, colombia, dólares, panamá, unidos, día, frontera, años, llegar, días, ruta, solo, año, cada, hacia</td>
-<td>colombia, venezolanos, migrantes, migración, país, población, persona, frontera, gobierno, millones, situación, venezolana, países, crisis, migratoria, colombianos, cúcuta, migrante, según, internacional</td>
-<td>coronavirus, salud, país, casos, covid, pandemia, colombia, persona, gobierno, medidas, virus, países, cuarentena, presidente, días, brasil, caso, autoridades, emergencia, según</td>
-<td>bogotá, aire, ciudad, calidad, colombia, salud, puede, nacional, pasaporte, san, guajira, capital, alerta, secretaría, país, condiciones, según, debe, cuenta, estudiantes</td>
-<td>persona, mujeres, derechos, colombia, violencia, años, niños, país, salud, casos, situación, población, humanos, informe, niñas, ser, víctimas, parte, solo, año</td>
-<td>unidos, colombia, méxico, migrantes, persona, países, país, frontera, colombianos, asilo, visa, año, gobierno, título, biden, migración, américa, según, tiempo, derechos</td>
+<td style="text-align: center;">Colombia-Venezuela Diplomacy</td>
+<td style="text-align: center;">0.9983723</td>
+<td style="text-align: center;">Petro invitará a más sectores de la oposición venezolana: esto es lo que sabe</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Colombia-Venezuela Diplomacy</td>
+<td style="text-align: center;">0.9981617</td>
+<td style="text-align: center;">¿Se congelan o no las reformas del Gobierno en la Cámara de Representantes?</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Colombia-Venezuela Diplomacy</td>
+<td style="text-align: center;">0.9980557</td>
+<td style="text-align: center;">Congelar el debate, la estrategia para salvar las reformas en el Congreso</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Colombia-Venezuela Diplomacy</td>
+<td style="text-align: center;">0.9979206</td>
+<td style="text-align: center;">El balance de EE. UU. sobre la Cumbre de Venezuela, organizada por Gustavo Petro</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Colombia-Venezuela Diplomacy</td>
+<td style="text-align: center;">0.9973620</td>
+<td style="text-align: center;">Conferencia sobre Venezuela apunta a un segundo encuentro y pide elecciones pronto</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Environmental Degradation</td>
+<td style="text-align: center;">0.9992601</td>
+<td style="text-align: center;">'Es fundamental que se esté recuperando la certidumbre con empresarios': mincomercio</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Environmental Degradation</td>
+<td style="text-align: center;">0.9992372</td>
+<td style="text-align: center;">La oferta, clave para ganar la batalla de la descarbonización</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Environmental Degradation</td>
+<td style="text-align: center;">0.9990861</td>
+<td style="text-align: center;">Nuevo estudio hace el balance de las reservas de carbono en la Amazonia</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Environmental Degradation</td>
+<td style="text-align: center;">0.9987138</td>
+<td style="text-align: center;">Latinoamérica enfrenta la mayor reducción de especies y hábitats Esta región ha sufrido una mengua del 94 %</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Environmental Degradation</td>
+<td style="text-align: center;">0.9986660</td>
+<td style="text-align: center;">Gas natural, clave en la transición energética</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Guerrilla</td>
+<td style="text-align: center;">0.9991331</td>
+<td style="text-align: center;">Fiscalía apela fallo que negó preclución a favor de Álvaro Uribe</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Guerrilla</td>
+<td style="text-align: center;">0.9991331</td>
+<td style="text-align: center;">Fiscalía apela fallo que negó preclusión a favor de Álvaro Uribe</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Guerrilla</td>
+<td style="text-align: center;">0.9984517</td>
+<td style="text-align: center;">"Uribe siempre tuvo conocimiento de la operación del Aro": Mancuso en la JEP</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Guerrilla</td>
+<td style="text-align: center;">0.9981036</td>
+<td style="text-align: center;">Julio Gerlein: El zar de la contratación al que Fiscalía imputará tras fuga de Merlano</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Guerrilla</td>
+<td style="text-align: center;">0.9980346</td>
+<td style="text-align: center;">Caso Álvaro Uribe: así avanza audiencia que define si se cierra elproceso en su contra</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Migration</td>
+<td style="text-align: center;">0.9990523</td>
+<td style="text-align: center;">Migrantes venezolanos no tienen protección ante el coronavirus en Norte de Santander</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Migration</td>
+<td style="text-align: center;">0.9987105</td>
+<td style="text-align: center;">Así está la situación en la frontera de EE. UU. tras una semana del fin del Título 42</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Migration</td>
+<td style="text-align: center;">0.9987043</td>
+<td style="text-align: center;">Accidentes viales, otro flagelo que enfrentan los migrantes, además del Darién</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Migration</td>
+<td style="text-align: center;">0.9984426</td>
+<td style="text-align: center;">Amnistía Internacional pidió a Colombia reconocer como refugiados a venezolanos</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Migration</td>
+<td style="text-align: center;">0.9983822</td>
+<td style="text-align: center;">La Guajira atraviesa otra ola migratoria, esta vez durante la pandemia</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Soccer</td>
+<td style="text-align: center;">0.9995505</td>
+<td style="text-align: center;">Mercado de fichajes, en vivo: movimientos de última hora en plena primera fecha</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Soccer</td>
+<td style="text-align: center;">0.9995482</td>
+<td style="text-align: center;">Mercado de fichajes, en vivo: movimientos de última hora antes de la primera fecha</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Soccer</td>
+<td style="text-align: center;">0.9995154</td>
+<td style="text-align: center;">Mercado de fichajes, en vivo: Santa Fe se sigue moviendo, pero perdió una pieza</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Soccer</td>
+<td style="text-align: center;">0.9994794</td>
+<td style="text-align: center;">Mercado de fichajes, en vivo: baja de Millonarios se va a otro equipo colombiano</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Soccer</td>
+<td style="text-align: center;">0.9993927</td>
+<td style="text-align: center;">Mercado de fichajes de la Liga, en vivo: 'Tití' Rodríguez debutó con gol en Junior</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuelan Politics</td>
+<td style="text-align: center;">0.9968177</td>
+<td style="text-align: center;">Portugal responde a Maduro y dice que fue Venezuela quien atacó a su crucero</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuelan Politics</td>
+<td style="text-align: center;">0.9966397</td>
+<td style="text-align: center;">Agente de la DEA, acusado de filtrar información confidencial sobre Álex Saab</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuelan Politics</td>
+<td style="text-align: center;">0.9964870</td>
+<td style="text-align: center;">¿Qué se sabe de los negocios de Álex Saab y Álvaro Pulido en Venezuela ?</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuelan Politics</td>
+<td style="text-align: center;">0.9964640</td>
+<td style="text-align: center;">Álex Saab, señalado por corrupción en Pdvsa: este sería el monto desfalcado</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuelan Politics</td>
+<td style="text-align: center;">0.9964638</td>
+<td style="text-align: center;">Fiscalía venezolana pide capturas por operativo militar</td>
 </tr>
 </tbody>
 </table>
-<ul>
-<li><strong>Top Terms and Themes:</strong> “Gaza”, “Colombia-Venezuelan Border Security”, “Darien Migration Route”, “Venezuela Migration Crisis”, “COVID-19”, “Health”, “Migrant Human Trafficking”, “Venezuelan Migrants-US”</li>
-</ul>
-<p>The bar graph illustrates the distribution of papers assigned to each topic across three years: 2017, 2020, and 2023. Topics include Colombia-Venezuelan Border Security, the Darien Migration Route, COVID-19, Health, Gaza, Migrant Human Trafficking, Venezuelan Migration Crisis, and Venezuelan Migrants to the United States. Each bar’s height represents the number of papers discussing a specific topic in a given year. The graph highlights shifting focus over time, with COVID-19 dominating coverage in 2020 and a significant increase in articles related to Venezuelan Migrants to the US in 2023. Meanwhile, topics like the Darien Migration Route and Migrant Human Trafficking gained more attention in 2023 compared to earlier years, reflecting the evolving priorities in migration-related reporting. “Gaza” and “Venezuelan Migrants to the US” are topics that gained relevance in 2023. However, there are some articles in previous years</p>
+
+
+</div>
+</div>
+</section>
+</section>
+<section id="nibiaaaa" class="level1">
+<h1>NIBIAAAA</h1>
+<p>Explain the final topic names for general</p>
+<p><strong>Topic Breakdown:</strong></p>
+<p>Colombia-Venezuela Diplomacy:</p>
+<p>This topic focuses on articles discussing international conference agreements concerning Venezuela, meetings between Colombia’s president, Gustavo Petro, and the opposition group of the current Chavista regime, <em>Plataforma Unitaria Democrática de Venezuela</em>. It also includes coverage of the controversy surrounding a comment made by the former Colombian ambassador to Venezuela, which influenced public opinion on a Colombian health reform.</p>
+<p>Notably, all top articles for this topic are from 2023, closely tied to the <em>Cumbre sobre Venezuela en Bogotá</em> (Venezuela Summit) that took place this year. The summit highlighted Petro’s widely reported stance on Venezuela, in which he attributes the country’s challenges to U.S. sanctions (<a href="https://latinoamerica21.com/en/the-progressive-paradox-petros-regressive-measures-against-venezuelan-migration/">Rojas Silva, 2024</a>).</p>
+<p>Environmental Degradation:</p>
+<p>This topic covered articles focusing on environmental relief strategies for the amazon region that regularly include Brasil, Colombia, Ecuador, Perú y Venezuela in response to climate change (like switching to natural gas, or making the carbon market more appealing for companies). Also, they talk about biodiversity loss due to deforestation. There is one of the top articles that covers concerns regarding companies and entrepreneurs in colombia and business relationships with venezuela, but we can connect the content from above with the fact that articles covering the environmental devastation all included the role of companies in it.</p>
+<p>Guerrilla:</p>
+<p>The most relevant articles in this topic were related to the Caso Uribe, a former Colombian president that had presuntos vínculos con grupos narcotraficantes y paramilitares de ultraderecha a lo largo de su carrera política. All the top articles also are related to 2023 since the prosecutor’s office formally accused him of these allegations. This topic related to venezuela, in that the layer of Uribe is also been investigated and he was the lawyer of a former Colombian ambassador in Venezeula. Other topics are related to Aida Merlano’s a colombian polititian that was convicted of conspiracy, weapons possession, and electoral crimes in connection with her campaign for senator (<a href="https://www.bbc.com/mundo/noticias-america-latina-49906275">BBC News Mundo, 2019</a>). Both articles are connected to ongoing legal processes to politicians allegedly connected to guerrilla groups.</p>
+<p>Migration:</p>
+<p>The most relevant articles in this topic covered the vulnerable positions of venezuelan immigrants during the COVID-19 pandemic, while also reporting in how colombian cities were responding to the immigration wave during at that time. Another topic covered was about the dangers that venezuelan immigrants have to face when crossing one on the most dangerous routes to migrate to the north of the american country (often to the United states) (<a href="https://www.cfr.org/article/crossing-darien-gap-migrants-risk-death-journey-us">Roy, D, 2024</a>). Then we had an article covering the need of colombia to recognize Venezuela immigrants as refugees to protect their rights. And finally, we had an article covering the changes of policies after the removal of the Title 42 restrictions a policy that gave the right to the. US border security to turn away any immigrant under the public heath threat that covid was, but that was changed in 2023 to turning away anyone seeking asylum who didn’t first seek protection in a country they traveled through, or first applied online (<a href="https://apnews.com/article/immigration-biden-border-title-42-mexico-asylum-be4e0b15b27adb9bede87b9bbefb798d">Long, C, 2023</a>). And since Colombia is a neighbour of Venezuela, now that country is usually passed by and therefore make Venezuela immigrants not applicable for assylum. All this articles cover the challenges that Venezuelan immigrants are encountering in direct or indirect response to Colombia.</p>
+<p>Soccer:</p>
+<p>The articles in this topic covered news on soccer matches, players, regional and international matches in this sport.</p>
+<p>Venezuela Politics:</p>
 <p><strong>Topic Evolution Over Time:</strong></p>
 <ul>
 <li><strong>Topic Distribution:</strong> The distribution of topics across different years was analyzed to identify trends and shifts.</li>
-<li><strong>Time Series Analysis:</strong> Time series analysis was used to track the evolution of topics over time.</li>
 </ul>
-<p><strong>Document-Level Analysis:</strong></p>
-<ul>
-<li><strong>Topic Assignments:</strong> Documents were assigned to topics based on their content.</li>
-<li><strong>Representative Documents:</strong> The most representative documents for each topic were identified and analyzed.</li>
-</ul>
-<p><strong>Comparative Analysis:</strong></p>
-<ul>
-<li><strong>Newspaper Comparison:</strong> The dominant topics in El Tiempo and El Espectador were compared to identify differences and similarities.</li>
-</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Report_nibia_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
+<section id="inter-topic-modeling-migration" class="level1">
+<h1>Inter-Topic Modeling: Migration</h1>
+<p><strong>Topic Identification and Interpretation:</strong></p>
+<ul>
+<li><strong>Top Terms and Themes:</strong></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Top 5 Words per Migration Topic</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Topic Name</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">beta</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Term</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">COVID-19</td>
+<td style="text-align: center;">0.0235548</td>
+<td style="text-align: center;">coronavirus</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">COVID-19</td>
+<td style="text-align: center;">0.0161337</td>
+<td style="text-align: center;">salud</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">COVID-19</td>
+<td style="text-align: center;">0.0140367</td>
+<td style="text-align: center;">país</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">COVID-19</td>
+<td style="text-align: center;">0.0125161</td>
+<td style="text-align: center;">casos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">COVID-19</td>
+<td style="text-align: center;">0.0118955</td>
+<td style="text-align: center;">covid</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Colombia-Venezuelan Border Security</td>
+<td style="text-align: center;">0.0136321</td>
+<td style="text-align: center;">venezolanos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Colombia-Venezuelan Border Security</td>
+<td style="text-align: center;">0.0127310</td>
+<td style="text-align: center;">persona</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Colombia-Venezuelan Border Security</td>
+<td style="text-align: center;">0.0109675</td>
+<td style="text-align: center;">migrantes</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Colombia-Venezuelan Border Security</td>
+<td style="text-align: center;">0.0090593</td>
+<td style="text-align: center;">autoridades</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Colombia-Venezuelan Border Security</td>
+<td style="text-align: center;">0.0090385</td>
+<td style="text-align: center;">ciudad</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Darien Migration Route</td>
+<td style="text-align: center;">0.0245733</td>
+<td style="text-align: center;">migrantes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Darien Migration Route</td>
+<td style="text-align: center;">0.0126453</td>
+<td style="text-align: center;">persona</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Darien Migration Route</td>
+<td style="text-align: center;">0.0113882</td>
+<td style="text-align: center;">darién</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Darien Migration Route</td>
+<td style="text-align: center;">0.0070979</td>
+<td style="text-align: center;">migración</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Darien Migration Route</td>
+<td style="text-align: center;">0.0062296</td>
+<td style="text-align: center;">dijo</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Gaza</td>
+<td style="text-align: center;">0.0206203</td>
+<td style="text-align: center;">israel</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Gaza</td>
+<td style="text-align: center;">0.0172094</td>
+<td style="text-align: center;">gaza</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Gaza</td>
+<td style="text-align: center;">0.0146315</td>
+<td style="text-align: center;">hamás</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Gaza</td>
+<td style="text-align: center;">0.0092145</td>
+<td style="text-align: center;">mundo</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Gaza</td>
+<td style="text-align: center;">0.0090368</td>
+<td style="text-align: center;">guerra</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Health</td>
+<td style="text-align: center;">0.0197845</td>
+<td style="text-align: center;">bogotá</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Health</td>
+<td style="text-align: center;">0.0075544</td>
+<td style="text-align: center;">aire</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Health</td>
+<td style="text-align: center;">0.0070512</td>
+<td style="text-align: center;">ciudad</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Health</td>
+<td style="text-align: center;">0.0064570</td>
+<td style="text-align: center;">calidad</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Health</td>
+<td style="text-align: center;">0.0060649</td>
+<td style="text-align: center;">colombia</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Migrant Human Trafficking</td>
+<td style="text-align: center;">0.0104806</td>
+<td style="text-align: center;">persona</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Migrant Human Trafficking</td>
+<td style="text-align: center;">0.0102540</td>
+<td style="text-align: center;">mujeres</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Migrant Human Trafficking</td>
+<td style="text-align: center;">0.0093836</td>
+<td style="text-align: center;">derechos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Migrant Human Trafficking</td>
+<td style="text-align: center;">0.0085894</td>
+<td style="text-align: center;">colombia</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Migrant Human Trafficking</td>
+<td style="text-align: center;">0.0068650</td>
+<td style="text-align: center;">violencia</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuela Migration Crisis</td>
+<td style="text-align: center;">0.0273223</td>
+<td style="text-align: center;">colombia</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuela Migration Crisis</td>
+<td style="text-align: center;">0.0169245</td>
+<td style="text-align: center;">venezolanos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuela Migration Crisis</td>
+<td style="text-align: center;">0.0156044</td>
+<td style="text-align: center;">migrantes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuela Migration Crisis</td>
+<td style="text-align: center;">0.0129568</td>
+<td style="text-align: center;">migración</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuela Migration Crisis</td>
+<td style="text-align: center;">0.0129412</td>
+<td style="text-align: center;">país</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuelan Migrants-US</td>
+<td style="text-align: center;">0.0203494</td>
+<td style="text-align: center;">unidos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuelan Migrants-US</td>
+<td style="text-align: center;">0.0141594</td>
+<td style="text-align: center;">colombia</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuelan Migrants-US</td>
+<td style="text-align: center;">0.0123903</td>
+<td style="text-align: center;">méxico</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuelan Migrants-US</td>
+<td style="text-align: center;">0.0123859</td>
+<td style="text-align: center;">migrantes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuelan Migrants-US</td>
+<td style="text-align: center;">0.0117931</td>
+<td style="text-align: center;">persona</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<ul>
+<li><p><strong>Topic Assignments:</strong></p></li>
+<li><p><strong>Representative Documents:</strong> The most representative documents for each topic were identified and analyzed.</p></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Top 5 Articles per Migratoin Topic</caption>
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Topic Name</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">max_gamma</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Title</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">COVID-19</td>
+<td style="text-align: center;">0.9999535</td>
+<td style="text-align: center;">En vivo: Venezuela suspende vuelos nacionales por coronavirus y Colombia confirma 65 casos</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">COVID-19</td>
+<td style="text-align: center;">0.9988569</td>
+<td style="text-align: center;">Uruguay aclara: "Jamás se pensó en Bogotá como centro para repatriación"</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">COVID-19</td>
+<td style="text-align: center;">0.9988479</td>
+<td style="text-align: center;">Brasil, epicentro latinoamericano de la pandemia, ¿debería preocuparnos?</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">COVID-19</td>
+<td style="text-align: center;">0.9982999</td>
+<td style="text-align: center;">Cuatro departamentos decretan toque de queda por coronavirus La medida se tomó en Quindío, Meta,</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">COVID-19</td>
+<td style="text-align: center;">0.9980661</td>
+<td style="text-align: center;">El plan de respuesta de Colombia para la llegada del coronavirus</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Colombia-Venezuelan Border Security</td>
+<td style="text-align: center;">0.9988717</td>
+<td style="text-align: center;">Cerca de 19 migrantes venezolanos murieron ahogados en un naufragio</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Colombia-Venezuelan Border Security</td>
+<td style="text-align: center;">0.9984884</td>
+<td style="text-align: center;">19 migrantes venezolanos murieron ahogados en un naufragio</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Colombia-Venezuelan Border Security</td>
+<td style="text-align: center;">0.9984509</td>
+<td style="text-align: center;">Lo que se sabe del naufragio de inmigrantes venezolanos</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Colombia-Venezuelan Border Security</td>
+<td style="text-align: center;">0.9984285</td>
+<td style="text-align: center;">Al menos ocho muertos tras ser arrollados por conductor en Brownsville , Texas</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Colombia-Venezuelan Border Security</td>
+<td style="text-align: center;">0.9984285</td>
+<td style="text-align: center;">Al menos siete muertos tras ser arrollados por conductor en Brownsville , Texas</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Darien Migration Route</td>
+<td style="text-align: center;">0.9997891</td>
+<td style="text-align: center;">La industria migratoria del Darién, un lucrativo negocio</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Darien Migration Route</td>
+<td style="text-align: center;">0.9996521</td>
+<td style="text-align: center;">Así es el cruel tráfico de las mafias con migrantes venezolanos en el Tapón del Darién</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Darien Migration Route</td>
+<td style="text-align: center;">0.9995884</td>
+<td style="text-align: center;">Exclusivo EL TIEMPO: así funciona el negocio de los 'coyotes colombianos' del Darién</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Darien Migration Route</td>
+<td style="text-align: center;">0.9994038</td>
+<td style="text-align: center;">La migración por el tapón de El Darién, un negocio rentable</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Darien Migration Route</td>
+<td style="text-align: center;">0.9992514</td>
+<td style="text-align: center;">El pueblo de Colombia donde algunos se vuelven millonarios con la tragedia de migrantes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Gaza</td>
+<td style="text-align: center;">0.9998036</td>
+<td style="text-align: center;">El Espectador le explica en qué va la tragedia del conflicto Israel-Hamás</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Gaza</td>
+<td style="text-align: center;">0.9996485</td>
+<td style="text-align: center;">Manifestantes piden en el Capitolio de EE. UU. un alto el fuego entre Israel y Hamás</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Gaza</td>
+<td style="text-align: center;">0.9996249</td>
+<td style="text-align: center;">???? En vivo: Hezbolá anuncia que está atacando a Israel desde Líbano con misiles</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Gaza</td>
+<td style="text-align: center;">0.9995945</td>
+<td style="text-align: center;">Hamás dijo que "no negociará sobre los cautivos mientras esté bajo fuego israelí"</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Gaza</td>
+<td style="text-align: center;">0.9990591</td>
+<td style="text-align: center;">Israel intensifica bombardeos en Gaza antes de una incursión terrestre</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Health</td>
+<td style="text-align: center;">0.9989727</td>
+<td style="text-align: center;">Se mantiene la alerta por mala calidad del aire, Distrito pide extremar medidas</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Health</td>
+<td style="text-align: center;">0.9983997</td>
+<td style="text-align: center;">Moderada: así amanece la calidad del aire en Bogotá</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Health</td>
+<td style="text-align: center;">0.9982999</td>
+<td style="text-align: center;">Traslado en colegios distritales 2024: ¿cómo solicitar el cambio de institución?</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Health</td>
+<td style="text-align: center;">0.9981715</td>
+<td style="text-align: center;">Convalidar títulos de ciertos médicos de Venezuela , una idea que causa controversia</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Health</td>
+<td style="text-align: center;">0.9979283</td>
+<td style="text-align: center;">Estas son las razones por las que se declaró alerta amarilla en Bogotá</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Migrant Human Trafficking</td>
+<td style="text-align: center;">0.9993006</td>
+<td style="text-align: center;">La lacra del feminicidio, aumentan las cifras de violencia de género en Latinoamérica</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Migrant Human Trafficking</td>
+<td style="text-align: center;">0.9992915</td>
+<td style="text-align: center;">La lacra del feminicidio en Latinoamérica</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Migrant Human Trafficking</td>
+<td style="text-align: center;">0.9991872</td>
+<td style="text-align: center;">El grupo de jóvenes que buscan abolir la explotación sexual en Medellín</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Migrant Human Trafficking</td>
+<td style="text-align: center;">0.9989580</td>
+<td style="text-align: center;">La médica que logró que condenaran a Venezuela por violencia obstétrica</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Migrant Human Trafficking</td>
+<td style="text-align: center;">0.9987041</td>
+<td style="text-align: center;">En el Concejo piden investigar explotación sexual de migrantes por el Tren de Aragua</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuela Migration Crisis</td>
+<td style="text-align: center;">0.9992192</td>
+<td style="text-align: center;">Migración venezolana en el mundo sube; cifras en Colombia pierden transparencia</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuela Migration Crisis</td>
+<td style="text-align: center;">0.9989940</td>
+<td style="text-align: center;">¿Por qué después de fin de año urge aun más abordar la política migratoria?</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuela Migration Crisis</td>
+<td style="text-align: center;">0.9983997</td>
+<td style="text-align: center;">Japón donó a Colombia 82 equipos de biometría para implementación del ETPV a migrantes</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuela Migration Crisis</td>
+<td style="text-align: center;">0.9982164</td>
+<td style="text-align: center;">Integración fronteriza binacional se reinicia en puente Atanasio Girardot</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuela Migration Crisis</td>
+<td style="text-align: center;">0.9980133</td>
+<td style="text-align: center;">Iniciativas para volver una oportunidad la migración venezolana</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuelan Migrants-US</td>
+<td style="text-align: center;">0.9992652</td>
+<td style="text-align: center;">Conozca cuál será la estrategia de Estados Unidos tras el fin del Título 42</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuelan Migrants-US</td>
+<td style="text-align: center;">0.9988539</td>
+<td style="text-align: center;">Así serán centros que abrirá EE.UU. para tramitar casos migratorios en Colombia</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuelan Migrants-US</td>
+<td style="text-align: center;">0.9986765</td>
+<td style="text-align: center;">Centros de Movilidad Segura para migrantes no son para colombianos, ¿quiénes aplican?</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Venezuelan Migrants-US</td>
+<td style="text-align: center;">0.9984285</td>
+<td style="text-align: center;">¿Qué se sabe de los centros de EE. UU. para tramitar casos migratorios en Colombia ?</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Venezuelan Migrants-US</td>
+<td style="text-align: center;">0.9984228</td>
+<td style="text-align: center;">Centros de Estados Unidos en Colombia para migrantes se quedan sin citas</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p><strong>Topic Evolution Over Time:</strong></p>
+<ul>
+<li><strong>Topic Distribution:</strong></li>
+</ul>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Report_nibia_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>[Summarize the key findings and their implications. Discuss the limitations of the study and potential future research directions.]</p>
@@ -264,6 +1012,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Additional Visualizations:</strong> Provide additional visualizations, such as word clouds, bar charts, and network diagrams.</li>
 <li><strong>Technical Details:</strong> Discuss specific implementation details, such as hyperparameter tuning and model evaluation metrics.</li>
 </ul>
+</section>
 </section>
 
 </main>
