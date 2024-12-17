@@ -84,7 +84,7 @@ Based on the fitness score analysis we decided on 6 topic as the optimal paramet
     -   **Gamma Value:**\
         Gamma values represent the degree of association between a document and each topic. See the sample distribution of gamma values below:
 
-        ![Gamma Values Distribution and Average Threshold](gamma_values.png){width="500"}
+        ![Figure 3: Gamma Values Distribution and Average Threshold](gamma_values.png){width="500"}
 
     -   **Assignment Criteria:**
 
@@ -110,6 +110,8 @@ kable(keywords, caption = "Top 5 Words per Topic", align = "c", format = "html")
 ```
 
 -   **Inter-Topic Distance:** The relationships between topics were visualized using an inter-topic distance map.
+
+![Figure 4: Inter-Topic Distance Map](topic_distance_map.png){height=500}
 
 In the previous plot, we established the lambda value to be in a 0.5, as it provides the best balance between word frequency in the overall corpus, and it's relevance in the selected topic. However, the toggle is useful to explore the two ends of relevance per given topic.
 
