@@ -75,18 +75,18 @@ dim(dtm)
 ## Topic Modeling
 
 ```{r lda-model}
-# # Optimal number of topics
-# result <- FindTopicsNumber(
-#   dtm,
-#   topics = seq(from = 2, to = 16, by = 1),
-#   metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
-#   method = "Gibbs",
-#   control = list(seed = 1234),
-#   mc.cores = 2L,
-#   verbose = TRUE
-# )
-# 
-# FindTopicsNumber_plot(result)
+# Optimal number of topics
+result <- FindTopicsNumber(
+  dtm,
+  topics = seq(from = 2, to = 16, by = 1),
+  metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
+  method = "Gibbs",
+  control = list(seed = 1234),
+  mc.cores = 2L,
+  verbose = TRUE
+)
+
+FindTopicsNumber_plot(result)
 
 ```
 -   Griffiths2004: Aims to identify coherence.
@@ -130,24 +130,19 @@ print(topic_xwalk)
 ## Visualization
 
 ```{r visualization}
-# # Prepare LDAvis data
-# 
-# json <- createJSON(
-#   phi = posterior(lda_model)$terms,
-#   theta = posterior(lda_model)$topics,
-#   doc.length = rowSums(as.matrix(dtm)),
-#   vocab = colnames(as.matrix(dtm)),
-#   term.frequency = colSums(as.matrix(dtm))
-# )
-# 
-# serVis(json, open.browser = TRUE)
-# serVis(json, out.dir = "lda_vis")
+# Prepare LDAvis data
+
+json <- createJSON(
+  phi = posterior(lda_model)$terms,
+  theta = posterior(lda_model)$topics,
+  doc.length = rowSums(as.matrix(dtm)),
+  vocab = colnames(as.matrix(dtm)),
+  term.frequency = colSums(as.matrix(dtm))
+)
+
+serVis(json, open.browser = TRUE)
 ```
 
-```{r}
-
-includeHTML("lda_vis/index.html")
-```
 
 # Tracing back articles 
 
@@ -227,9 +222,6 @@ assigned_articles <- merged_data %>%
 
 assigned_articles
 
-# flatten top words column in order to export as csv
-assigned_articles$top_words <- sapply(assigned_articles$top_words, paste, collapse = ", ")
-
 #export table
 write.csv(assigned_articles, "./tables/classified_articles.csv", row.names = FALSE)
 ```
@@ -253,7 +245,7 @@ write.csv(summary_table, "./tables/top_titles.csv", row.names = FALSE)
 
 ```
 
-Step 1: Calculate Topic Distribution per Year
+# Step 1: Calculate Topic Distribution per Year
 
 ```{r}
 
@@ -350,18 +342,18 @@ dim(dtm5)
 ```
 
 ```{r}
-# # Optimal number of topics
-# result5 <- FindTopicsNumber(
-#   dtm5,
-#   topics = seq(from = 2, to = 16, by = 1),
-#   metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
-#   method = "Gibbs",
-#   control = list(seed = 1234),
-#   mc.cores = 2L,
-#   verbose = TRUE
-# )
-# 
-# FindTopicsNumber_plot(result5)
+# Optimal number of topics
+result5 <- FindTopicsNumber(
+  dtm5,
+  topics = seq(from = 2, to = 16, by = 1),
+  metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
+  method = "Gibbs",
+  control = list(seed = 1234),
+  mc.cores = 2L,
+  verbose = TRUE
+)
+
+FindTopicsNumber_plot(result5)
 
 ```
 
@@ -494,7 +486,7 @@ write.csv(summary_table5, "./tables/migration_top_titles.csv", row.names = FALSE
 
 ```
 
-Step 1: Calculate Topic Distribution per Year
+# Step 1: Calculate Topic Distribution per Year
 
 ```{r}
 
@@ -515,7 +507,7 @@ write.csv(topic_yearly_distribution5, "./tables/migration_topic_yearly_distribut
 
 ```
 
-Step 2: Calculate the Number and Percent of Documents Using the "Top 20 Words" per Topic
+# Step 2: Calculate the Number and Percent of Documents Using the "Top 20 Words" per Topic
 
 ```{r}
 # Assuming 'top_terms' contains the top 20 terms for each topic

@@ -9,6 +9,8 @@ theme: journal
 library(plotly)
 library(knitr)
 library(rmarkdown)
+library(servr)
+library(htmlwidgets)
 
 ```
 
@@ -61,7 +63,7 @@ We downloaded these articles from the **Nexus Uni** database under the keyword *
 
 -   Arun2010: Analyzes topic separation.
 
-![*Figure 2: Line Graphs Showing Four Model Fitness Scores of k Topics*](general%20fitness%20scores%20copy.png){width="500"}
+![*Figure 2: Line Graphs Showing Four Model Fitness Scores of k Topics*](general fitness scores copy.png){width="500"}
 
 Based on the fitness score analysis we decided on 6 topic as the optimal parameter our LDA model.
 
@@ -112,24 +114,36 @@ kable(keywords, caption = "Top 5 Words per Topic", align = "c", format = "html")
 -   **Inter-Topic Distance:** The relationships between topics were visualized using an inter-topic distance map.
 
 ```{r, echo=FALSE}
-# ## Topic Modeling
-# # Fit LDA Model
-# optimal_topics <- 6  # Update based on results
-# lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
-# 
-# ## Visualization
-# 
-# # Prepare LDAvis data
-# 
-# json <- createJSON(
-#   phi = posterior(lda_model)$terms,
-#   theta = posterior(lda_model)$topics,
-#   doc.length = rowSums(as.matrix(dtm)),
-#   vocab = colnames(as.matrix(dtm)),
-#   term.frequency = colSums(as.matrix(dtm))
-# )
-# 
-# serVis(json, open.browser = TRUE)
+# Load required libraries
+library(topicmodels)
+library(LDAvis)
+library(htmltools)
+
+# Ensure LDA model is created
+optimal_topics <- 6  # Adjust this based on your optimal topic count
+lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
+
+# Create JSON for LDAvis visualization
+json <- createJSON(
+  phi = posterior(lda_model)$terms,
+  theta = posterior(lda_model)$topics,
+  doc.length = rowSums(as.matrix(dtm)),
+  vocab = colnames(as.matrix(dtm)),
+  term.frequency = colSums(as.matrix(dtm))
+)
+
+# Save the visualization
+output_file <- "ldavis_plot.html"
+temp_dir <- tempfile()
+
+if (!dir.exists(temp_dir)) dir.create(temp_dir)
+serVis(json, out.dir = temp_dir, open.browser = FALSE)
+
+# Copy the HTML file to a permanent location
+file.copy(file.path(temp_dir, "index.html"), output_file, overwrite = TRUE)
+
+# Embed the HTML file in Quarto
+includeHTML(output_file)
 
 ```
 
@@ -252,8 +266,3 @@ Locally, Colombian communities seemed to play a mixed role— topics like Venezu
 
 Finally, the sharp increase in coverage in 2023 reflects migration’s growing importance in Colombian media. Topics such as Migration, Diplomacy, and Guerrilla gained prominence, illustrating shifting political and social priorities. By applying LDA iteratively, we uncovered both broad themes and nuanced subtopics, demonstrating the value of focused modeling in revealing the complexities of migration narratives and their global connections. Additionally, we also understood the importance of pairing this style of modelling with a strong method for determining the topic names and capture the nuances of the ways how different articles connect.
 
-## Appendix (Optional)
-
--   **Code Snippets:** Include relevant R code snippets for data cleaning, preprocessing, topic modeling, and visualization.
--   **Additional Visualizations:** Provide additional visualizations, such as word clouds, bar charts, and network diagrams.
--   **Technical Details:** Discuss specific implementation details, such as hyperparameter tuning and model evaluation metrics.
