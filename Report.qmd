@@ -9,8 +9,6 @@ theme: journal
 library(plotly)
 library(knitr)
 library(rmarkdown)
-library(servr)
-library(htmlwidgets)
 
 ```
 

@@ -71,9 +71,6 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: package 'knitr' was built under R version 4.3.3</code></pre>
 </div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: package 'servr' was built under R version 4.3.3</code></pre>
-</div>
 </div>
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
@@ -147,7 +144,7 @@ Gamma values represent the degree of association between a document and each top
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="gamma_values.png" class="img-fluid figure-img" width="500"></p>
-<figcaption class="figure-caption">Gamma Values Distribution and Average Threshold</figcaption>
+<figcaption class="figure-caption">Figure 3: Gamma Values Distribution and Average Threshold</figcaption>
 </figure>
 </div></li>
 <li><p><strong>Assignment Criteria:</strong></p>
@@ -341,37 +338,13 @@ Gamma values represent the degree of association between a document and each top
 <ul>
 <li><strong>Inter-Topic Distance:</strong> The relationships between topics were visualized using an inter-topic distance map.</li>
 </ul>
-<div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in dir.create(out.dir):
-'/var/folders/hn/nkylpl7n1l52_h_cs50fh11w0000gq/T//RtmpVejBGo/filea78c6b0f119e'
-already exists</code></pre>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="topic_distance_map.png" height="500" class="figure-img"></p>
+<figcaption class="figure-caption">Figure 4: Inter-Topic Distance Map</figcaption>
+</figure>
 </div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] TRUE</code></pre>
-</div>
-<div class="cell-output-display">
-
-
-  
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>LDAvis</title>
-    <script src="d3.v3.js"></script>
-    <script src="ldavis.js"></script>
-    <link rel="stylesheet" type="text/css" href="lda.css">
-  
-
-  
-    <div id="lda"></div>
-    <script>
-      var vis = new LDAvis("#lda", "lda.json");
-    </script>
-  
-
-
-</div>
-</div>
-<p>In the previous interactive plot, we recommend establishing the lambda value to be in a 0.5, as it provides the best balance between word frequency in the overall corpus, and it’s relevance in the selected topic. However, the toggle is useful to explore the two ends of relevance per given topic.</p>
+<p>In the previous plot, we established the lambda value to be in a 0.5, as it provides the best balance between word frequency in the overall corpus, and it’s relevance in the selected topic. However, the toggle is useful to explore the two ends of relevance per given topic.</p>
 <p>The amount of topics, and the seed used in this LDA model showed no overlap between any of our topics. The topics with the largest percentage of marginal topic distribution are 1 (Colombia-Venezuela Diplomacy) and 2 (Environmental Degradation). Conversely, Topic 6 (Venezuela Politics) has the smallest distribution. In other iterations of LDA’s for our data, we observed that topics overlapped more often when they had a larger marginal topic distributions.</p>
 <p><strong>Document-Level Analysis:</strong></p>
 <ul>
@@ -563,7 +536,7 @@ already exists</code></pre>
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="Report_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+<p><img src="Report_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 </section>
@@ -1033,7 +1006,7 @@ already exists</code></pre>
 </ul>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="Report_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+<p><img src="Report_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
 <section id="conclusion" class="level2">
