@@ -113,41 +113,7 @@ kable(keywords, caption = "Top 5 Words per Topic", align = "c", format = "html")
 
 -   **Inter-Topic Distance:** The relationships between topics were visualized using an inter-topic distance map.
 
-```{r, echo=FALSE}
-# Load required libraries
-library(topicmodels)
-library(LDAvis)
-library(htmltools)
-
-# Ensure LDA model is created
-optimal_topics <- 6  # Adjust this based on your optimal topic count
-lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
-
-# Create JSON for LDAvis visualization
-json <- createJSON(
-  phi = posterior(lda_model)$terms,
-  theta = posterior(lda_model)$topics,
-  doc.length = rowSums(as.matrix(dtm)),
-  vocab = colnames(as.matrix(dtm)),
-  term.frequency = colSums(as.matrix(dtm))
-)
-
-# Save the visualization
-output_file <- "ldavis_plot.html"
-temp_dir <- tempfile()
-
-if (!dir.exists(temp_dir)) dir.create(temp_dir)
-serVis(json, out.dir = temp_dir, open.browser = FALSE)
-
-# Copy the HTML file to a permanent location
-file.copy(file.path(temp_dir, "index.html"), output_file, overwrite = TRUE)
-
-# Embed the HTML file in Quarto
-includeHTML(output_file)
-
-```
-
-In the previous interactive plot, we recommend establishing the lambda value to be in a 0.5, as it provides the best balance between word frequency in the overall corpus, and it's relevance in the selected topic. However, the toggle is useful to explore the two ends of relevance per given topic.
+In the previous plot, we established the lambda value to be in a 0.5, as it provides the best balance between word frequency in the overall corpus, and it's relevance in the selected topic. However, the toggle is useful to explore the two ends of relevance per given topic.
 
 The amount of topics, and the seed used in this LDA model showed no overlap between any of our topics. The topics with the largest percentage of marginal topic distribution are 1 (Colombia-Venezuela Diplomacy) and 2 (Environmental Degradation). Conversely, Topic 6 (Venezuela Politics) has the smallest distribution. In other iterations of LDA's for our data, we observed that topics overlapped more often when they had a larger marginal topic distributions.
 
