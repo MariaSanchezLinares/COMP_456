@@ -75,18 +75,18 @@ dim(dtm)
 ## Topic Modeling
 
 ```{r lda-model}
-# Optimal number of topics
-result <- FindTopicsNumber(
-  dtm,
-  topics = seq(from = 2, to = 16, by = 1),
-  metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
-  method = "Gibbs",
-  control = list(seed = 1234),
-  mc.cores = 2L,
-  verbose = TRUE
-)
-
-FindTopicsNumber_plot(result)
+# # Optimal number of topics
+# result <- FindTopicsNumber(
+#   dtm,
+#   topics = seq(from = 2, to = 16, by = 1),
+#   metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
+#   method = "Gibbs",
+#   control = list(seed = 1234),
+#   mc.cores = 2L,
+#   verbose = TRUE
+# )
+# 
+# FindTopicsNumber_plot(result)
 
 ```
 -   Griffiths2004: Aims to identify coherence.
@@ -98,10 +98,10 @@ FindTopicsNumber_plot(result)
 -   Arun2010: Analyzes topic separation.
 
 ```{r}
-
-# Fit LDA Model
-optimal_topics <- 6  # Update based on results
-lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
+# 
+# # Fit LDA Model
+# optimal_topics <- 6  # Update based on results
+# lda_model <- LDA(dtm, k = optimal_topics, control = list(seed = 1234))
 
 ```
 
@@ -342,25 +342,25 @@ dim(dtm5)
 ```
 
 ```{r}
-# Optimal number of topics
-result5 <- FindTopicsNumber(
-  dtm5,
-  topics = seq(from = 2, to = 16, by = 1),
-  metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
-  method = "Gibbs",
-  control = list(seed = 1234),
-  mc.cores = 2L,
-  verbose = TRUE
-)
-
-FindTopicsNumber_plot(result5)
+# # Optimal number of topics
+# result5 <- FindTopicsNumber(
+#   dtm5,
+#   topics = seq(from = 2, to = 16, by = 1),
+#   metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
+#   method = "Gibbs",
+#   control = list(seed = 1234),
+#   mc.cores = 2L,
+#   verbose = TRUE
+# )
+# 
+# FindTopicsNumber_plot(result5)
 
 ```
 
 ```{r}
-# Fit LDA Model
-optimal_topics5 <- 8  # Update based on results
-lda_model5 <- LDA(dtm5, k = optimal_topics5, control = list(seed = 1234))
+# # Fit LDA Model
+# optimal_topics5 <- 8  # Update based on results
+# lda_model5 <- LDA(dtm5, k = optimal_topics5, control = list(seed = 1234))
 
 ```
 
@@ -458,12 +458,12 @@ assigned_articles5 <- merged_data5 %>%
 
 
 assigned_articles5
-
-# flatten top words column in order to export as csv
-assigned_articles5$top_words <- sapply(assigned_articles5$top_words, paste, collapse = ", ")
-
-#export table
-write.csv(assigned_articles5, "./tables/classified_migration.csv", row.names = FALSE)
+# 
+# # flatten top words column in order to export as csv
+# assigned_articles5$top_words <- sapply(assigned_articles5$top_words, paste, collapse = ", ")
+# 
+# #export table
+# write.csv(assigned_articles5, "./tables/classified_migration.csv", row.names = FALSE)
 
 ```
 
@@ -480,9 +480,9 @@ summary_table5 <- assigned_articles5 %>%
 
 # Print the summary table
 print(summary_table5)
-
-#export
-write.csv(summary_table5, "./tables/migration_top_titles.csv", row.names = FALSE)
+# 
+# #export
+# write.csv(summary_table5, "./tables/migration_top_titles.csv", row.names = FALSE)
 
 ```
 
@@ -501,9 +501,9 @@ topic_yearly_distribution5 <- assigned_articles5 %>%
 
 # Print the topic distribution table
 print(topic_yearly_distribution5)
-
-# export
-write.csv(topic_yearly_distribution5, "./tables/migration_topic_yearly_distribution.csv", row.names = FALSE)
+# 
+# # export
+# write.csv(topic_yearly_distribution5, "./tables/migration_topic_yearly_distribution.csv", row.names = FALSE)
 
 ```
 
@@ -534,64 +534,130 @@ final_table5 <- left_join(topic_yearly_distribution5, top_words_yearly_distribut
 
 # Print the final table with both distributions
 print(final_table5)
-
-# export
-write.csv(final_table5, "./tables/migration_top_list_keywords", row.names = FALSE)
+# 
+# # export
+# write.csv(final_table5, "./tables/migration_top_list_keywords", row.names = FALSE)
 
 ```
 
 #Visualization
 ```{r}
-ggplot(topic_yearly_distribution, aes(x = year, y = num_docs, fill = as.factor(topic_name))) +
+ggplot(topic_yearly_distribution, aes(x = year, y = percent_docs, fill = as.factor(topic_name))) +
   geom_bar(stat = "identity", position = "dodge", width = 0.7) +  # "dodge" separates the bars for each topic
   scale_fill_manual(values = c("#1f78b4", "#33a02c", "#e31a1c", "#ff7f00", "#6a3d9a", "#b15928", "#a6cee3", "#b2df8a")) +
   labs(
-    title = "Topic Distribution per Year (Count of Papers)",
-    subtitle = "Number of papers assigned to each topic per year",
+    title = "Topics per Year",
+    subtitle = "Percent of artciles assigned to each topic per year",
     x = "Year",
-    y = "Number of Papers",
+    y = "Percent of Articles",
     fill = "Topic"
   ) +
   theme_minimal(base_family = "Helvetica") +
   theme(
-    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
-    plot.subtitle = element_text(size = 14, hjust = 0.5),
+    plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
+    plot.subtitle = element_text(size = 16, hjust = 0.5),
     legend.position = "top",
-    legend.title = element_text(face = "bold"),
-    axis.title = element_text(size = 14, face = "bold"),
-    axis.text = element_text(size = 12),
+    legend.title = element_text(face = "bold", size = 13),
+    axis.title = element_text(size = 15, face = "bold"),
+    axis.text = element_text(size = 15),
     panel.grid.major = element_line(color = "gray90", size = 0.5),  # Light grid lines
     panel.grid.minor = element_blank(),  # Remove minor grid lines
-    panel.background = element_rect(fill = "white")
+    panel.background = element_rect(fill = "white"),
+    legend.text = element_text(size = 14)
   )
 
 ```
 
 ```{r}
-ggplot(topic_yearly_distribution5, aes(x = year, y = num_docs, fill = as.factor(topic_name))) +
+ggplot(topic_yearly_distribution5, aes(x = year, y = percent_docs, fill = as.factor(topic_name))) +
   geom_bar(stat = "identity", position = "dodge", width = 0.7) +  # "dodge" separates the bars for each topic
   scale_fill_manual(values = c("#1f78b4", "#33a02c", "#e31a1c", "#ff7f00", "#6a3d9a", "#b15928", "#a6cee3", "#b2df8a")) +
   labs(
-    title = "Topic Distribution per Year (Count of Papers)",
-    subtitle = "Number of papers assigned to each topic per year",
+    title = "Migration Topics per Year",
+    subtitle = "Percentage of articles assigned to each topic per year",
     x = "Year",
-    y = "Number of Papers",
+    y = "Percetage of articles",
     fill = "Topic"
   ) +
   theme_minimal(base_family = "Helvetica") +
   theme(
-    plot.title = element_text(face = "bold", size = 16, hjust = 0.5),
-    plot.subtitle = element_text(size = 14, hjust = 0.5),
+    plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
+    plot.subtitle = element_text(size = 16, hjust = 0.5),
     legend.position = "top",
-    legend.title = element_text(face = "bold"),
-    axis.title = element_text(size = 14, face = "bold"),
-    axis.text = element_text(size = 12),
+    legend.title = element_text(face = "bold", size = 13),
+    axis.title = element_text(size = 15, face = "bold"),
+    axis.text = element_text(size = 15),
     panel.grid.major = element_line(color = "gray90", size = 0.5),  # Light grid lines
     panel.grid.minor = element_blank(),  # Remove minor grid lines
-    panel.background = element_rect(fill = "white")
+    panel.background = element_rect(fill = "white"),
+    legend.text = element_text(size = 14)
   )
 
 ```
+
+```{r}
+
+# Define custom colors
+custom_colors <- c("#1f78b4", "#33a02c", "#e31a1c", "#ff7f00", 
+                   "#6a3d9a", "#b15928", "#a6cee3", "#b2df8a")
+
+# Create the line graph
+ggplot(topic_yearly_distribution, aes(x = year, y = num_docs, 
+                                      color = topic_name, group = topic_name)) +
+  geom_line(size = 1) +  # Line for each topic
+  geom_point(size = 2) +  # Points at each year
+  scale_color_manual(values = custom_colors) +  # Apply custom colors
+  labs(
+    title = "Media Coverage Over Time",
+    subtitle = "Tracking the number of articles per topic per year",
+    x = "Year",
+    y = "Number of Articles",
+    color = "Topic"
+  ) +
+  theme_minimal(base_family = "Helvetica") +
+  theme(
+    plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
+    plot.subtitle = element_text(size = 16, hjust = 0.5),
+    legend.title = element_text(face = "bold", size = 13),
+    axis.title = element_text(size = 15, face = "bold"),
+    axis.text = element_text(size = 15),
+    panel.grid.major = element_line(color = "gray90", size = 0.5),  # Light grid lines
+    panel.grid.minor = element_blank(),  # Remove minor grid lines
+    panel.background = element_rect(fill = "white"),
+    legend.text = element_text(size = 14)
+  )
+
+```
+```{r}
+
+# Create the line graph
+ggplot(topic_yearly_distribution5, aes(x = year, y = num_docs, 
+                                      color = topic_name, group = topic_name)) +
+  geom_line(size = 1) +  # Line for each topic
+  geom_point(size = 2) +  # Points at each year
+  scale_color_manual(values = custom_colors) +  # Apply custom colors
+  labs(
+    title = "Migration Media Coverage Over Time",
+    subtitle = "Tracking the number of articles per topic per year",
+    x = "Year",
+    y = "Number of Articles",
+    color = "Topic"
+  ) +
+  theme_minimal(base_family = "Helvetica") +
+  theme(
+    plot.title = element_text(face = "bold", size = 18, hjust = 0.5),
+    plot.subtitle = element_text(size = 16, hjust = 0.5),
+    legend.title = element_text(face = "bold", size = 13),
+    axis.title = element_text(size = 15, face = "bold"),
+    axis.text = element_text(size = 15),
+    panel.grid.major = element_line(color = "gray90", size = 0.5),  # Light grid lines
+    panel.grid.minor = element_blank(),  # Remove minor grid lines
+    panel.background = element_rect(fill = "white"),
+    legend.text = element_text(size = 14)
+  )
+
+```
+
 
 ```{r}
 # Extract maximum gamma values and thresholds
